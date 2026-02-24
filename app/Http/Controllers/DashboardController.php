@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
 use Spatie\GoogleCalendar\Event;
 
@@ -377,5 +378,59 @@ class DashboardController extends Controller
             \Log::error("Google Calendar Store Error: " . $e->getMessage());
             return response()->json(['success' => false, 'message' => 'Fehler: ' . $e->getMessage()], 500);
         }
+    }
+
+    public function showOffer($id)
+    {
+        $user = Auth::user();
+        $companyId = Session::get('active_company_id', 1);
+
+        $offer = DB::table('angebot_tabelle')
+            ->where('id', $id)
+            ->first();
+
+        if (!$offer) {
+            abort(404, 'Angebot nicht gefunden.');
+        }
+
+        // Artikel abrufen (direkt aus JTLWAWI - Platzhalter bis Tabellenname klar ist)
+        // Vermutlich etwas wie: DB::table('tAngebotPos')->where('tAngebot_kAngebot', $offer->angebot_id)->get();
+        $items = [];
+        try {
+            if (Schema::hasTable('angebot_artikel')) {
+                $items = DB::table('angebot_artikel')->where('angebot_id', $offer->angebot_id)->get();
+            } else {
+                // Fallback / Dummy-Daten für die Visualisierung wie im Screenshot
+                $items = collect([
+                    (object)[
+                        'pos' => 1,
+                        'menge' => 500,
+                        'art_nr' => 'WA-100-TB',
+                        'bezeichnung' => 'Trinkbecher Classic 0.3l inkl. 1-farb Druck',
+                        'einzelpreis' => 0.85,
+                        'gesamt_netto' => 425.00,
+                        'mwst_prozent' => 19,
+                        'gesamt_brutto' => 505.75
+                    ],
+                    (object)[
+                        'pos' => 2,
+                        'menge' => 1,
+                        'art_nr' => 'VZ-001-SETUP',
+                        'bezeichnung' => 'Vorkosten / Sieberstellung / Maschineneinrichtung',
+                        'einzelpreis' => 45.00,
+                        'gesamt_netto' => 45.00,
+                        'mwst_prozent' => 19,
+                        'gesamt_brutto' => 53.55
+                    ]
+                ]);
+            }
+        } catch (\Exception $e) {
+            // Falls Schema-Check fehlschlägt
+        }
+
+        $companyName = ($companyId == 1) ? 'Branding Europe GmbH' : 'Europe Pen GmbH';
+        $accentColor = ($companyId == 1) ? '#1DA1F2' : '#0088CC';
+
+        return view('offers.show', compact('user', 'offer', 'items', 'companyId', 'companyName', 'accentColor'));
     }
 }

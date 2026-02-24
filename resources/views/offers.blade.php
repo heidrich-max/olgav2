@@ -579,7 +579,9 @@
                         <tr>
                             <td>{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</td>
                             <td>
-                                <strong>{{ $offer->angebotsnummer }}</strong><br>
+                                <a href="{{ route('offers.show', $offer->id) }}" style="text-decoration: none; color: inherit;">
+                                    <strong>{{ $offer->angebotsnummer }}</strong>
+                                </a><br>
                                 <small style="color: var(--text-muted)">{{ $offer->benutzer }}</small>
                             </td>
                             <td>
