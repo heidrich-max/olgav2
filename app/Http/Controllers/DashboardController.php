@@ -270,7 +270,7 @@ class DashboardController extends Controller
             ->leftJoin('auftrag_status', 'auftrag_tabelle.letzter_status', '=', 'auftrag_status.status_sh')
             ->where('auftrag_tabelle.benutzer', $userName)
             ->where('auftrag_tabelle.abgeschlossen_status', '!=', 'Auftrag abgeschlossen')
-            ->orderBy('auftrag_tabelle.erstelldatum', 'desc')
+            ->orderBy('auftrag_tabelle.erstelldatum', 'asc')
             ->select(
                 'auftrag_tabelle.*',
                 'auftrag_status.bg as status_bg',
