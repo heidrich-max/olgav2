@@ -294,8 +294,8 @@
                                 <tr>
                                     <th>Datum</th>
                                     <th>Nummer</th>
-                                    <th>Projektname</th>
                                     <th>Firma</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -303,8 +303,12 @@
                                 <tr>
                                     <td style="white-space: nowrap;">{{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}</td>
                                     <td>{{ $order->auftragsnummer ?? '—' }}</td>
-                                    <td>{{ $order->projektname ?? '—' }}</td>
                                     <td>{{ $order->firmenname ?? $order->projekt_firmenname ?? '—' }}</td>
+                                    <td>
+                                        <span class="status-pill" style="border-color: {{ $order->letzter_status_bg_hex ?? 'rgba(255,255,255,0.2)' }}; color: {{ $order->letzter_status_farbe_hex ?? '#fff' }}; background: {{ $order->letzter_status_bg_hex ? $order->letzter_status_bg_hex . '33' : 'rgba(255,255,255,0.08)' }};">
+                                            {{ $order->letzter_status_name ?? '—' }}
+                                        </span>
+                                    </td>
                                 </tr>
                                 @endforeach
                             </tbody>
