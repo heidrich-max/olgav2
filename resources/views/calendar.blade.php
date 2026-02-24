@@ -129,7 +129,10 @@
                 firstDay: 1,
                 height: 'auto',
                 eventClick: function(info) {
-                    alert('Termin: ' + info.event.title + (info.event.extendedProps.location ? '\nOrt: ' + info.event.extendedProps.location : ''));
+                    let msg = 'Termin: ' + info.event.title;
+                    if (info.event.extendedProps.location) msg += '\nOrt: ' + info.event.extendedProps.location;
+                    if (info.event.extendedProps.description) msg += '\n\nBeschreibung:\n' + info.event.extendedProps.description;
+                    alert(msg);
                 },
                 eventTextColor: '#fff',
                 eventBackgroundColor: 'rgba(29, 161, 242, 0.6)',
@@ -259,9 +262,13 @@
                     <input type="checkbox" name="all_day" id="all_day" value="1">
                     <label for="all_day" style="font-size: 0.85rem;">Ganztägiger Termin</label>
                 </div>
-                <div style="margin-bottom: 25px;">
+                <div style="margin-bottom: 15px;">
                     <label style="display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px;">Ort (optional)</label>
                     <input type="text" name="location" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; padding: 10px; color: #fff;">
+                </div>
+                <div style="margin-bottom: 25px;">
+                    <label style="display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px;">Beschreibung (optional)</label>
+                    <textarea name="description" rows="3" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; padding: 10px; color: #fff; resize: vertical;"></textarea>
                 </div>
                 <div style="display: flex; gap: 10px;">
                     <button type="button" onclick="closeEventModal()" style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; padding: 12px; border-radius: 8px; cursor: pointer;">Abbrechen</button>

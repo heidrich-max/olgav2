@@ -287,12 +287,14 @@ class DashboardController extends Controller
             'end_time' => 'required_if:all_day,0',
             'all_day' => 'boolean',
             'location' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:1000',
         ]);
 
         try {
             $event = new Event();
             $event->name = $validated['title'];
             $event->location = $validated['location'] ?? '';
+            $event->description = $validated['description'] ?? '';
 
             if ($request->has('all_day') && $validated['all_day']) {
                 $start = Carbon::parse($validated['start_date'])->startOfDay();
