@@ -5,9 +5,11 @@
 require __DIR__.'/../vendor/autoload.php';
 $app = require_once __DIR__.'/../bootstrap/app.php';
 
+// Fix for "A facade root has not been set."
+Illuminate\Support\Facades\Facade::setFacadeApplication($app);
+
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
-$request = Illuminate\Http\Request::capture();
-$app->instance('request', $request);
+$app->boot();
 
 echo "<h1>Laravel Cache Cleaner</h1>";
 
