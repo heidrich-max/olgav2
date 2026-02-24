@@ -1,0 +1,31 @@
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Large media/uploads
+uploads/
+freigaben/
+korrekturabzuege/
+pdf/
+lieferschein/
+rechnung/
+
+# Logs and cache
+*.log
+cache/
+temp/
+storage/logs/
+storage/framework/cache/
+storage/framework/sessions/
+storage/framework/views/
+
+# Dependencies
+node_modules/
+vendor/
+
+# Environment
+.env
+
+# Scripts
+download_olgav2.ps1
+list_server.ps1
