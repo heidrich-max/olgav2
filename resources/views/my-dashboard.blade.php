@@ -345,11 +345,11 @@
                                     <td style="white-space: nowrap; width: 200px;">
                                         @if($event->isAllDayEvent())
                                             <span class="status-pill" style="background: rgba(29,161,242,0.1); color: var(--primary-accent);">Ganztägig</span>
-                                            <div style="font-size: 0.8rem; margin-top: 4px;">{{ $event->startDateTime->format('d.m.Y') }}</div>
+                                            <div style="font-size: 0.8rem; margin-top: 4px;">{{ $event->start->format('d.m.Y') }}</div>
                                         @else
-                                            <div style="font-weight: 600;">{{ $event->startDateTime->format('d.m.Y') }}</div>
+                                            <div style="font-weight: 600;">{{ $event->start->format('d.m.Y') }}</div>
                                             <div style="font-size: 0.8rem; color: var(--text-muted);">
-                                                {{ $event->startDateTime->format('H:i') }} – {{ $event->endDateTime->format('H:i') }}
+                                                {{ $event->start->format('H:i') }} – {{ $event->end->format('H:i') }}
                                             </div>
                                         @endif
                                     </td>
