@@ -356,9 +356,6 @@
                                         @if($event->googleEvent->description)
                                             <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 2px;">{{ $event->googleEvent->description }}</div>
                                         @endif
-                                        <div style="font-size: 0.7rem; color: var(--primary-accent); opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">
-                                            <i class="fas fa-map-marker-alt" style="font-size: 0.65rem;"></i> {{ $event->googleEvent->location ?? 'Kein Ort' }}
-                                        </div>
                                     </td>
                                 </tr>
                                 @endforeach
