@@ -344,14 +344,21 @@
                                 <tr>
                                     <td style="width: 140px;">
                                         @php
-                                            $startDate = $event->startDateTime ?? $event->startDate;
+                                            $start = $event->startDateTime ?? $event->startDate;
+                                            $end = $event->endDateTime ?? $event->endDate;
+                                            $isMultiday = $start && $end && $start->format('d.m.Y') !== $end->format('d.m.Y');
                                         @endphp
-                                        <div style="font-weight: 600; font-size: 0.9rem;">{{ $startDate->format('d.m.Y') }}</div>
+                                        <div style="font-weight: 600; font-size: 0.9rem;">
+                                            {{ $start->format('d.m.Y') }}
+                                            @if($isMultiday)
+                                                - {{ $end->format('d.m.Y') }}
+                                            @endif
+                                        </div>
                                         <div style="font-size: 0.75rem; color: var(--text-muted);">
                                             @if($event->isAllDayEvent())
                                                 Ganztägig
                                             @else
-                                                {{ $startDate->format('H:i') }} Uhr
+                                                {{ $start->format('H:i') }} Uhr
                                             @endif
                                         </div>
                                     </td>
