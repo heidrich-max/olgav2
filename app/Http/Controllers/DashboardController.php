@@ -241,6 +241,8 @@ class DashboardController extends Controller
         $myOffers = DB::table('angebot_tabelle')
             ->where('benutzer', $userName)
             ->whereNotIn('letzter_status_name', ['Status angenommen', 'Status abgeschlossen'])
+            ->get();
+
         // Eigene nicht-abgeschlossene Aufträge (alle Firmen)
         $myOrders = DB::table('auftrag_tabelle')
             ->leftJoin('auftrag_status', 'auftrag_tabelle.letzter_status', '=', 'auftrag_status.status_sh')
