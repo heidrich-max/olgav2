@@ -301,6 +301,7 @@
                             <tbody>
                                 @foreach($myOrders as $order)
                                 <tr>
+                                    <td style="white-space: nowrap;">{{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}</td>
                                     <td>{{ $order->auftragsnummer ?? '—' }}</td>
                                     <td>{{ $order->projektname ?? '—' }}</td>
                                     <td>{{ $order->firmenname ?? $order->projekt_firmenname ?? '—' }}</td>
