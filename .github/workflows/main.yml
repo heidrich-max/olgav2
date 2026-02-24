@@ -27,5 +27,7 @@ jobs:
           **/.git*
           **/.git*/**
           **/node_modules/**
+          **/vendor/**
           **/.github/**
           download_olgav2.ps1
+          composer.phar
