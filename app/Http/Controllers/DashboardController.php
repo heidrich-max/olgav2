@@ -232,7 +232,22 @@ class DashboardController extends Controller
             ->orderBy('erstelldatum', 'desc')
             ->get();
 
-        // Google Calendar Events abrufen
+        // Google Calendar Events abrufen (nur die nächsten 5 für das Dashboard)
+        $calendarEvents = [];
+        try {
+            $calendarEvents = Event::get()->take(5);
+        } catch (\Exception $e) {
+            \Log::error("Google Calendar Error (Dashboard): " . $e->getMessage());
+        }
+
+        return view('my-dashboard', compact('user', 'myOffers', 'myOrders', 'calendarEvents'));
+    }
+
+    public function calendar()
+    {
+        $user = Auth::user();
+        
+        // Alle Google Calendar Events abrufen
         $calendarEvents = [];
         $eventsJson = '[]';
         try {
@@ -251,15 +266,15 @@ class DashboardController extends Controller
                     'allDay' => $event->isAllDayEvent(),
                     'location' => $event->googleEvent->location ?? '',
                     'description' => $event->googleEvent->description ?? '',
-                    'color' => '#1DA1F2', // Basis-Farbe
+                    'color' => '#1DA1F2', 
                 ];
             });
             $eventsJson = $formattedEvents->toJson();
 
         } catch (\Exception $e) {
-            \Log::error("Google Calendar Error: " . $e->getMessage());
+            \Log::error("Google Calendar Error (Full): " . $e->getMessage());
         }
 
-        return view('my-dashboard', compact('user', 'myOffers', 'myOrders', 'calendarEvents', 'eventsJson'));
+        return view('calendar', compact('user', 'calendarEvents', 'eventsJson'));
     }
 }

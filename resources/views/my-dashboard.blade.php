@@ -212,6 +212,9 @@
                     <a href="{{ route('my.dashboard') }}" class="user-dropdown-item active">
                         <i class="fas fa-user-cog"></i> Mein Dashboard
                     </a>
+                    <a href="{{ route('calendar') }}" class="user-dropdown-item">
+                        <i class="fas fa-calendar-alt"></i> Kalender
+                    </a>
                     <div class="user-dropdown-divider"></div>
                     <a href="#" class="user-dropdown-item logout" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         <i class="fas fa-sign-out-alt"></i> Abmelden
@@ -299,9 +302,48 @@
                                 @foreach($myOrders as $order)
                                 <tr>
                                     <td style="white-space: nowrap;">{{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}</td>
-                                    <td>{{ $order->auftragsnummer ?? '—' }}</td>
-                                    <td>{{ $order->projektname ?? '—' }}</td>
-                                    <td>{{ $order->firmenname ?? $order->projekt_firmenname ?? '—' }}</td>
+                @endif
+            </div>
+
+            <!-- Kompakter Kalender (Nächste 5 Termine) -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-calendar-alt"></i> Anstehende Termine</h2>
+                    <a href="{{ route('calendar') }}" style="color: var(--primary-accent); text-decoration: none; font-size: 0.8rem; font-weight: 600;">
+                        Alle ansehen <i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i>
+                    </a>
+                </div>
+                
+                @if(empty($calendarEvents) || count($calendarEvents) == 0)
+                    <div class="empty-msg">
+                        <i class="fas fa-calendar-day"></i>
+                        Keine anstehenden Termine.
+                    </div>
+                @else
+                    <div style="max-height: 420px; overflow-y: auto;">
+                        <table class="data-table">
+                            <tbody>
+                                @foreach($calendarEvents as $event)
+                                <tr>
+                                    <td style="width: 140px;">
+                                        @php
+                                            $startDate = $event->startDateTime ?? $event->startDate;
+                                        @endphp
+                                        <div style="font-weight: 600; font-size: 0.9rem;">{{ $startDate->format('d.m.Y') }}</div>
+                                        <div style="font-size: 0.75rem; color: var(--text-muted);">
+                                            @if($event->isAllDayEvent())
+                                                Ganztägig
+                                            @else
+                                                {{ $startDate->format('H:i') }} Uhr
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div style="font-weight: 500; font-size: 0.9rem;">{{ $event->name }}</div>
+                                        <div style="font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;">
+                                            {{ $event->googleEvent->location ?? 'Kein Ort angegeben' }}
+                                        </div>
+                                    </td>
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -311,85 +353,7 @@
             </div>
         </div>
 
-        <!-- Google Calendar -->
-        <div class="grid-full">
-            <div class="card">
-                <div class="card-header">
-                    <h2><i class="fas fa-calendar-alt"></i> Terminplanung (Google)</h2>
-                    <div style="display: flex; gap: 10px;">
-                        <a href="https://calendar.google.com" target="_blank" class="status-pill" style="text-decoration: none; background: var(--primary-accent); color: #fff;">
-                            <i class="fas fa-external-link-alt"></i> Google Kalender öffnen
-                        </a>
-                    </div>
-                </div>
-                <div class="card-body" style="padding: 20px;">
-                    <div id="calendar" style="min-height: 600px;"></div>
-                </div>
-            </div>
-        </div>
     </div>
-
-    <!-- FullCalendar Integration -->
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var calendarEl = document.getElementById('calendar');
-            var events = {!! $eventsJson !!};
-
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                locale: 'de',
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,listMonth'
-                },
-                buttonText: {
-                    today: 'Heute',
-                    month: 'Monat',
-                    week: 'Woche',
-                    list: 'Liste'
-                },
-                events: events,
-                firstDay: 1, // Montag
-                height: 'auto',
-                themeSystem: 'standard',
-                eventClick: function(info) {
-                    if (info.event.extendedProps.location) {
-                        alert('Termin: ' + info.event.title + '\nOrt: ' + info.event.extendedProps.location);
-                    } else {
-                        alert('Termin: ' + info.event.title);
-                    }
-                },
-                eventTextColor: '#fff',
-                eventBackgroundColor: 'rgba(29, 161, 242, 0.6)',
-                eventBorderColor: 'transparent'
-            });
-
-            calendar.render();
-        });
-    </script>
-
-    <style>
-        /* FullCalendar Glass Style */
-        .fc {
-            --fc-border-color: rgba(255, 255, 255, 0.1);
-            --fc-button-bg-color: rgba(255, 255, 255, 0.05);
-            --fc-button-border-color: rgba(255, 255, 255, 0.1);
-            --fc-button-hover-bg-color: rgba(255, 255, 255, 0.1);
-            --fc-button-active-bg-color: var(--primary-accent);
-            --fc-page-bg-color: transparent;
-            --fc-neutral-bg-color: rgba(255, 255, 255, 0.02);
-            --fc-list-event-hover-bg-color: rgba(255, 255, 255, 0.05);
-            color: #fff;
-        }
-        .fc .fc-toolbar-title { font-size: 1.2rem; font-weight: 600; }
-        .fc .fc-button { border-radius: 8px; text-transform: capitalize; padding: 6px 12px; font-size: 0.9rem; }
-        .fc .fc-daygrid-day.fc-day-today { background: rgba(29, 161, 242, 0.05) !important; }
-        .fc .fc-event { border-radius: 4px; padding: 2px 4px; border: none !important; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .fc-theme-standard td, .fc-theme-standard th { border-color: rgba(255,255,255,0.08); }
-        .fc-list { background: rgba(255,255,255,0.02); border-radius: 12px; }
-    </style>
 
     <script>
         // Company Switcher
