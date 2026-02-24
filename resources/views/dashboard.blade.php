@@ -351,7 +351,7 @@
                     <a href="{{ route('offers.index') }}" class="more-link" style="font-size:0.8rem; margin:0;">Alle Angebote</a>
                 </div>
                 @forelse($offers as $offer)
-                <div class="list-item">
+                <div class="list-item" style="background: {{ $offer->letzter_status_bg_hex ? $offer->letzter_status_bg_hex . '10' : 'rgba(255,255,255,0.03)' }}; border-left: 3px solid {{ $offer->letzter_status_bg_hex ?? 'transparent' }}; padding-left: 10px; margin-bottom: 5px; border-radius: 4px;">
                     <div class="item-text">
                         <div class="item-main">{{ $offer->angebotsnummer }} / {{ $offer->benutzer_kuerzel }}</div>
                         <div class="item-sub">{{ $offer->projektname }}</div>
@@ -370,7 +370,7 @@
                     <h2><i class="fas fa-truck-loading"></i> Offene Bestellungen</h2>
                 </div>
                 @forelse($orders as $order)
-                <div class="list-item">
+                <div class="list-item" style="background: {{ $order->status_bg ? $order->status_bg . '10' : 'rgba(255,255,255,0.03)' }}; border-left: 3px solid {{ $order->status_bg ?? 'transparent' }}; padding-left: 10px; margin-bottom: 5px; border-radius: 4px;">
                     <div class="item-text">
                         <div class="item-main">{{ $order->auftragsnummer }}</div>
                         <div class="item-sub">{{ $order->projektname }}</div>

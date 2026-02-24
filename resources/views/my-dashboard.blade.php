@@ -259,12 +259,12 @@
                             </thead>
                             <tbody>
                                 @foreach($myOffers as $offer)
-                                <tr>
-                                    <td style="white-space: nowrap;">{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</td>
+                                <tr style="background: {{ $offer->letzter_status_bg_hex ? $offer->letzter_status_bg_hex . '15' : 'transparent' }}; border-left: 4px solid {{ $offer->letzter_status_bg_hex ?? 'transparent' }}; transition: background 0.2s;">
+                                    <td style="white-space: nowrap; padding-left: 10px;">{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</td>
                                     <td>{{ $offer->angebotsnummer ?? '—' }}</td>
                                     <td>{{ $offer->firmenname ?? $offer->projekt_firmenname ?? '—' }}</td>
                                     <td>
-                                        <span class="status-pill" style="border-color: {{ $offer->letzter_status_bg_hex ?? 'rgba(255,255,255,0.2)' }}; color: {{ $offer->letzter_status_farbe_hex ?? '#fff' }}; background: {{ $offer->letzter_status_bg_hex ? $offer->letzter_status_bg_hex . '33' : 'rgba(255,255,255,0.08)' }};">
+                                        <span class="status-pill" style="border-color: {{ $offer->letzter_status_bg_hex ?? 'rgba(255,255,255,0.2)' }}; color: {{ $offer->letzter_status_farbe_hex ?? '#fff' }}; background: {{ $offer->letzter_status_bg_hex ? $offer->letzter_status_bg_hex . '44' : 'rgba(255,255,255,0.08)' }}; font-weight: 800;">
                                             {{ $offer->letzter_status ?? $offer->letzter_status_name ?? '—' }}
                                         </span>
                                     </td>
@@ -300,12 +300,12 @@
                             </thead>
                             <tbody>
                                 @foreach($myOrders as $order)
-                                <tr>
-                                    <td style="white-space: nowrap;">{{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}</td>
+                                <tr style="background: {{ $order->status_bg ? $order->status_bg . '15' : 'transparent' }}; border-left: 4px solid {{ $order->status_bg ?? 'transparent' }}; transition: background 0.2s;">
+                                    <td style="white-space: nowrap; padding-left: 10px;">{{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}</td>
                                     <td>{{ $order->auftragsnummer ?? '—' }}</td>
                                     <td>{{ $order->firmenname ?? $order->projekt_firmenname ?? '—' }}</td>
                                     <td>
-                                        <span class="status-pill" style="border-color: {{ $order->status_bg ?? 'rgba(255,255,255,0.2)' }}; color: {{ $order->status_color ?? '#fff' }}; background: {{ $order->status_bg ? $order->status_bg . '33' : 'rgba(255,255,255,0.08)' }};">
+                                        <span class="status-pill" style="border-color: {{ $order->status_bg ?? 'rgba(255,255,255,0.2)' }}; color: {{ $order->status_color ?? '#fff' }}; background: {{ $order->status_bg ? $order->status_bg . '44' : 'rgba(255,255,255,0.08)' }}; font-weight: 800;">
                                             {{ $order->status_kuerzel ?? $order->status_name_raw ?? $order->letzter_status_name ?? '—' }}
                                         </span>
                                     </td>
