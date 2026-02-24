@@ -91,8 +91,11 @@
             <a href="{{ route('my.dashboard') }}" class="btn-back"><i class="fas fa-chevron-left"></i> Zurück zum Dashboard</a>
         </div>
         <div style="display: flex; align-items: center; gap: 20px;">
-            <a href="https://calendar.google.com" target="_blank" class="status-pill" style="text-decoration: none; background: var(--primary-accent); color: #fff; padding: 6px 15px; font-weight: 600;">
-                <i class="fas fa-plus"></i> Termin in Google erstellen
+            <a href="javascript:void(0)" onclick="openEventModal()" class="status-pill" style="text-decoration: none; background: var(--primary-accent); color: #fff; padding: 6px 15px; font-weight: 600;">
+                <i class="fas fa-plus"></i> Termin direkt erstellen
+            </a>
+            <a href="https://calendar.google.com" target="_blank" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem;">
+                <i class="fas fa-external-link-alt"></i> Zu Google
             </a>
             <span style="font-size: 0.9rem; font-weight: 500;">{{ $user->name_komplett }}</span>
         </div>
@@ -163,9 +166,103 @@
             });
             requestAnimationFrame(animate);
         }
+        // Event Modal Logic
+        const eventModal = document.getElementById('eventModal');
+        const eventForm = document.getElementById('eventForm');
+
+        function openEventModal() {
+            eventModal.style.display = 'flex';
+        }
+
+        function closeEventModal() {
+            eventModal.style.display = 'none';
+            eventForm.reset();
+        }
+
+        document.getElementById('all_day').addEventListener('change', function(e) {
+            const timeFields = document.getElementById('timeFields');
+            timeFields.style.display = e.target.checked ? 'none' : 'grid';
+        });
+
+        eventForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const submitBtn = eventForm.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Speichere...';
+
+            const formData = new FormData(eventForm);
+            
+            try {
+                const response = await fetch("{{ route('calendar.store') }}", {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('Erfolg: ' + result.message);
+                    location.reload();
+                } else {
+                    alert('Fehler: ' + result.message);
+                }
+            } catch (error) {
+                alert('Ein Fehler ist aufgetreten: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Speichern';
+            }
+        });
+
         window.addEventListener('resize', resize);
         resize();
         animate();
     </script>
+
+    <!-- Event Modal -->
+    <div id="eventModal" class="modal-overlay" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
+        <div class="card" style="width: 100%; max-width: 500px; padding: 30px;">
+            <div class="card-header" style="margin-bottom: 25px;">
+                <h2><i class="fas fa-calendar-plus"></i> Neuer Termin</h2>
+                <button onclick="closeEventModal()" style="background:none; border:none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem;">&times;</button>
+            </div>
+            <form id="eventForm">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px;">Titel</label>
+                    <input type="text" name="title" required style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; padding: 10px; color: #fff;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px;">Datum</label>
+                    <input type="date" name="start_date" required style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; padding: 10px; color: #fff;">
+                </div>
+                <div id="timeFields" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <div>
+                        <label style="display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px;">Startzeit</label>
+                        <input type="time" name="start_time" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; padding: 10px; color: #fff;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px;">Endzeit</label>
+                        <input type="time" name="end_time" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; padding: 10px; color: #fff;">
+                    </div>
+                </div>
+                <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" name="all_day" id="all_day" value="1">
+                    <label for="all_day" style="font-size: 0.85rem;">Ganztägiger Termin</label>
+                </div>
+                <div style="margin-bottom: 25px;">
+                    <label style="display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px;">Ort (optional)</label>
+                    <input type="text" name="location" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; padding: 10px; color: #fff;">
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" onclick="closeEventModal()" style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; padding: 12px; border-radius: 8px; cursor: pointer;">Abbrechen</button>
+                    <button type="submit" style="flex: 2; background: var(--primary-accent); border: none; color: #fff; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600;">Speichern</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

@@ -277,4 +277,44 @@ class DashboardController extends Controller
 
         return view('calendar', compact('user', 'calendarEvents', 'eventsJson'));
     }
+
+    public function storeEvent(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'start_date' => 'required|date',
+            'start_time' => 'required_if:all_day,0',
+            'end_time' => 'required_if:all_day,0',
+            'all_day' => 'boolean',
+            'location' => 'nullable|string|max:255',
+        ]);
+
+        try {
+            $event = new Event();
+            $event->name = $validated['title'];
+            $event->location = $validated['location'] ?? '';
+
+            if ($request->has('all_day') && $validated['all_day']) {
+                $start = Carbon::parse($validated['start_date'])->startOfDay();
+                $end = Carbon::parse($validated['start_date'])->endOfDay();
+                
+                $event->startDate = $start;
+                $event->endDate = $end;
+            } else {
+                $start = Carbon::parse($validated['start_date'] . ' ' . $validated['start_time']);
+                $end = Carbon::parse($validated['start_date'] . ' ' . $validated['end_time']);
+                
+                $event->startDateTime = $start;
+                $event->endDateTime = $end;
+            }
+
+            $event->save();
+
+            return response()->json(['success' => true, 'message' => 'Termin erfolgreich erstellt!']);
+
+        } catch (\Exception $e) {
+            \Log::error("Google Calendar Store Error: " . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Fehler: ' . $e->getMessage()], 500);
+        }
+    }
 }

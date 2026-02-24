@@ -17,6 +17,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/offers', [DashboardController::class, 'offers'])->name('offers.index');
     Route::get('/my-dashboard', [DashboardController::class, 'myDashboard'])->name('my.dashboard');
     Route::get('/calendar', [DashboardController::class, 'calendar'])->name('calendar');
+    Route::post('/calendar/event', [DashboardController::class, 'storeEvent'])->name('calendar.store');
     Route::get('/dashboard/switch/{id}', [DashboardController::class, 'switchCompany'])->name('company.switch');
 
 });
