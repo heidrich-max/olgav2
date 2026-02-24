@@ -317,9 +317,14 @@
             <div class="card">
                 <div class="card-header">
                     <h2><i class="fas fa-calendar-alt"></i> Anstehende Termine</h2>
-                    <a href="{{ route('calendar') }}" style="color: var(--primary-accent); text-decoration: none; font-size: 0.8rem; font-weight: 600;">
-                        Alle ansehen <i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i>
-                    </a>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <a href="https://calendar.google.com" target="_blank" title="Termin erstellen" style="color: var(--text-muted); font-size: 0.9rem;">
+                            <i class="fas fa-plus-circle"></i>
+                        </a>
+                        <a href="{{ route('calendar') }}" style="color: var(--primary-accent); text-decoration: none; font-size: 0.8rem; font-weight: 600;">
+                            Alle ansehen <i class="fas fa-chevron-right" style="font-size: 0.7rem;"></i>
+                        </a>
+                    </div>
                 </div>
                 
                 @if(empty($calendarEvents) || count($calendarEvents) == 0)

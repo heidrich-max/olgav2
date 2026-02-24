@@ -91,8 +91,8 @@
             <a href="{{ route('my.dashboard') }}" class="btn-back"><i class="fas fa-chevron-left"></i> Zurück zum Dashboard</a>
         </div>
         <div style="display: flex; align-items: center; gap: 20px;">
-            <a href="https://calendar.google.com" target="_blank" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem;">
-                <i class="fas fa-external-link-alt"></i> Zu Google
+            <a href="https://calendar.google.com" target="_blank" class="status-pill" style="text-decoration: none; background: var(--primary-accent); color: #fff; padding: 6px 15px; font-weight: 600;">
+                <i class="fas fa-plus"></i> Termin in Google erstellen
             </a>
             <span style="font-size: 0.9rem; font-weight: 500;">{{ $user->name_komplett }}</span>
         </div>
