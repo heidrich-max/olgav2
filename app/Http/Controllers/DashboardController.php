@@ -234,13 +234,32 @@ class DashboardController extends Controller
 
         // Google Calendar Events abrufen
         $calendarEvents = [];
+        $eventsJson = '[]';
         try {
             $calendarEvents = Event::get();
+            
+            // Für FullCalendar aufbereiten
+            $formattedEvents = collect($calendarEvents)->map(function($event) {
+                $start = $event->startDateTime ?? $event->startDate;
+                $end = $event->endDateTime ?? $event->endDate;
+                
+                return [
+                    'id' => $event->googleEvent->id,
+                    'title' => $event->name,
+                    'start' => $start->toIso8601String(),
+                    'end' => $end->toIso8601String(),
+                    'allDay' => $event->isAllDayEvent(),
+                    'location' => $event->googleEvent->location ?? '',
+                    'description' => $event->googleEvent->description ?? '',
+                    'color' => '#1DA1F2', // Basis-Farbe
+                ];
+            });
+            $eventsJson = $formattedEvents->toJson();
+
         } catch (\Exception $e) {
-            // Log error or handle silently for now
             \Log::error("Google Calendar Error: " . $e->getMessage());
         }
 
-        return view('my-dashboard', compact('user', 'myOffers', 'myOrders', 'calendarEvents'));
+        return view('my-dashboard', compact('user', 'myOffers', 'myOrders', 'calendarEvents', 'eventsJson'));
     }
 }
