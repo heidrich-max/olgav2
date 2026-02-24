@@ -391,56 +391,62 @@
         });
 
         // Event Modal Logic
-        const eventModal = document.getElementById('eventModal');
-        const eventForm = document.getElementById('eventForm');
+        let eventModal, eventForm;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            eventModal = document.getElementById('eventModal');
+            eventForm = document.getElementById('eventForm');
+
+            if (eventForm) {
+                document.getElementById('all_day').addEventListener('change', function(e) {
+                    const timeFields = document.getElementById('timeFields');
+                    if (timeFields) timeFields.style.display = e.target.checked ? 'none' : 'grid';
+                });
+
+                eventForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    const submitBtn = eventForm.querySelector('button[type="submit"]');
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Speichere...';
+
+                    const formData = new FormData(eventForm);
+                    
+                    try {
+                        const response = await fetch("{{ route('calendar.store') }}", {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json'
+                            }
+                        });
+
+                        const result = await response.json();
+
+                        if (result.success) {
+                            alert('Erfolg: ' + result.message);
+                            location.reload();
+                        } else {
+                            alert('Fehler: ' + result.message);
+                        }
+                    } catch (error) {
+                        alert('Ein Fehler ist aufgetreten: ' + error.message);
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = 'Speichern';
+                    }
+                });
+            }
+        });
 
         function openEventModal() {
-            eventModal.style.display = 'flex';
+            if (eventModal) eventModal.style.display = 'flex';
         }
 
         function closeEventModal() {
-            eventModal.style.display = 'none';
-            eventForm.reset();
+            if (eventModal) eventModal.style.display = 'none';
+            if (eventForm) eventForm.reset();
         }
-
-        document.getElementById('all_day').addEventListener('change', function(e) {
-            const timeFields = document.getElementById('timeFields');
-            timeFields.style.display = e.target.checked ? 'none' : 'grid';
-        });
-
-        eventForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const submitBtn = eventForm.querySelector('button[type="submit"]');
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Speichere...';
-
-            const formData = new FormData(eventForm);
-            
-            try {
-                const response = await fetch("{{ route('calendar.store') }}", {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Accept': 'application/json'
-                    }
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    alert('Erfolg: ' + result.message);
-                    location.reload(); // Einfachster Weg um Liste zu aktualisieren
-                } else {
-                    alert('Fehler: ' + result.message);
-                }
-            } catch (error) {
-                alert('Ein Fehler ist aufgetreten: ' + error.message);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = 'Speichern';
-            }
-        });
 
         // Network Animation
         const canvas = document.getElementById('network-overlay');
