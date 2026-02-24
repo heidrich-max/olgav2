@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Spatie\GoogleCalendar\Event;
 
 class DashboardController extends Controller
 {
@@ -231,6 +232,15 @@ class DashboardController extends Controller
             ->orderBy('erstelldatum', 'desc')
             ->get();
 
-        return view('my-dashboard', compact('user', 'myOffers', 'myOrders'));
+        // Google Calendar Events abrufen
+        $calendarEvents = [];
+        try {
+            $calendarEvents = Event::get();
+        } catch (\Exception $e) {
+            // Log error or handle silently for now
+            \Log::error("Google Calendar Error: " . $e->getMessage());
+        }
+
+        return view('my-dashboard', compact('user', 'myOffers', 'myOrders', 'calendarEvents'));
     }
 }

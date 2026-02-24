@@ -315,15 +315,54 @@
         <div class="grid-full">
             <div class="card">
                 <div class="card-header">
-                    <h2><i class="fas fa-calendar-alt"></i> Kalender</h2>
+                    <h2><i class="fas fa-calendar-alt"></i> Mein Kalender (info@frank.group)</h2>
+                    <div style="display: flex; gap: 10px;">
+                        <span class="badge-count">{{ count($calendarEvents) }} Termine</span>
+                        <a href="https://calendar.google.com" target="_blank" class="status-pill" style="text-decoration: none; background: var(--primary-accent); color: #fff;">
+                            <i class="fas fa-plus"></i> Termin erstellen
+                        </a>
+                    </div>
                 </div>
-                <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; text-align: center; color: var(--text-muted);">
-                    <i class="fas fa-calendar-check" style="font-size: 2rem; margin-bottom: 12px; color: var(--primary-accent); display: block;"></i>
-                    <p style="margin-bottom: 10px;">Google Kalender – bitte Embed-URL hinterlegen.</p>
-                    <p style="font-size: 0.8rem;">In Google Kalender: <strong>Einstellungen → Kalender → Kalender einbetten → Einbettungscode kopieren</strong></p>
-                    {{-- Sobald die URL vorliegt, ersetze diesen Block: --}}
-                    {{-- <iframe src="GOOGLE_CALENDAR_EMBED_URL" class="calendar-frame"></iframe> --}}
-                </div>
+                
+                @if(empty($calendarEvents))
+                    <div class="empty-msg">
+                        <i class="fas fa-calendar-day"></i>
+                        Keine anstehenden Termine gefunden.
+                    </div>
+                @else
+                    <div style="max-height: 500px; overflow-y: auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Zeitraum</th>
+                                    <th>Titel</th>
+                                    <th>Ort / Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($calendarEvents as $event)
+                                <tr>
+                                    <td style="white-space: nowrap; width: 200px;">
+                                        @if($event->isAllDayEvent())
+                                            <span class="status-pill" style="background: rgba(29,161,242,0.1); color: var(--primary-accent);">Ganztägig</span>
+                                            <div style="font-size: 0.8rem; margin-top: 4px;">{{ $event->startDateTime->format('d.m.Y') }}</div>
+                                        @else
+                                            <div style="font-weight: 600;">{{ $event->startDateTime->format('d.m.Y') }}</div>
+                                            <div style="font-size: 0.8rem; color: var(--text-muted);">
+                                                {{ $event->startDateTime->format('H:i') }} – {{ $event->endDateTime->format('H:i') }}
+                                            </div>
+                                        @endif
+                                    </td>
+                                    <td style="font-weight: 500;">{{ $event->name }}</td>
+                                    <td style="color: var(--text-muted); font-size: 0.8rem;">
+                                        {{ $event->googleEvent->location ?? '—' }}
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
             </div>
         </div>
     </div>

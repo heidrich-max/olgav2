@@ -25,7 +25,9 @@ vendor/
 
 # Environment
 .env
+storage/app/google-calendar/
 
 # Scripts
 download_olgav2.ps1
 list_server.ps1
+composer.phar
