@@ -64,11 +64,14 @@ class DashboardController extends Controller
         $companyStats->vorjahr = OrderRevenue::whereIn('projekt_id', $mappedProjects)->sum('netto_umsatz_vorjahr');
         
         // Lists
-        $orders = OrderTable::where('firmen_id', $companyId)
-            ->where('abgeschlossen_status', '!=', 'Auftrag abgeschlossen')
-            ->orderBy('erstelldatum', 'desc')
-            ->limit(10)
-            ->get();
+    $orders = DB::table('auftrag_tabelle')
+        ->leftJoin('auftrag_status', 'auftrag_tabelle.letzter_status', '=', 'auftrag_status.status_sh')
+        ->where('auftrag_tabelle.firmen_id', $companyId)
+        ->where('auftrag_tabelle.abgeschlossen_status', '!=', 'Auftrag abgeschlossen')
+        ->orderBy('auftrag_tabelle.erstelldatum', 'desc')
+        ->select('auftrag_tabelle.*', 'auftrag_status.bg as status_bg', 'auftrag_status.color as status_color', 'auftrag_status.status_sh as status_kuerzel')
+        ->limit(10)
+        ->get();
             
         $offers = DB::table('angebot_tabelle')
             ->where('firmen_id', $companyId)
@@ -227,9 +230,11 @@ class DashboardController extends Controller
 
         // Eigene nicht-abgeschlossene Aufträge (alle Firmen)
         $myOrders = DB::table('auftrag_tabelle')
-            ->where('benutzer', $userName)
-            ->where('abgeschlossen_status', '!=', 'Auftrag abgeschlossen')
-            ->orderBy('erstelldatum', 'desc')
+            ->leftJoin('auftrag_status', 'auftrag_tabelle.letzter_status', '=', 'auftrag_status.status_sh')
+            ->where('auftrag_tabelle.benutzer', $userName)
+            ->where('auftrag_tabelle.abgeschlossen_status', '!=', 'Auftrag abgeschlossen')
+            ->orderBy('auftrag_tabelle.erstelldatum', 'desc')
+            ->select('auftrag_tabelle.*', 'auftrag_status.bg as status_bg', 'auftrag_status.color as status_color', 'auftrag_status.status_sh as status_kuerzel')
             ->get();
 
         // Google Calendar Events abrufen (nur die nächsten 5 für das Dashboard)

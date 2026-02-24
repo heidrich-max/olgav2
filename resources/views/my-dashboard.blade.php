@@ -305,7 +305,10 @@
                                     <td>{{ $order->auftragsnummer ?? '—' }}</td>
                                     <td>{{ $order->firmenname ?? $order->projekt_firmenname ?? '—' }}</td>
                                     <td>
-                                        <span class="status-pill" style="border-color: {{ $order->letzter_status_bg_hex ?? 'rgba(255,255,255,0.2)' }}; color: {{ $order->letzter_status_farbe_hex ?? '#fff' }}; background: {{ $order->letzter_status_bg_hex ? $order->letzter_status_bg_hex . '33' : 'rgba(255,255,255,0.08)' }};">
+                                        <span class="status-pill" style="border-color: {{ $order->status_bg ?? 'rgba(255,255,255,0.2)' }}; color: {{ $order->status_color ?? '#fff' }}; background: {{ $order->status_bg ? $order->status_bg . '33' : 'rgba(255,255,255,0.08)' }};">
+                                            @if($order->status_kuerzel)
+                                                <small style="opacity: 0.8; margin-right: 4px;">[{{ $order->status_kuerzel }}]</small>
+                                            @endif
                                             {{ $order->letzter_status_name ?? '—' }}
                                         </span>
                                     </td>
