@@ -265,7 +265,7 @@
                                     <td>{{ $offer->firmenname ?? $offer->projekt_firmenname ?? '—' }}</td>
                                     <td>
                                         <span class="status-pill" style="border-color: {{ $offer->letzter_status_bg_hex ?? 'rgba(255,255,255,0.2)' }}; color: {{ $offer->letzter_status_farbe_hex ?? '#fff' }}; background: {{ $offer->letzter_status_bg_hex ? $offer->letzter_status_bg_hex . '33' : 'rgba(255,255,255,0.08)' }};">
-                                            {{ $offer->letzter_status_name ?? '—' }}
+                                            {{ $offer->letzter_status ?? $offer->letzter_status_name ?? '—' }}
                                         </span>
                                     </td>
                                 </tr>

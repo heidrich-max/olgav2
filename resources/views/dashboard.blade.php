@@ -356,8 +356,8 @@
                         <div class="item-main">{{ $offer->angebotsnummer }} / {{ $offer->benutzer_kuerzel }}</div>
                         <div class="item-sub">{{ $offer->projektname }}</div>
                     </div>
-                    <div class="badge" style="color: {{ $offer->letzter_status_farbe_hex }}; border-color: {{ $offer->letzter_status_bg_hex }}">
-                        {{ $offer->letzter_status_name }}
+                    <div class="badge" style="color: {{ $offer->letzter_status_farbe_hex }}; border-color: {{ $offer->letzter_status_bg_hex }}; background: {{ $offer->letzter_status_bg_hex ? $offer->letzter_status_bg_hex . '33' : 'rgba(255,255,255,0.08)' }};">
+                        {{ $offer->letzter_status ?? $offer->letzter_status_name }}
                     </div>
                 </div>
                 @empty

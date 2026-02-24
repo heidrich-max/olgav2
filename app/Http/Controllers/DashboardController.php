@@ -100,6 +100,17 @@ class DashboardController extends Controller
             ->limit(10)
             ->get();
 
+        // Ensure colors have # for offers
+        $offers->transform(function($offer) {
+            if (isset($offer->letzter_status_bg_hex) && $offer->letzter_status_bg_hex && strpos($offer->letzter_status_bg_hex, '#') !== 0) {
+                $offer->letzter_status_bg_hex = '#' . $offer->letzter_status_bg_hex;
+            }
+            if (isset($offer->letzter_status_farbe_hex) && $offer->letzter_status_farbe_hex && strpos($offer->letzter_status_farbe_hex, '#') !== 0) {
+                $offer->letzter_status_farbe_hex = '#' . $offer->letzter_status_farbe_hex;
+            }
+            return $offer;
+        });
+
         // Generate Month List (last 12 months)
         $availableMonths = [];
         for ($i = 0; $i < 12; $i++) {
@@ -242,6 +253,17 @@ class DashboardController extends Controller
             ->where('benutzer', $userName)
             ->whereNotIn('letzter_status_name', ['Status angenommen', 'Status abgeschlossen'])
             ->get();
+
+        // Ensure colors have # for offers
+        $myOffers->transform(function($offer) {
+            if (isset($offer->letzter_status_bg_hex) && $offer->letzter_status_bg_hex && strpos($offer->letzter_status_bg_hex, '#') !== 0) {
+                $offer->letzter_status_bg_hex = '#' . $offer->letzter_status_bg_hex;
+            }
+            if (isset($offer->letzter_status_farbe_hex) && $offer->letzter_status_farbe_hex && strpos($offer->letzter_status_farbe_hex, '#') !== 0) {
+                $offer->letzter_status_farbe_hex = '#' . $offer->letzter_status_farbe_hex;
+            }
+            return $offer;
+        });
 
         // Eigene nicht-abgeschlossene Aufträge (alle Firmen)
         $myOrders = DB::table('auftrag_tabelle')
