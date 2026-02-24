@@ -379,7 +379,7 @@
                         @if($order->status_kuerzel)
                             <small style="opacity: 0.8; margin-right: 4px;">[{{ $order->status_kuerzel }}]</small>
                         @endif
-                        {{ $order->letzter_status_name }}
+                        {{ $order->status_name_raw ?? $order->letzter_status_name }}
                     </div>
                 </div>
                 @empty

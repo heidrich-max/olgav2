@@ -69,9 +69,26 @@ class DashboardController extends Controller
         ->where('auftrag_tabelle.firmen_id', $companyId)
         ->where('auftrag_tabelle.abgeschlossen_status', '!=', 'Auftrag abgeschlossen')
         ->orderBy('auftrag_tabelle.erstelldatum', 'desc')
-        ->select('auftrag_tabelle.*', 'auftrag_status.bg as status_bg', 'auftrag_status.color as status_color', 'auftrag_status.status_sh as status_kuerzel')
+        ->select(
+            'auftrag_tabelle.*', 
+            'auftrag_status.bg as status_bg', 
+            'auftrag_status.color as status_color', 
+            'auftrag_status.status_sh as status_kuerzel',
+            'auftrag_status.status_lg as status_name_raw'
+        )
         ->limit(10)
         ->get();
+
+    // Ensure colors have # and names are clean
+    $orders->transform(function($order) {
+        if ($order->status_bg && strpos($order->status_bg, '#') !== 0) {
+            $order->status_bg = '#' . $order->status_bg;
+        }
+        if ($order->status_color && strpos($order->status_color, '#') !== 0) {
+            $order->status_color = '#' . $order->status_color;
+        }
+        return $order;
+    });
             
         $offers = DB::table('angebot_tabelle')
             ->where('firmen_id', $companyId)
@@ -224,18 +241,31 @@ class DashboardController extends Controller
         $myOffers = DB::table('angebot_tabelle')
             ->where('benutzer', $userName)
             ->whereNotIn('letzter_status_name', ['Status angenommen', 'Status abgeschlossen'])
-            ->where('abgeschlossen_status', '!=', 'Angebot abgeschlossen')
-            ->orderBy('erstelldatum', 'desc')
-            ->get();
-
         // Eigene nicht-abgeschlossene Aufträge (alle Firmen)
         $myOrders = DB::table('auftrag_tabelle')
             ->leftJoin('auftrag_status', 'auftrag_tabelle.letzter_status', '=', 'auftrag_status.status_sh')
             ->where('auftrag_tabelle.benutzer', $userName)
             ->where('auftrag_tabelle.abgeschlossen_status', '!=', 'Auftrag abgeschlossen')
             ->orderBy('auftrag_tabelle.erstelldatum', 'desc')
-            ->select('auftrag_tabelle.*', 'auftrag_status.bg as status_bg', 'auftrag_status.color as status_color', 'auftrag_status.status_sh as status_kuerzel')
+            ->select(
+                'auftrag_tabelle.*',
+                'auftrag_status.bg as status_bg',
+                'auftrag_status.color as status_color',
+                'auftrag_status.status_sh as status_kuerzel',
+                'auftrag_status.status_lg as status_name_raw'
+            )
             ->get();
+
+        // Ensure colors have # and names are clean
+        $myOrders->transform(function($order) {
+            if ($order->status_bg && strpos($order->status_bg, '#') !== 0) {
+                $order->status_bg = '#' . $order->status_bg;
+            }
+            if ($order->status_color && strpos($order->status_color, '#') !== 0) {
+                $order->status_color = '#' . $order->status_color;
+            }
+            return $order;
+        });
 
         // Google Calendar Events abrufen (nur die nächsten 5 für das Dashboard)
         $calendarEvents = [];
@@ -251,7 +281,7 @@ class DashboardController extends Controller
     public function calendar()
     {
         $user = Auth::user();
-        
+
         // Alle Google Calendar Events abrufen
         $calendarEvents = [];
         $eventsJson = '[]';
