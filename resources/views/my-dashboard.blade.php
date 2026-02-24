@@ -343,13 +343,17 @@
                                 @foreach($calendarEvents as $event)
                                 <tr>
                                     <td style="white-space: nowrap; width: 200px;">
+                                        @php
+                                            $startDate = $event->startDateTime ?? $event->startDate;
+                                            $endDate = $event->endDateTime ?? $event->endDate;
+                                        @endphp
                                         @if($event->isAllDayEvent())
                                             <span class="status-pill" style="background: rgba(29,161,242,0.1); color: var(--primary-accent);">Ganztägig</span>
-                                            <div style="font-size: 0.8rem; margin-top: 4px;">{{ $event->start->format('d.m.Y') }}</div>
+                                            <div style="font-size: 0.8rem; margin-top: 4px;">{{ $startDate->format('d.m.Y') }}</div>
                                         @else
-                                            <div style="font-weight: 600;">{{ $event->start->format('d.m.Y') }}</div>
+                                            <div style="font-weight: 600;">{{ $startDate->format('d.m.Y') }}</div>
                                             <div style="font-size: 0.8rem; color: var(--text-muted);">
-                                                {{ $event->start->format('H:i') }} – {{ $event->end->format('H:i') }}
+                                                {{ $startDate->format('H:i') }} – {{ $endDate->format('H:i') }}
                                             </div>
                                         @endif
                                     </td>
