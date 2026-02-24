@@ -356,9 +356,9 @@
                         <div class="item-main">{{ $offer->angebotsnummer }} / {{ $offer->benutzer_kuerzel }}</div>
                         <div class="item-sub">{{ $offer->projektname }}</div>
                     </div>
-                    <div class="badge" style="color: {{ $offer->letzter_status_farbe_hex }}; border-color: {{ $offer->letzter_status_bg_hex }}; background: {{ $offer->letzter_status_bg_hex ? $offer->letzter_status_bg_hex . '33' : 'rgba(255,255,255,0.08)' }};">
+                    <b style="color: {{ $offer->letzter_status_farbe_hex }}; font-size: 0.8rem;">
                         {{ $offer->letzter_status ?? $offer->letzter_status_name }}
-                    </div>
+                    </b>
                 </div>
                 @empty
                 <p style="color: var(--text-muted); font-size: 0.9rem;">Aktuell keine offenen Angebote.</p>
@@ -375,9 +375,9 @@
                         <div class="item-main">{{ $order->auftragsnummer }}</div>
                         <div class="item-sub">{{ $order->projektname }}</div>
                     </div>
-                    <div class="badge" style="color: {{ $order->status_color ?? '#fff' }}; border-color: {{ $order->status_bg ?? 'rgba(255,255,255,0.2)' }}; background: {{ $order->status_bg ? $order->status_bg . '33' : 'rgba(255,255,255,0.08)' }};">
+                    <b style="color: {{ $order->status_color ?? '#fff' }}; font-size: 0.8rem;">
                         {{ $order->status_kuerzel ?? $order->status_name_raw ?? $order->letzter_status_name }}
-                    </div>
+                    </b>
                 </div>
                 @empty
                 <p style="color: var(--text-muted); font-size: 0.9rem;">Aktuell keine offenen Bestellungen.</p>

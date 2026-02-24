@@ -264,9 +264,9 @@
                                     <td>{{ $offer->angebotsnummer ?? '—' }}</td>
                                     <td>{{ $offer->firmenname ?? $offer->projekt_firmenname ?? '—' }}</td>
                                     <td>
-                                        <span class="status-pill" style="border-color: {{ $offer->letzter_status_bg_hex ?? 'rgba(255,255,255,0.2)' }}; color: {{ $offer->letzter_status_farbe_hex ?? '#fff' }}; background: {{ $offer->letzter_status_bg_hex ? $offer->letzter_status_bg_hex . '44' : 'rgba(255,255,255,0.08)' }}; font-weight: 800;">
+                                        <b style="color: {{ $offer->letzter_status_farbe_hex ?? '#fff' }}; font-size: 0.85rem;">
                                             {{ $offer->letzter_status ?? $offer->letzter_status_name ?? '—' }}
-                                        </span>
+                                        </b>
                                     </td>
                                 </tr>
                                 @endforeach
@@ -305,9 +305,9 @@
                                     <td>{{ $order->auftragsnummer ?? '—' }}</td>
                                     <td>{{ $order->firmenname ?? $order->projekt_firmenname ?? '—' }}</td>
                                     <td>
-                                        <span class="status-pill" style="border-color: {{ $order->status_bg ?? 'rgba(255,255,255,0.2)' }}; color: {{ $order->status_color ?? '#fff' }}; background: {{ $order->status_bg ? $order->status_bg . '44' : 'rgba(255,255,255,0.08)' }}; font-weight: 800;">
+                                        <b style="color: {{ $order->status_color ?? '#fff' }}; font-size: 0.85rem;">
                                             {{ $order->status_kuerzel ?? $order->status_name_raw ?? $order->letzter_status_name ?? '—' }}
-                                        </span>
+                                        </b>
                                     </td>
                                 </tr>
                                 @endforeach
