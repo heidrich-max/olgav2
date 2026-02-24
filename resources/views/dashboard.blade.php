@@ -376,10 +376,7 @@
                         <div class="item-sub">{{ $order->projektname }}</div>
                     </div>
                     <div class="badge" style="color: {{ $order->status_color ?? '#fff' }}; border-color: {{ $order->status_bg ?? 'rgba(255,255,255,0.2)' }}; background: {{ $order->status_bg ? $order->status_bg . '33' : 'rgba(255,255,255,0.08)' }};">
-                        @if($order->status_kuerzel)
-                            <small style="opacity: 0.8; margin-right: 4px;">[{{ $order->status_kuerzel }}]</small>
-                        @endif
-                        {{ $order->status_name_raw ?? $order->letzter_status_name }}
+                        {{ $order->status_kuerzel ?? $order->status_name_raw ?? $order->letzter_status_name }}
                     </div>
                 </div>
                 @empty

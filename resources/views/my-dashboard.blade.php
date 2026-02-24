@@ -306,10 +306,7 @@
                                     <td>{{ $order->firmenname ?? $order->projekt_firmenname ?? '—' }}</td>
                                     <td>
                                         <span class="status-pill" style="border-color: {{ $order->status_bg ?? 'rgba(255,255,255,0.2)' }}; color: {{ $order->status_color ?? '#fff' }}; background: {{ $order->status_bg ? $order->status_bg . '33' : 'rgba(255,255,255,0.08)' }};">
-                                            @if($order->status_kuerzel)
-                                                <small style="opacity: 0.8; margin-right: 4px;">[{{ $order->status_kuerzel }}]</small>
-                                            @endif
-                                            {{ $order->status_name_raw ?? $order->letzter_status_name ?? '—' }}
+                                            {{ $order->status_kuerzel ?? $order->status_name_raw ?? $order->letzter_status_name ?? '—' }}
                                         </span>
                                     </td>
                                 </tr>
