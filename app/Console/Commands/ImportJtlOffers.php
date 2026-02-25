@@ -1,0 +1,172 @@
+<?php
+
+namespace App\Console\Commands;
+
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use PDO;
+use Exception;
+
+class ImportJtlOffers extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'app:import-jtl-offers';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Synchronisiert Angebote aus allen JTL-Wawi-Mandanten in die lokale Datenbank';
+
+    /**
+     * Execute the console command.
+     */
+    public function handle()
+    {
+        $this->info("Starte JTL-Angebots-Import...");
+        $startTime = microtime(true);
+
+        // 1. Lookup-Daten laden (Pre-Caching)
+        $firmenMap = DB::table('auftrag_projekt_firma')->get()->keyBy('name')->toArray();
+        
+        $aliasMap = DB::table('auftrag_projekt_firma_namen')
+            ->join('auftrag_projekt_firma', 'auftrag_projekt_firma.id', '=', 'auftrag_projekt_firma_namen.name_id')
+            ->select('auftrag_projekt_firma_namen.begriff', 'auftrag_projekt_firma.name')
+            ->get()
+            ->pluck('name', 'begriff')
+            ->toArray();
+
+        $userMap = DB::table('user')->get()->keyBy('name_komplett')->toArray();
+
+        $existingAngebote = DB::table('angebot_tabelle')
+            ->select(DB::raw("CONCAT(projekt_id, '_', angebot_id) as key_id"))
+            ->pluck('key_id')
+            ->flip()
+            ->toArray();
+
+        $existingStatus = DB::table('angebot_status_a')
+            ->select(DB::raw("CONCAT(projekt_id, '_', angebot_id) as key_id"))
+            ->pluck('key_id')
+            ->flip()
+            ->toArray();
+
+        // 2. WAWI Mandanten abrufen
+        $wawiConnections = DB::table('auftrag_projekt_wawi')->get();
+        
+        $totalInserted = 0;
+        $totalUpdated = 0;
+        $totalSkipped = 0;
+        $totalErrors = 0;
+
+        foreach ($wawiConnections as $wawi) {
+            $this->info("Verarbeite Mandant: {$wawi->dataname} ({$wawi->host})");
+            
+            try {
+                // Dynamische Verbindung zu SQL Server (JTL)
+                $dsn = "sqlsrv:Server={$wawi->host};Database={$wawi->dataname};TrustServerCertificate=yes";
+                $wawi_db = new PDO($dsn, $wawi->username, $wawi->password, [
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+                ]);
+
+                // Angebote abrufen
+                $offers = $wawi_db->query("
+                    SELECT dErstellt, kBestellung, cBenutzername, cAngebotsnummer,
+                           cRechnungsadresseFirma, cStatustext, fAngebotswert, cFirmenname
+                    FROM Kunde.lvAngebote
+                    ORDER BY dErstellt DESC
+                ")->fetchAll();
+
+                foreach ($offers as $obj) {
+                    $angebot_id = $obj['kBestellung'];
+                    $projekt_firmenname = trim($obj['cFirmenname'] ?? '');
+
+                    // Firma auflösen
+                    if (!isset($firmenMap[$projekt_firmenname]) && isset($aliasMap[$projekt_firmenname])) {
+                        $projekt_firmenname = $aliasMap[$projekt_firmenname];
+                    }
+
+                    if (empty($projekt_firmenname) || !isset($firmenMap[$projekt_firmenname])) {
+                        $totalSkipped++;
+                        continue;
+                    }
+
+                    $firma = $firmenMap[$projekt_firmenname];
+                    $projekt_id = $firma->id;
+                    $lookupKey = "{$projekt_id}_{$angebot_id}";
+
+                    $benutzer = !empty($obj['cBenutzername']) ? $obj['cBenutzername'] : 'Fabian Frank';
+                    $userData = $userMap[$benutzer] ?? $userMap['Fabian Frank'] ?? null;
+                    
+                    $data = [
+                        'angebot_id' => $angebot_id,
+                        'projekt_id' => $projekt_id,
+                        'firmen_id' => $firma->firma_id,
+                        'benutzer' => $benutzer,
+                        'benutzer_kuerzel' => $userData->kuerzel ?? '',
+                        'angebotsnummer' => $obj['cAngebotsnummer'] ?? '',
+                        'firmenname' => $obj['cRechnungsadresseFirma'] ?? '',
+                        'projektname' => $obj['cStatustext'] ?? '',
+                        'erstelldatum' => !empty($obj['dErstellt']) ? date("Y-m-d", strtotime($obj['dErstellt'])) : date('Y-m-d'),
+                        'angebotssumme' => $obj['fAngebotswert'] ?? 0,
+                        'projekt_firmenname' => $projekt_firmenname,
+                    ];
+
+                    try {
+                        // Status sicherstellen
+                        if (!isset($existingStatus[$lookupKey])) {
+                            DB::table('angebot_status_a')->insert([
+                                'projekt_id' => $projekt_id,
+                                'angebot_id' => $angebot_id,
+                                'user_id' => $userData->id ?? null,
+                                'status' => 1
+                            ]);
+                            $existingStatus[$lookupKey] = true;
+                        }
+
+                        // Update oder Insert
+                        if (isset($existingAngebote[$lookupKey])) {
+                            DB::table('angebot_tabelle')
+                                ->where('angebot_id', $angebot_id)
+                                ->where('projekt_id', $projekt_id)
+                                ->update($data);
+                            $totalUpdated++;
+                        } else {
+                            $data['projekt_firmenname_kuerzel'] = $firma->name_kuerzel;
+                            $data['projekt_farbe_hex'] = $firma->bg;
+                            $data['letzter_status'] = 'O';
+                            $data['letzter_status_name'] = 'Status offen';
+                            $data['letzter_status_bg_hex'] = '653191';
+                            $data['letzter_status_farbe_hex'] = 'fff';
+                            $data['abgeschlossen_status'] = 'Angebot nicht abgeschlossen';
+                            
+                            DB::table('angebot_tabelle')->insert($data);
+                            $existingAngebote[$lookupKey] = true;
+                            $totalInserted++;
+                        }
+                    } catch (Exception $rowEx) {
+                        $this->error("Fehler bei Angebot #{$angebot_id}: " . $rowEx->getMessage());
+                        $totalErrors++;
+                    }
+                }
+
+            } catch (Exception $e) {
+                $this->error("Fehler bei Mandant {$wawi->dataname}: " . $e->getMessage());
+                Log::error("JTL Import Error ({$wawi->dataname}): " . $e->getMessage());
+                $totalErrors++;
+            }
+        }
+
+        $duration = round(microtime(true) - $startTime, 2);
+        $this->info("Import abgeschlossen in {$duration}s.");
+        $this->info("Neu: {$totalInserted} | Aktualisiert: {$totalUpdated} | Übersprungen: {$totalSkipped} | Fehler: {$totalErrors}");
+        
+        Log::info("JTL Angebots-Import abgeschlossen: {$totalInserted} neu, {$totalUpdated} aktualisiert, {$totalErrors} Fehler.");
+    }
+}
