@@ -252,8 +252,7 @@
         <div class="container offer-detail">
             <div class="header-actions">
                 <div class="welcome-msg">
-                    <h1>Angebot: {{ $offer->angebotsnummer }}</h1>
-                    <p>{{ $offer->firmenname }} &bull; {{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</p>
+                    <h1>{{ $offer->angebotsnummer }} / {{ $offer->benutzer_kuerzel }}</h1>
                 </div>
                 <div class="action-buttons">
                     @php
@@ -290,11 +289,11 @@
                                 {{ $offer->kunde_strasse ?? 'Keine Straße hinterlegt' }}<br>
                                 {{ $offer->kunde_plz ?? '' }} {{ $offer->kunde_ort ?? '' }}<br>
                                 {{ $offer->kunde_land ?? 'Deutschland' }}<br>
-                                @if($offer->kunde_mail)
-                                <span class="contact-info"><i class="fas fa-envelope"></i> {{ $offer->kunde_mail }}</span>
-                                @endif
                                 @if($offer->kunde_telefon)
                                 <span class="contact-info"><i class="fas fa-phone"></i> {{ $offer->kunde_telefon }}</span>
+                                @endif
+                                @if($offer->kunde_mail)
+                                <span class="contact-info"><i class="fas fa-envelope"></i> {{ $offer->kunde_mail }}</span>
                                 @endif
                             </p>
                         </div>
@@ -317,26 +316,28 @@
                     </div>
                     <div class="info-list">
                         <div class="info-item">
-                            <span class="label">Status:</span>
-                            <span class="badge" style="color: {{ $offer->letzter_status_farbe_hex }}; border: 1px solid {{ $offer->letzter_status_bg_hex }}; background: {{ $offer->letzter_status_bg_hex }}20;">
-                                {{ $offer->letzter_status_name }}
-                            </span>
-                        </div>
-                        <div class="info-item">
                             <span class="label">Projekt:</span>
-                            <span>{{ $offer->projekt_firmenname }}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="label">Bearbeiter:</span>
-                            <span>{{ $offer->benutzer }}</span>
+                            <span>{{ $offer->projektname ?: $offer->projekt_firmenname }}</span>
                         </div>
                         <div class="info-item">
                             <span class="label">Angebotsdatum:</span>
                             <span>{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</span>
                         </div>
                         <div class="info-item">
+                            <span class="label">Angebot:</span>
+                            <span>{{ $offer->angebotsnummer }}</span>
+                        </div>
+                        <div class="info-item">
                             <span class="label">Kunden-Nr:</span>
                             <span>{{ $offer->kunden_nr ?? '—' }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Firma:</span>
+                            <span>{{ $offer->firmenname }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Bearbeiter:</span>
+                            <span>{{ $offer->benutzer }}</span>
                         </div>
                     </div>
                 </div>
