@@ -9,11 +9,11 @@ $kernel->bootstrap();
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-echo "<h1>Datenbank-Inspektion: angebot_information</h1>";
+echo "<h1>Datenbank-Inspektion: angebot_informationen</h1>";
 
 try {
-    if (Schema::hasTable('angebot_information')) {
-        $columns = DB::select("SHOW COLUMNS FROM angebot_information");
+    if (Schema::hasTable('angebot_informationen')) {
+        $columns = DB::select("SHOW COLUMNS FROM angebot_informationen");
         echo "<table border='1' cellpadding='10' style='border-collapse: collapse;'>";
         echo "<thead><tr><th>Field</th><th>Type</th><th>Null</th><th>Key</th><th>Default</th><th>Extra</th></tr></thead><tbody>";
         foreach ($columns as $col) {
@@ -29,10 +29,10 @@ try {
         echo "</tbody></table>";
 
         echo "<h2>Stichprobe (letzte 5):</h2>";
-        $samples = DB::table('angebot_information')->latest()->limit(5)->get();
+        $samples = DB::table('angebot_informationen')->latest()->limit(5)->get();
         echo "<pre>" . print_r($samples, true) . "</pre>";
     } else {
-        echo "<p style='color:red;'>Tabelle 'angebot_information' wurde nicht gefunden!</p>";
+        echo "<p style='color:red;'>Tabelle 'angebot_informationen' wurde nicht gefunden!</p>";
     }
 } catch (\Exception $e) {
     echo "<h2 style='color:red;'>Fehler:</h2><pre>" . $e->getMessage() . "</pre>";
