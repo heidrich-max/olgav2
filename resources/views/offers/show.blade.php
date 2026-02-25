@@ -71,6 +71,7 @@
             margin-top: 8px;
             overflow: hidden;
             border: 1px solid var(--glass-border);
+            z-index: 200;
         }
         .company-switcher.active .switcher-content { display: block; }
         .switcher-item {
@@ -79,10 +80,12 @@
             text-decoration: none;
             display: flex; align-items: center; gap: 10px;
             transition: background 0.3s, color 0.3s;
+            font-size: 0.9rem;
         }
         .switcher-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
         .switcher-item.active { border-left: 3px solid var(--primary-accent); color: var(--text-main); background: rgba(255,255,255,0.05); }
 
+        /* ---- USER DROPDOWN ---- */
         .user-dropdown { position: relative; }
         .user-btn {
             background: none; border: none;
@@ -94,25 +97,39 @@
             border: 1px solid transparent;
         }
         .user-btn:hover { background: rgba(255,255,255,0.08); border-color: var(--glass-border); }
+        
         .user-dropdown-menu {
-            display: none;
-            position: absolute;
-            top: 110%; right: 0;
-            background: #1e293b;
-            min-width: 240px;
-            border-radius: 15px;
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-            overflow: hidden;
-            z-index: 1000;
+            display: none; position: absolute; top: 110%; right: 0;
+            background: #1e293b; min-width: 240px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border-radius: 12px; overflow: hidden;
+            border: 1px solid var(--glass-border); z-index: 200;
         }
         .user-dropdown.active .user-dropdown-menu { display: block; }
+
+        .user-dropdown-header {
+            padding: 16px 20px;
+            background: rgba(255,255,255,0.04);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .user-dropdown-header .user-name { font-weight: 600; font-size: 0.95rem; color: #fff; }
+        .user-dropdown-header .user-role { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+
+        .user-dropdown-item {
+            padding: 12px 20px; color: var(--text-muted); text-decoration: none;
+            display: flex; align-items: center; gap: 12px; font-size: 0.9rem;
+            transition: background 0.2s, color 0.2s;
+        }
+        .user-dropdown-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
+        .user-dropdown-item.logout { color: #fca5a5; }
+        .user-dropdown-item.logout:hover { background: rgba(239,68,68,0.1); color: #fff; }
+        .user-dropdown-divider { height: 1px; background: var(--glass-border); margin: 6px 0; }
 
         .main-content { position: relative; z-index: 1; padding: 40px; max-width: 1400px; margin: 0 auto; }
         
         /* Offer Details Specifics */
         .header-actions { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; }
-        .welcome-msg h1 { font-size: 2.2rem; font-weight: 700; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .welcome-msg h1 { font-size: 2.2rem; font-weight: 700; background: linear-gradient(90deg, #fff, var(--primary-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .welcome-msg p { color: var(--text-muted); font-size: 1.1rem; margin-top: 5px; }
 
         .action-buttons { display: flex; gap: 12px; }
@@ -178,41 +195,56 @@
                     <i class="fas fa-chevron-down" style="font-size: 0.7rem;"></i>
                 </button>
                 <div class="switcher-content">
-                    <a href="{{ route('company.switch', 1) }}" class="switcher-item {{ $companyId == 1 ? 'active' : '' }}">
-                        <i class="fas fa-home"></i> Branding Europe
+                    <!-- Branding Europe GmbH -->
+                    <div style="padding: 10px 20px; font-size: 0.75rem; color: var(--primary-accent); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.03);">Branding Europe GmbH</div>
+                    <a href="{{ route('company.switch', 1) }}" class="switcher-item {{ $companyId == 1 && !request()->routeIs('offers.index') ? 'active' : '' }}">
+                        <i class="fas fa-home"></i> Dashboard
                     </a>
-                    <a href="{{ route('company.switch', 2) }}" class="switcher-item {{ $companyId == 2 ? 'active' : '' }}">
-                        <i class="fas fa-home"></i> Europe Pen
+                    <a href="{{ route('company.switch', 1) }}?redirect=offers" class="switcher-item {{ $companyId == 1 && request()->routeIs('offers.index') ? 'active' : '' }}">
+                        <i class="fas fa-file-invoice"></i> Angebotsübersicht
                     </a>
-                    <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.05);">
-                    <a href="{{ route('offers.index') }}" class="switcher-item">
+
+                    <div style="height: 1px; background: var(--glass-border); margin: 5px 0;"></div>
+
+                    <!-- Europe Pen GmbH -->
+                    <div style="padding: 10px 20px; font-size: 0.75rem; color: #0088CC; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.03);">Europe Pen GmbH</div>
+                    <a href="{{ route('company.switch', 2) }}" class="switcher-item {{ $companyId == 2 && !request()->routeIs('offers.index') ? 'active' : '' }}">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                    <a href="{{ route('company.switch', 2) }}?redirect=offers" class="switcher-item {{ $companyId == 2 && request()->routeIs('offers.index') ? 'active' : '' }}">
                         <i class="fas fa-file-invoice"></i> Angebotsübersicht
                     </a>
                 </div>
             </div>
         </div>
 
-        <div class="user-dropdown" id="userDropdown">
-            <button class="user-btn" id="userBtn">
-                <div style="text-align: right;">
-                    <div style="font-weight: 600; font-size: 0.9rem;">{{ Auth::user()->name }}</div>
-                    <div style="font-size: 0.75rem; color: var(--text-muted);">{{ Auth::user()->name_komplett }}</div>
-                </div>
-                <div style="width: 35px; height: 35px; background: var(--primary-accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;">
-                    {{ substr(Auth::user()->name, 0, 1) }}
-                </div>
-            </button>
-            <div class="user-dropdown-menu">
-                <a href="{{ route('my.dashboard') }}" class="switcher-item">
-                    <i class="fas fa-user-circle"></i> Mein Dashboard
-                </a>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="switcher-item" style="width: 100%; background: none; border: none; cursor: pointer; text-align: left;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="user-dropdown" id="userDropdown">
+                <button class="user-btn" id="userBtn">
+                    <i class="fas fa-user-circle" style="color: var(--primary-accent); font-size: 1.1rem;"></i>
+                    {{ $user->name_komplett }}
+                    <i class="fas fa-chevron-down" style="font-size: 0.65rem; color: var(--text-muted);"></i>
+                </button>
+                <div class="user-dropdown-menu">
+                    <div class="user-dropdown-header">
+                        <div class="user-name">{{ $user->name_komplett }}</div>
+                        <div class="user-role">{{ $companyName }}</div>
+                    </div>
+                    <a href="{{ route('my.dashboard') }}" class="user-dropdown-item">
+                        <i class="fas fa-user-cog"></i> Mein Dashboard
+                    </a>
+                    <a href="{{ route('calendar') }}" class="user-dropdown-item">
+                        <i class="fas fa-calendar-alt"></i> Mein Kalender
+                    </a>
+                    <div class="user-dropdown-divider"></div>
+                    <a href="#" class="user-dropdown-item logout" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         <i class="fas fa-sign-out-alt"></i> Abmelden
-                    </button>
-                </form>
+                    </a>
+                </div>
             </div>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+            </form>
         </div>
     </nav>
 
