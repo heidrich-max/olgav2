@@ -33,13 +33,17 @@ class ImportJtlOffers extends Command
         $startTime = microtime(true);
 
         // 1. Lookup-Daten laden (Pre-Caching)
-        $firmenMap = DB::table('auftrag_projekt_firma')->get()->keyBy('name')->toArray();
+        $firmenMap = DB::table('auftrag_projekt_firma')->get()->mapWithKeys(function ($item) {
+            return [strtolower($item->name) => $item];
+        })->toArray();
         
         $aliasMap = DB::table('auftrag_projekt_firma_namen')
             ->join('auftrag_projekt_firma', 'auftrag_projekt_firma.id', '=', 'auftrag_projekt_firma_namen.name_id')
             ->select('auftrag_projekt_firma_namen.begriff', 'auftrag_projekt_firma.name')
             ->get()
-            ->pluck('name', 'begriff')
+            ->mapWithKeys(function ($item) {
+                return [strtolower($item->begriff) => $item->name];
+            })
             ->toArray();
 
         $userMap = DB::table('user')->get()->keyBy('name_komplett')->toArray();
@@ -86,18 +90,20 @@ class ImportJtlOffers extends Command
                 foreach ($offers as $obj) {
                     $angebot_id = $obj['kBestellung'];
                     $projekt_firmenname = trim($obj['cFirmenname'] ?? '');
+                    $projekt_firmenname_lower = strtolower($projekt_firmenname);
 
                     // Firma auflösen
-                    if (!isset($firmenMap[$projekt_firmenname]) && isset($aliasMap[$projekt_firmenname])) {
-                        $projekt_firmenname = $aliasMap[$projekt_firmenname];
+                    if (!isset($firmenMap[$projekt_firmenname_lower]) && isset($aliasMap[$projekt_firmenname_lower])) {
+                        $projekt_firmenname = $aliasMap[$projekt_firmenname_lower];
+                        $projekt_firmenname_lower = strtolower($projekt_firmenname);
                     }
 
-                    if (empty($projekt_firmenname) || !isset($firmenMap[$projekt_firmenname])) {
+                    if (empty($projekt_firmenname) || !isset($firmenMap[$projekt_firmenname_lower])) {
                         $totalSkipped++;
                         continue;
                     }
 
-                    $firma = $firmenMap[$projekt_firmenname];
+                    $firma = $firmenMap[$projekt_firmenname_lower];
                     $projekt_id = $firma->id;
                     $lookupKey = "{$projekt_id}_{$angebot_id}";
 
