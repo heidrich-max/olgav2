@@ -1,0 +1,1 @@
+﻿Fehler: SQLSTATE[HY000] [2002] Es konnte keine Verbindung hergestellt werden, da der Zielcomputer die Verbindung verweigerte
