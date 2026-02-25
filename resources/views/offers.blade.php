@@ -576,10 +576,10 @@
                     </thead>
                     <tbody>
                         @foreach($offers as $offer)
-                        <tr onclick="window.location='{{ route('offers.show', $offer->id) }}'" style="cursor: pointer;">
+                        <tr onclick="window.location='{{ route('offers.show', $offer->id) }}?from=offers'" style="cursor: pointer;">
                             <td>{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</td>
                             <td>
-                                <a href="{{ route('offers.show', $offer->id) }}" style="text-decoration: none; color: inherit;">
+                                <a href="{{ route('offers.show', $offer->id) }}?from=offers" style="text-decoration: none; color: inherit;">
                                     <strong>{{ $offer->angebotsnummer }}</strong>
                                 </a><br>
                                 <small style="color: var(--text-muted)">{{ $offer->benutzer }}</small>

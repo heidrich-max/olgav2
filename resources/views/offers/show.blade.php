@@ -256,7 +256,15 @@
                     <p>{{ $offer->firmenname }} &bull; {{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</p>
                 </div>
                 <div class="action-buttons">
-                    <a href="{{ route('offers.index') }}" class="btn-glass-default">
+                    @php
+                        $backRoute = route('offers.index');
+                        if (request()->query('from') === 'my.dashboard') {
+                            $backRoute = route('my.dashboard');
+                        } elseif (request()->query('from') === 'dashboard') {
+                            $backRoute = route('dashboard');
+                        }
+                    @endphp
+                    <a href="{{ $backRoute }}" class="btn-glass-default">
                         <i class="fas fa-arrow-left"></i> Zurück
                     </a>
                     <button class="btn-glass-primary">
