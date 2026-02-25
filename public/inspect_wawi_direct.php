@@ -27,9 +27,7 @@ try {
     echo "<p style='color:green'>Verbindung erfolgreich!</p>";
 
     $checkTables = [
-        'Kunde.lvAngebote',
         'Kunde.lvAngebotsPositionen',
-        'tAdresse',
         'tBestellPos',
     ];
 
