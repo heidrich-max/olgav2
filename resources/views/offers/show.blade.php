@@ -293,6 +293,9 @@
                                 @if($offer->kunde_mail)
                                 <span class="contact-info"><i class="fas fa-envelope"></i> {{ $offer->kunde_mail }}</span>
                                 @endif
+                                @if($offer->kunde_telefon)
+                                <span class="contact-info"><i class="fas fa-phone"></i> {{ $offer->kunde_telefon }}</span>
+                                @endif
                             </p>
                         </div>
                         <div class="address-box">
@@ -328,8 +331,8 @@
                             <span>{{ $offer->benutzer }}</span>
                         </div>
                         <div class="info-item">
-                            <span class="label">Gültig bis:</span>
-                            <span>{{ $offer->gueltig_bis ? \Carbon\Carbon::parse($offer->gueltig_bis)->format('d.m.Y') : '—' }}</span>
+                            <span class="label">Angebotsdatum:</span>
+                            <span>{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</span>
                         </div>
                         <div class="info-item">
                             <span class="label">Kunden-Nr:</span>
@@ -348,8 +351,8 @@
                             <thead>
                                 <tr>
                                     <th>Pos</th>
-                                    <th>Menge</th>
                                     <th>Art. Nr.</th>
+                                    <th>Menge</th>
                                     <th>Bezeichnung</th>
                                     <th class="amount">E-Preis</th>
                                     <th class="amount">Gesamt (Netto)</th>
@@ -361,8 +364,8 @@
                                 @forelse($items as $index => $item)
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
-                                    <td>{{ number_format($item->menge, 0, ',', '.') }} {{ $item->einheit }}</td>
                                     <td><code class="art-nr">{{ $item->art_nr }}</code></td>
+                                    <td>{{ number_format($item->menge, 0, ',', '.') }} {{ $item->einheit }}</td>
                                     <td>{!! nl2br(e($item->bezeichnung)) !!}</td>
                                     <td class="amount">{{ number_format($item->einzelpreis_netto, 2, ',', '.') }} €</td>
                                     <td class="amount">{{ number_format($item->gesamt_netto, 2, ',', '.') }} €</td>
