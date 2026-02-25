@@ -29,12 +29,8 @@ try {
     $checkTables = [
         'Kunde.lvAngebote',
         'Kunde.lvAngebotsPositionen',
-        'tAngebot',
-        'tAngebotPos',
         'tAdresse',
-        'tBestellung',
         'tBestellPos',
-        'tKunde'
     ];
 
     foreach ($checkTables as $table) {
