@@ -333,7 +333,7 @@
                         </div>
                         <div class="info-item">
                             <span class="label">Kunden-Nr:</span>
-                            <span>{{ $offer->kunden_nr ?? 'KD-12345' }}</span>
+                            <span>{{ $offer->kunden_nr ?? '—' }}</span>
                         </div>
                     </div>
                 </div>
