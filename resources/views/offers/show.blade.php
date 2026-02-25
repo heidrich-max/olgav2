@@ -608,6 +608,36 @@
             </div>
         </div>
     </div>
+    <!-- Close Offer Modal -->
+    <div id="closeOfferModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-check-circle"></i> Angebot abschließen</h3>
+                <button class="close-modal-btn" id="closeModalIcon">&times;</button>
+            </div>
+            <form action="{{ route('offers.close', $offer->id) }}" method="POST">
+                @csrf
+                <div class="form-group">
+                    <label for="grund_id">Abschlussgrund wählen (optional):</label>
+                    <select name="grund_id" id="grund_id" class="custom-select">
+                        <option value="">-- Kein spezifischer Grund --</option>
+                        @foreach($reasons as $reason)
+                        <option value="{{ $reason->id }}">{{ $reason->grund }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 10px;">
+                    Hinweis: Das Angebot wird als "Abgeschlossen" markiert und steht nicht mehr zur Bearbeitung offen.
+                </p>
+                <div class="modal-footer">
+                    <button type="button" class="btn-glass-default" id="cancelCloseBtn">Abbrechen</button>
+                    <button type="submit" class="btn-glass-success">
+                        <i class="fas fa-check"></i> Jetzt abschließen
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script>
         // Company Switcher
@@ -693,36 +723,5 @@
         window.addEventListener('resize', resize);
         resize(); animate();
     </script>
-
-    <!-- Close Offer Modal -->
-    <div id="closeOfferModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-check-circle"></i> Angebot abschließen</h3>
-                <button class="close-modal-btn" id="closeModalIcon">&times;</button>
-            </div>
-            <form action="{{ route('offers.close', $offer->id) }}" method="POST">
-                @csrf
-                <div class="form-group">
-                    <label for="grund_id">Abschlussgrund wählen (optional):</label>
-                    <select name="grund_id" id="grund_id" class="custom-select">
-                        <option value="">-- Kein spezifischer Grund --</option>
-                        @foreach($reasons as $reason)
-                        <option value="{{ $reason->id }}">{{ $reason->grund }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 10px;">
-                    Hinweis: Das Angebot wird als "Abgeschlossen" markiert und steht nicht mehr zur Bearbeitung offen.
-                </p>
-                <div class="modal-footer">
-                    <button type="button" class="btn-glass-default" id="cancelCloseBtn">Abbrechen</button>
-                    <button type="submit" class="btn-glass-success">
-                        <i class="fas fa-check"></i> Jetzt abschließen
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
 </body>
 </html>
