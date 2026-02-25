@@ -6,6 +6,8 @@ use App\Models\OrderRevenue;
 use App\Models\OrderTable;
 use App\Models\OfferTable;
 use App\Models\AngebotInformation;
+use App\Models\AngebotAblehnen;
+use App\Models\AngebotAbgeschlossen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -410,7 +412,10 @@ class DashboardController extends Controller
             ->orderBy('timestamp', 'desc')
             ->get();
 
-        return view('offers.show', compact('user', 'offer', 'items', 'companyId', 'companyName', 'accentColor', 'history'));
+        // Ablehngründe laden
+        $reasons = AngebotAblehnen::orderBy('id', 'asc')->get();
+
+        return view('offers.show', compact('user', 'offer', 'items', 'companyId', 'companyName', 'accentColor', 'history', 'reasons'));
     }
 
     /**
@@ -435,5 +440,76 @@ class DashboardController extends Controller
         ]);
 
         return back()->with('success', 'Notiz wurde hinzugefügt.');
+    }
+
+    /**
+     * Schließt ein Angebot ab (Status 4).
+     */
+    public function closeOffer(Request $request, $id)
+    {
+        $grundId = $request->input('grund_id');
+
+        $offer = DB::table('angebot_tabelle')->where('id', $id)->first();
+        if (!$offer) {
+            return back()->with('error', 'Angebot nicht gefunden.');
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // 1. Status Details für ID 4 (Abgeschlossen) holen
+            $status = DB::table('angebot_status')->where('id', 4)->first();
+            if (!$status) {
+                throw new \Exception('Status-Konfiguration für "Abgeschlossen" (ID 4) fehlt.');
+            }
+
+            // 2. angebot_tabelle aktualisieren
+            DB::table('angebot_tabelle')
+                ->where('id', $id)
+                ->update([
+                    'letzter_status'           => $status->status_sh,
+                    'letzter_status_name'      => 'Status ' . $status->status_lg,
+                    'letzter_status_bg_hex'    => $status->bg,
+                    'letzter_status_farbe_hex' => $status->color,
+                    'abgeschlossen_status'     => 'Angebot abgeschlossen'
+                ]);
+
+            // 3. In angebot_abgeschlossen dokumentieren
+            AngebotAbgeschlossen::create([
+                'angebot_id' => $offer->id,
+                'projekt_id' => $offer->projekt_id,
+                'user_id'    => Auth::id(),
+                'grund_id'   => $grundId ?: 0
+            ]);
+
+            // 4. In angebot_status_a (Historie für Dashboard-Filter) loggen
+            DB::table('angebot_status_a')->insert([
+                'angebot_id' => $offer->id,
+                'projekt_id' => $offer->projekt_id,
+                'user_id'    => Auth::id(),
+                'status'     => 4
+            ]);
+
+            // 5. Automatischen Eintrag im neuen Notiz-Verlauf erstellen
+            $reasonText = "";
+            if ($grundId) {
+                $reason = AngebotAblehnen::find($grundId);
+                $reasonText = $reason ? " (Grund: " . $reason->grund . ")" : "";
+            }
+
+            AngebotInformation::create([
+                'angebot_id' => $offer->id,
+                'projekt_id' => $offer->projekt_id,
+                'user_id'    => Auth::id(),
+                'information' => "Angebot wurde manuell abgeschlossen." . $reasonText,
+            ]);
+
+            DB::commit();
+            return back()->with('success', 'Angebot wurde erfolgreich abgeschlossen.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Fehler beim Abschließen: ' . $e->getMessage());
+        }
     }
 }

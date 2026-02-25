@@ -294,6 +294,58 @@
             color: #e2e8f0;
             white-space: pre-wrap;
         }
+
+        /* ---- MODAL STYLING ---- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(8px);
+            align-items: center; justify-content: center;
+        }
+
+        .modal.active { display: flex; }
+
+        .modal-content {
+            background: #1e293b;
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            width: 500px; max-width: 90%;
+            padding: 30px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .modal-header h3 { color: var(--primary-accent); font-size: 1.4rem; margin: 0; }
+        
+        .close-modal-btn {
+            background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem;
+        }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 10px; color: var(--text-muted); font-size: 0.9rem; }
+        
+        .custom-select {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 12px;
+            color: #fff;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .modal-footer {
+            display: flex; justify-content: flex-end; gap: 15px; margin-top: 30px;
+        }
     </style>
 </head>
 <body>
@@ -380,11 +432,13 @@
                     <a href="{{ $backRoute }}" class="btn-glass-default">
                         <i class="fas fa-arrow-left"></i> Zurück
                     </a>
+                    @if($offer->letzter_status != 'A' && $offer->abgeschlossen_status != 'Angebot abgeschlossen')
+                    <button type="button" class="btn-glass-success" id="openCloseModal">
+                        <i class="fas fa-check-circle"></i> Abschließen
+                    </button>
+                    @endif
                     <button class="btn-glass-primary">
                         <i class="fas fa-paper-plane"></i> Erinnerung senden
-                    </button>
-                    <button class="btn-glass-success">
-                        <i class="fas fa-check-circle"></i> Abschließen
                     </button>
                 </div>
             </div>
@@ -585,6 +639,27 @@
             if(userDropdown) userDropdown.classList.remove('active');
         });
 
+        // Close Offer Modal
+        const openCloseModal = document.getElementById('openCloseModal');
+        const closeOfferModal = document.getElementById('closeOfferModal');
+        const cancelCloseBtn = document.getElementById('cancelCloseBtn');
+        const closeModalIcon = document.getElementById('closeModalIcon');
+
+        if (openCloseModal) {
+            openCloseModal.addEventListener('click', () => {
+                closeOfferModal.classList.add('active');
+            });
+        }
+
+        const closeModal = () => closeOfferModal.classList.remove('active');
+
+        if (cancelCloseBtn) cancelCloseBtn.addEventListener('click', closeModal);
+        if (closeModalIcon) closeModalIcon.addEventListener('click', closeModal);
+
+        window.addEventListener('click', (e) => {
+            if (e.target === closeOfferModal) closeModal();
+        });
+
         // Network Animation
         const canvas = document.getElementById('network-overlay');
         const ctx = canvas.getContext('2d');
@@ -618,5 +693,36 @@
         window.addEventListener('resize', resize);
         resize(); animate();
     </script>
+
+    <!-- Close Offer Modal -->
+    <div id="closeOfferModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-check-circle"></i> Angebot abschließen</h3>
+                <button class="close-modal-btn" id="closeModalIcon">&times;</button>
+            </div>
+            <form action="{{ route('offers.close', $offer->id) }}" method="POST">
+                @csrf
+                <div class="form-group">
+                    <label for="grund_id">Abschlussgrund wählen (optional):</label>
+                    <select name="grund_id" id="grund_id" class="custom-select">
+                        <option value="">-- Kein spezifischer Grund --</option>
+                        @foreach($reasons as $reason)
+                        <option value="{{ $reason->id }}">{{ $reason->grund }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 10px;">
+                    Hinweis: Das Angebot wird als "Abgeschlossen" markiert und steht nicht mehr zur Bearbeitung offen.
+                </p>
+                <div class="modal-footer">
+                    <button type="button" class="btn-glass-default" id="cancelCloseBtn">Abbrechen</button>
+                    <button type="submit" class="btn-glass-success">
+                        <i class="fas fa-check"></i> Jetzt abschließen
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
