@@ -81,13 +81,15 @@ class ImportJtlOffers extends Command
 
                 // Angebote abrufen (inkl. Adressdaten)
                 $offers = $wawi_db->query("
-                    SELECT dErstellt, kBestellung, cBenutzername, cAngebotsnummer,
-                           cRechnungsadresseFirma, cStatustext, fAngebotswert, cFirmenname,
-                           cRechnungsadresseStrasse, cRechnungsadressePlz, cRechnungsadresseOrt, 
-                           cRechnungsadresseLand, cRechnungsadresseMail, cRechnungsadresseKundennummer,
-                           cRechnungsadresseTelefon
-                    FROM Kunde.lvAngebote
-                    ORDER BY dErstellt DESC
+                    SELECT t1.dErstellt, t1.kBestellung, t1.cBenutzername, t1.cAngebotsnummer,
+                           t1.cRechnungsadresseFirma, t1.cStatustext, t1.fAngebotswert, t1.cFirmenname,
+                           t1.cRechnungsadresseStrasse, t1.cRechnungsadressePlz, t1.cRechnungsadresseOrt, 
+                           t1.cRechnungsadresseLand, t1.cRechnungsadresseMail, t1.cRechnungsadresseKundennummer,
+                           t1.cRechnungsadresseTelefon,
+                           t2.kAuftrag as ConvertedOrderId
+                    FROM Kunde.lvAngebote t1
+                    LEFT JOIN Verkauf.lvAuftragsverwaltung t2 ON t2.cExterneAuftragsnummer = t1.cAngebotsnummer
+                    ORDER BY t1.dErstellt DESC
                 ")->fetchAll();
 
                 foreach ($offers as $obj) {
@@ -136,19 +138,40 @@ class ImportJtlOffers extends Command
                     ];
 
                     try {
-                        // Status sicherstellen
+                        // Status sicherstellen oder aktualisieren (Konvertierung prüfen)
+                        $isConverted = !empty($obj['ConvertedOrderId']);
+                        
                         if (!isset($existingStatus[$lookupKey])) {
                             DB::table('angebot_status_a')->insert([
                                 'projekt_id' => $projekt_id,
                                 'angebot_id' => $angebot_id,
                                 'user_id' => $userData->id ?? null,
-                                'status' => 1
+                                'status' => $isConverted ? 5 : 1
                             ]);
                             $existingStatus[$lookupKey] = true;
+                        } elseif ($isConverted) {
+                            // Wenn konvertiert, aber lokal noch nicht auf Status 5 (angenommen)
+                            $currentStatus = DB::table('angebot_status_a')
+                                ->where('projekt_id', $projekt_id)
+                                ->where('angebot_id', $angebot_id)
+                                ->value('status');
+                            
+                            if ($currentStatus != 5) {
+                                DB::table('angebot_status_a')
+                                    ->where('projekt_id', $projekt_id)
+                                    ->where('angebot_id', $angebot_id)
+                                    ->update(['status' => 5]);
+                            }
                         }
 
                         // Update oder Insert
                         if (isset($existingAngebote[$lookupKey])) {
+                            if ($isConverted) {
+                                $data['letzter_status'] = 'A';
+                                $data['letzter_status_name'] = 'Status angenommen';
+                                $data['abgeschlossen_status'] = 'abgeschlossen';
+                            }
+                            
                             DB::table('angebot_tabelle')
                                 ->where('angebot_id', $angebot_id)
                                 ->where('projekt_id', $projekt_id)
@@ -157,11 +180,20 @@ class ImportJtlOffers extends Command
                         } else {
                             $data['projekt_firmenname_kuerzel'] = $firma->name_kuerzel;
                             $data['projekt_farbe_hex'] = $firma->bg;
-                            $data['letzter_status'] = 'O';
-                            $data['letzter_status_name'] = 'Status offen';
-                            $data['letzter_status_bg_hex'] = '653191';
-                            $data['letzter_status_farbe_hex'] = 'fff';
-                            $data['abgeschlossen_status'] = 'Angebot nicht abgeschlossen';
+                            
+                            if ($isConverted) {
+                                $data['letzter_status'] = 'A';
+                                $data['letzter_status_name'] = 'Status angenommen';
+                                $data['letzter_status_bg_hex'] = '10b981'; // Grün für angenommen
+                                $data['letzter_status_farbe_hex'] = 'fff';
+                                $data['abgeschlossen_status'] = 'abgeschlossen';
+                            } else {
+                                $data['letzter_status'] = 'O';
+                                $data['letzter_status_name'] = 'Status offen';
+                                $data['letzter_status_bg_hex'] = '653191';
+                                $data['letzter_status_farbe_hex'] = 'fff';
+                                $data['abgeschlossen_status'] = 'Angebot nicht abgeschlossen';
+                            }
                             
                             DB::table('angebot_tabelle')->insert($data);
                             $existingAngebote[$lookupKey] = true;
