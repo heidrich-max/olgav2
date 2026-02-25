@@ -317,7 +317,7 @@
                     <div class="info-list">
                         <div class="info-item">
                             <span class="label">Projekt:</span>
-                            <span>{{ $offer->projektname ?: $offer->projekt_firmenname }}</span>
+                            <span>{{ $offer->projekt_firmenname }}</span>
                         </div>
                         <div class="info-item">
                             <span class="label">Angebotsdatum:</span>
