@@ -259,7 +259,7 @@
                             </thead>
                             <tbody>
                                 @foreach($myOffers as $offer)
-                                <tr style="background: {{ $offer->letzter_status_bg_hex ? $offer->letzter_status_bg_hex . '15' : 'transparent' }}; border-left: 4px solid {{ $offer->letzter_status_bg_hex ?? 'transparent' }}; transition: background 0.2s;">
+                                <tr onclick="window.location='{{ route('offers.show', $offer->id) }}'" style="background: {{ $offer->letzter_status_bg_hex ? $offer->letzter_status_bg_hex . '15' : 'transparent' }}; border-left: 4px solid {{ $offer->letzter_status_bg_hex ?? 'transparent' }}; transition: background 0.2s; cursor: pointer;">
                                     <td style="white-space: nowrap; padding-left: 10px;">{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</td>
                                     <td>{{ $offer->angebotsnummer ?? '—' }}</td>
                                     <td>{{ $offer->firmenname ?? $offer->projekt_firmenname ?? '—' }}</td>

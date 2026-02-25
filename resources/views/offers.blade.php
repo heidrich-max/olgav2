@@ -576,7 +576,7 @@
                     </thead>
                     <tbody>
                         @foreach($offers as $offer)
-                        <tr>
+                        <tr onclick="window.location='{{ route('offers.show', $offer->id) }}'" style="cursor: pointer;">
                             <td>{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</td>
                             <td>
                                 <a href="{{ route('offers.show', $offer->id) }}" style="text-decoration: none; color: inherit;">

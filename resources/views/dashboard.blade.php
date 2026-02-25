@@ -354,7 +354,7 @@
                     <a href="{{ route('offers.index') }}" class="more-link" style="font-size:0.8rem; margin:0;">Alle Angebote</a>
                 </div>
                 @forelse($offers as $offer)
-                <div class="list-item" style="background: {{ $offer->letzter_status_bg_hex ? $offer->letzter_status_bg_hex . '10' : 'rgba(255,255,255,0.03)' }}; border-left: 3px solid {{ $offer->letzter_status_bg_hex ?? 'transparent' }}; padding-left: 10px; margin-bottom: 5px; border-radius: 4px;">
+                <div class="list-item" onclick="window.location='{{ route('offers.show', $offer->id) }}'" style="background: {{ $offer->letzter_status_bg_hex ? $offer->letzter_status_bg_hex . '10' : 'rgba(255,255,255,0.03)' }}; border-left: 3px solid {{ $offer->letzter_status_bg_hex ?? 'transparent' }}; padding-left: 10px; margin-bottom: 5px; border-radius: 4px; cursor: pointer;">
                     <div class="item-text">
                         <div class="item-main">
                             <a href="{{ route('offers.show', $offer->id) }}" style="text-decoration: none; color: inherit;">
