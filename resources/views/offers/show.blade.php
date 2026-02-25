@@ -287,19 +287,21 @@
                             <h3>Rechnungsadresse</h3>
                             <p>
                                 <strong>{{ $offer->firmenname }}</strong><br>
-                                {{ $offer->strasse ?? 'Musterstraße 123' }}<br>
-                                {{ $offer->plz ?? '12345' }} {{ $offer->ort ?? 'Musterstadt' }}<br>
-                                {{ $offer->land ?? 'Deutschland' }}<br>
-                                <span class="contact-info"><i class="fas fa-envelope"></i> {{ $offer->email ?? 'info@firma.de' }}</span>
+                                {{ $offer->kunde_strasse ?? 'Keine Straße hinterlegt' }}<br>
+                                {{ $offer->kunde_plz ?? '' }} {{ $offer->kunde_ort ?? '' }}<br>
+                                {{ $offer->kunde_land ?? 'Deutschland' }}<br>
+                                @if($offer->kunde_mail)
+                                <span class="contact-info"><i class="fas fa-envelope"></i> {{ $offer->kunde_mail }}</span>
+                                @endif
                             </p>
                         </div>
                         <div class="address-box">
                             <h3>Lieferadresse</h3>
                             <p>
                                 <strong>{{ $offer->firmenname }}</strong><br>
-                                {{ $offer->strasse ?? 'Musterstraße 123' }}<br>
-                                {{ $offer->plz ?? '12345' }} {{ $offer->ort ?? 'Musterstadt' }}<br>
-                                {{ $offer->land ?? 'Deutschland' }}
+                                {{ $offer->kunde_strasse ?? 'Keine Straße hinterlegt' }}<br>
+                                {{ $offer->kunde_plz ?? '' }} {{ $offer->kunde_ort ?? '' }}<br>
+                                {{ $offer->kunde_land ?? 'Deutschland' }}
                             </p>
                         </div>
                     </div>
@@ -326,8 +328,8 @@
                             <span>{{ $offer->benutzer }}</span>
                         </div>
                         <div class="info-item">
-                            <span class="label">Zahlungsart:</span>
-                            <span>Rechnung (14 Tage)</span>
+                            <span class="label">Gültig bis:</span>
+                            <span>{{ $offer->gueltig_bis ? \Carbon\Carbon::parse($offer->gueltig_bis)->format('d.m.Y') : '—' }}</span>
                         </div>
                         <div class="info-item">
                             <span class="label">Kunden-Nr:</span>
@@ -356,23 +358,31 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($items as $item)
+                                @forelse($items as $index => $item)
                                 <tr>
-                                    <td>{{ $item->pos }}</td>
-                                    <td>{{ $item->menge }}</td>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ number_format($item->menge, 0, ',', '.') }} {{ $item->einheit }}</td>
                                     <td><code class="art-nr">{{ $item->art_nr }}</code></td>
-                                    <td>{{ $item->bezeichnung }}</td>
-                                    <td class="amount">{{ number_format($item->einzelpreis, 2, ',', '.') }} €</td>
+                                    <td>{!! nl2br(e($item->bezeichnung)) !!}</td>
+                                    <td class="amount">{{ number_format($item->einzelpreis_netto, 2, ',', '.') }} €</td>
                                     <td class="amount">{{ number_format($item->gesamt_netto, 2, ',', '.') }} €</td>
-                                    <td class="amount">{{ $item->mwst_prozent }}%</td>
-                                    <td class="amount"><strong>{{ number_format($item->gesamt_brutto, 2, ',', '.') }} €</strong></td>
+                                    <td class="amount">{{ number_format($item->mwst_prozent, 0) }}%</td>
+                                    <td class="amount"><strong>{{ number_format($item->gesamt_netto * (1 + $item->mwst_prozent / 100), 2, ',', '.') }} €</strong></td>
                                 </tr>
-                                @endforeach
+                                @empty
+                                <tr>
+                                    <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                                        Keine Artikelpositionen gefunden.
+                                    </td>
+                                </tr>
+                                @endforelse
                             </tbody>
                             <tfoot>
                                 @php
                                     $netTotal = collect($items)->sum('gesamt_netto');
-                                    $grossTotal = collect($items)->sum('gesamt_brutto');
+                                    $grossTotal = collect($items)->sum(function($item) {
+                                        return $item->gesamt_netto * (1 + $item->mwst_prozent / 100);
+                                    });
                                     $vatTotal = $grossTotal - $netTotal;
                                 @endphp
                                 <tr class="summary-row total-netto">
@@ -380,7 +390,7 @@
                                     <td class="amount">{{ number_format($netTotal, 2, ',', '.') }} €</td>
                                 </tr>
                                 <tr class="summary-row total-mwst">
-                                    <td colspan="7">zzgl. {{ $items[0]->mwst_prozent ?? 19 }}% MwSt</td>
+                                    <td colspan="7">zzgl. MwSt</td>
                                     <td class="amount">{{ number_format($vatTotal, 2, ',', '.') }} €</td>
                                 </tr>
                                 <tr class="summary-row total-brutto">

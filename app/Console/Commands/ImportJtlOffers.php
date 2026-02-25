@@ -79,10 +79,12 @@ class ImportJtlOffers extends Command
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
                 ]);
 
-                // Angebote abrufen
+                // Angebote abrufen (inkl. Adressdaten)
                 $offers = $wawi_db->query("
                     SELECT dErstellt, kBestellung, cBenutzername, cAngebotsnummer,
-                           cRechnungsadresseFirma, cStatustext, fAngebotswert, cFirmenname
+                           cRechnungsadresseFirma, cStatustext, fAngebotswert, cFirmenname,
+                           cRechnungsadresseStrasse, cRechnungsadressePlz, cRechnungsadresseOrt, 
+                           cRechnungsadresseLand, cMail, dGueltigBis
                     FROM Kunde.lvAngebote
                     ORDER BY dErstellt DESC
                 ")->fetchAll();
@@ -122,6 +124,12 @@ class ImportJtlOffers extends Command
                         'erstelldatum' => !empty($obj['dErstellt']) ? date("Y-m-d", strtotime($obj['dErstellt'])) : date('Y-m-d'),
                         'angebotssumme' => $obj['fAngebotswert'] ?? 0,
                         'projekt_firmenname' => $projekt_firmenname,
+                        'kunde_strasse' => $obj['cRechnungsadresseStrasse'] ?? null,
+                        'kunde_plz' => $obj['cRechnungsadressePlz'] ?? null,
+                        'kunde_ort' => $obj['cRechnungsadresseOrt'] ?? null,
+                        'kunde_land' => $obj['cRechnungsadresseLand'] ?? null,
+                        'kunde_mail' => $obj['cMail'] ?? null,
+                        'gueltig_bis' => !empty($obj['dGueltigBis']) ? date("Y-m-d", strtotime($obj['dGueltigBis'])) : null,
                     ];
 
                     try {
@@ -155,6 +163,51 @@ class ImportJtlOffers extends Command
                             DB::table('angebot_tabelle')->insert($data);
                             $existingAngebote[$lookupKey] = true;
                             $totalInserted++;
+                        }
+
+                        // 3. Artikel-Positionen synchronisieren (immer bei Änderungen oder neuen Einträgen)
+                        // Nur wenn das Angebot innerhalb der letzten 30 Tage erstellt wurde oder wir keine Artikel haben
+                        $hasArticles = DB::table('angebot_artikel')->where('jtl_angebot_id', $angebot_id)->exists();
+                        $isRecent = strtotime($data['erstelldatum']) > strtotime('-30 days');
+
+                        if (!$hasArticles || $isRecent) {
+                            $positions = $wawi_db->prepare("
+                                SELECT cString, cArtNr, nAnzahl, fVkNetto, fMwSt, cEinheit
+                                FROM Kunde.lvAngebotsPositionen
+                                WHERE kBestellung = :kBestellung
+                                ORDER BY nSort
+                            ");
+                            $positions->execute(['kBestellung' => $angebot_id]);
+                            $rows = $positions->fetchAll();
+
+                            if (!empty($rows)) {
+                                $lokal_id = DB::table('angebot_tabelle')
+                                    ->where('angebot_id', $angebot_id)
+                                    ->where('projekt_id', $projekt_id)
+                                    ->value('id');
+
+                                if ($lokal_id) {
+                                    // Bestehende Positionen löschen und neu schreiben
+                                    DB::table('angebot_artikel')->where('angebot_id_lokal', $lokal_id)->delete();
+                                    
+                                    foreach ($rows as $index => $pos) {
+                                        DB::table('angebot_artikel')->insert([
+                                            'angebot_id_lokal' => $lokal_id,
+                                            'jtl_angebot_id' => $angebot_id,
+                                            'sort_order' => $index,
+                                            'art_nr' => $pos['cArtNr'] ?? '',
+                                            'bezeichnung' => $pos['cString'] ?? '',
+                                            'menge' => $pos['nAnzahl'] ?? 0,
+                                            'einheit' => $pos['cEinheit'] ?? 'Stk.',
+                                            'einzelpreis_netto' => $pos['fVkNetto'] ?? 0,
+                                            'mwst_prozent' => $pos['fMwSt'] ?? 0,
+                                            'gesamt_netto' => ($pos['nAnzahl'] ?? 0) * ($pos['fVkNetto'] ?? 0),
+                                            'created_at' => now(),
+                                            'updated_at' => now(),
+                                        ]);
+                                    }
+                                }
+                            }
                         }
                     } catch (Exception $rowEx) {
                         $this->error("Fehler bei Angebot #{$angebot_id}: " . $rowEx->getMessage());
