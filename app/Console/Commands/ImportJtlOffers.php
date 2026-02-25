@@ -173,8 +173,8 @@ class ImportJtlOffers extends Command
                         if (!$hasArticles || $isRecent) {
                             $positions = $wawi_db->prepare("
                                 SELECT cString, cArtNr, nAnzahl, fVkNetto, fMwSt, cEinheit
-                                FROM Kunde.lvAngebotsPositionen
-                                WHERE kBestellung = :kBestellung
+                                FROM tBestellPos
+                                WHERE tBestellung_kBestellung = :kBestellung
                                 ORDER BY nSort
                             ");
                             $positions->execute(['kBestellung' => $angebot_id]);
