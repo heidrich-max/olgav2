@@ -84,7 +84,7 @@ class ImportJtlOffers extends Command
                     SELECT dErstellt, kBestellung, cBenutzername, cAngebotsnummer,
                            cRechnungsadresseFirma, cStatustext, fAngebotswert, cFirmenname,
                            cRechnungsadresseStrasse, cRechnungsadressePlz, cRechnungsadresseOrt, 
-                           cRechnungsadresseLand, cMail, dGueltigBis
+                           cRechnungsadresseLand, cRechnungsadresseMail
                     FROM Kunde.lvAngebote
                     ORDER BY dErstellt DESC
                 ")->fetchAll();
@@ -128,8 +128,8 @@ class ImportJtlOffers extends Command
                         'kunde_plz' => $obj['cRechnungsadressePlz'] ?? null,
                         'kunde_ort' => $obj['cRechnungsadresseOrt'] ?? null,
                         'kunde_land' => $obj['cRechnungsadresseLand'] ?? null,
-                        'kunde_mail' => $obj['cMail'] ?? null,
-                        'gueltig_bis' => !empty($obj['dGueltigBis']) ? date("Y-m-d", strtotime($obj['dGueltigBis'])) : null,
+                        'kunde_mail' => $obj['cRechnungsadresseMail'] ?? null,
+                        'gueltig_bis' => null,
                     ];
 
                     try {
