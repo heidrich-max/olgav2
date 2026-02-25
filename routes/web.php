@@ -13,6 +13,53 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+Route::get('/inspect-wawi', function() {
+    try {
+        $wawi = DB::table('auftrag_projekt_wawi')->first();
+        if (!$wawi) return "Kein Wawi-Mandant gefunden.";
+
+        $dsn = "sqlsrv:Server={$wawi->host};Database={$wawi->dataname};TrustServerCertificate=yes";
+        $pdo = new PDO($dsn, $wawi->username, $wawi->password, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+        ]);
+
+        $output = "<h1>JTL Wawi Inspection: {$wawi->dataname}</h1>";
+
+        // 1. List likely tables
+        $tables = $pdo->query("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE 'tAngebot%' OR TABLE_NAME LIKE 'tAdresse%' OR TABLE_NAME LIKE 'tBestell%'")->fetchAll();
+        $output .= "<h2>Relevant Tables Found:</h2><ul>";
+        foreach($tables as $t) {
+            $output .= "<li>{$t['TABLE_NAME']}</li>";
+        }
+        $output .= "</ul>";
+
+        // 2. Inspect tAngebotPos if exists
+        $testTables = ['tAngebotPos', 'tBestellPos', 'tAdresse'];
+        foreach($testTables as $table) {
+            $output .= "<h2>Columns in $table</h2>";
+            try {
+                $cols = $pdo->query("SELECT COLUMN_NAME, DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$table'")->fetchAll();
+                $output .= "<table border='1'><tr><th>Field</th><th>Type</th></tr>";
+                foreach($cols as $c) {
+                    $output .= "<tr><td>{$c['COLUMN_NAME']}</td><td>{$c['DATA_TYPE']}</td></tr>";
+                }
+                $output .= "</table>";
+                
+                $output .= "<h3>Sample Row from $table</h3>";
+                $row = $pdo->query("SELECT TOP 1 * FROM $table")->fetch();
+                $output .= "<pre>" . print_r($row, true) . "</pre>";
+            } catch(\Exception $e) {
+                $output .= "<p style='color:red'>Fehler bei $table: " . $e->getMessage() . "</p>";
+            }
+        }
+
+        return $output;
+    } catch (\Exception $e) {
+        return "Error: " . $e->getMessage();
+    }
+});
+
 Route::get('/debug-db', function() {
     try {
         $tables = DB::select('SHOW TABLES');
