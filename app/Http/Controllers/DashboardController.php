@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\OrderRevenue;
 use App\Models\OrderTable;
 use App\Models\OfferTable;
+use App\Models\AngebotInformation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -402,6 +403,37 @@ class DashboardController extends Controller
         $companyName = ($companyId == 1) ? 'Branding Europe GmbH' : 'Europe Pen GmbH';
         $accentColor = ($companyId == 1) ? '#1DA1F2' : '#0088CC';
 
-        return view('offers.show', compact('user', 'offer', 'items', 'companyId', 'companyName', 'accentColor'));
+        // Historie laden
+        $history = AngebotInformation::with('user')
+            ->where('angebot_id', $offer->id)
+            ->where('projekt_id', $offer->projekt_id)
+            ->orderBy('timestamp', 'desc')
+            ->get();
+
+        return view('offers.show', compact('user', 'offer', 'items', 'companyId', 'companyName', 'accentColor', 'history'));
+    }
+
+    /**
+     * Speichert eine neue Notiz/Historien-Eintrag zum Angebot.
+     */
+    public function storeOfferNote(Request $request, $id)
+    {
+        $request->validate([
+            'information' => 'required|string|max:5000',
+        ]);
+
+        $offer = DB::table('angebot_tabelle')->where('id', $id)->first();
+        if (!$offer) {
+            return back()->with('error', 'Angebot nicht gefunden.');
+        }
+
+        AngebotInformation::create([
+            'angebot_id' => $offer->id,
+            'projekt_id' => $offer->projekt_id,
+            'user_id'    => Auth::id(),
+            'information' => $request->information,
+        ]);
+
+        return back()->with('success', 'Notiz wurde hinzugefügt.');
     }
 }

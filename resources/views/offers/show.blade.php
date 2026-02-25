@@ -180,6 +180,120 @@
         .btn-glass-primary:hover { background: rgba(29, 161, 242, 0.2); }
         .btn-glass-success { border-color: #10b981; }
         .btn-glass-success:hover { background: rgba(16, 185, 129, 0.2); }
+
+        /* ---- HISTORY / NOTES SECTION ---- */
+        .history-section {
+            margin-top: 40px;
+            padding-bottom: 60px;
+        }
+
+        .history-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+
+        .history-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: var(--primary-accent);
+        }
+
+        .note-form {
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 40px;
+        }
+
+        .note-form textarea {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 15px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 100px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .note-form textarea:focus {
+            outline: none;
+            border-color: var(--primary-accent);
+            background: rgba(15, 23, 42, 0.6);
+            box-shadow: 0 0 0 4px rgba(29, 161, 242, 0.1);
+        }
+
+        .submit-note-btn {
+            background: var(--primary-accent);
+            color: #fff;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+        }
+
+        .submit-note-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+            box-shadow: 0 5px 15px rgba(29, 161, 242, 0.3);
+        }
+
+        .history-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .history-item {
+            position: relative;
+            padding-left: 20px;
+            border-left: 2px solid var(--glass-border);
+        }
+
+        .history-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+        }
+
+        .history-author {
+            color: var(--primary-accent);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .history-time {
+            color: var(--text-muted);
+        }
+
+        .history-content {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #e2e8f0;
+            white-space: pre-wrap;
+        }
     </style>
 </head>
 <body>
@@ -403,6 +517,38 @@
                                 </tr>
                             </tfoot>
                         </table>
+                    </div>
+                <div class="history-section">
+                    <div class="history-card">
+                        <h2><i class="fas fa-history"></i> Verlauf & Notizen</h2>
+                        
+                        <div class="note-form">
+                            <form action="{{ route('offers.note.store', $offer->id) }}" method="POST">
+                                @csrf
+                                <textarea name="information" placeholder="Neue Notiz oder Historien-Eintrag verfassen..." required></textarea>
+                                <button type="submit" class="submit-note-btn">
+                                    <i class="fas fa-paper-plane"></i> Eintrag speichern
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="history-timeline">
+                            @forelse($history as $entry)
+                            <div class="history-item">
+                                <div class="history-item-header">
+                                    <span class="history-author">
+                                        <i class="fas fa-user-circle"></i> {{ $entry->user->name_komplett ?? 'Unbekannter Bearbeiter' }}
+                                    </span>
+                                    <span class="history-time">
+                                        {{ \Carbon\Carbon::parse($entry->timestamp)->format('d.m.Y H:i') }} Uhr
+                                    </span>
+                                </div>
+                                <div class="history-content">{!! nl2br(e($entry->information)) !!}</div>
+                            </div>
+                            @empty
+                            <p style="color: var(--text-muted); text-align: center; padding: 20px;">Noch kein Verlauf für dieses Angebot vorhanden.</p>
+                            @endforelse
+                        </div>
                     </div>
                 </div>
             </div>
