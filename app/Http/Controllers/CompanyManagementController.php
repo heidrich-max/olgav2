@@ -8,9 +8,19 @@ use Illuminate\Support\Facades\Auth;
 
 class CompanyManagementController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
+        
+        $companyId = \Illuminate\Support\Facades\Session::get('active_company_id');
+        if (!$companyId) {
+            $companyId = $request->cookie('active_company_id', 1);
+        }
+        if (!in_array($companyId, [1, 2])) { $companyId = 1; }
+
+        $companyName = ($companyId == 1) ? 'Branding Europe GmbH' : 'Europe Pen GmbH';
+        $accentColor = ($companyId == 1) ? '#1DA1F2' : '#0088CC';
+
         $projects = CompanyProject::orderBy('firma_id')->orderBy('name')->get();
         
         // Group by company ID for better UI organization
@@ -21,12 +31,22 @@ class CompanyManagementController extends Controller
             2 => 'Europe Pen GmbH'
         ];
 
-        return view('companies.index', compact('user', 'groupedProjects', 'companyNames'));
+        return view('companies.index', compact('user', 'groupedProjects', 'companyNames', 'companyId', 'companyName', 'accentColor'));
     }
 
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
         $user = Auth::user();
+
+        $companyId = \Illuminate\Support\Facades\Session::get('active_company_id');
+        if (!$companyId) {
+            $companyId = $request->cookie('active_company_id', 1);
+        }
+        if (!in_array($companyId, [1, 2])) { $companyId = 1; }
+
+        $companyName = ($companyId == 1) ? 'Branding Europe GmbH' : 'Europe Pen GmbH';
+        $accentColor = ($companyId == 1) ? '#1DA1F2' : '#0088CC';
+
         $project = CompanyProject::findOrFail($id);
         
         $companyNames = [
@@ -34,7 +54,7 @@ class CompanyManagementController extends Controller
             2 => 'Europe Pen GmbH'
         ];
 
-        return view('companies.edit', compact('user', 'project', 'companyNames'));
+        return view('companies.edit', compact('user', 'project', 'companyNames', 'companyId', 'companyName', 'accentColor'));
     }
 
     public function update(Request $request, $id)

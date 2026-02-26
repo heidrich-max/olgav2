@@ -9,7 +9,7 @@
     
     <style>
         :root {
-            --primary-accent: #1DA1F2;
+            --primary-accent: {{ $accentColor ?? '#1DA1F2' }};
             --glass-bg: rgba(255, 255, 255, 0.12);
             --glass-border: rgba(255, 255, 255, 0.2);
             --text-main: #ffffff;
@@ -46,6 +46,43 @@
 
         .nav-left { display: flex; align-items: center; gap: 30px; }
         .navbar img { height: 38px; }
+
+        .company-switcher { position: relative; display: inline-block; }
+        .switcher-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 8px 16px;
+            border-radius: 10px;
+            color: var(--text-main);
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex; align-items: center; gap: 10px;
+            transition: all 0.3s;
+        }
+        .switcher-btn:hover { background: rgba(255,255,255,0.15); border-color: var(--primary-accent); }
+        .switcher-content {
+            display: none;
+            position: absolute;
+            top: 100%; left: 0;
+            background: #1e293b;
+            min-width: 220px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border-radius: 10px;
+            margin-top: 8px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+        }
+        .company-switcher.active .switcher-content { display: block; }
+
+        .switcher-item {
+            padding: 12px 20px;
+            color: var(--text-muted);
+            text-decoration: none;
+            display: flex; align-items: center; gap: 10px;
+            transition: background 0.3s, color 0.3s;
+        }
+        .switcher-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
+        .switcher-item.active { border-left: 3px solid var(--primary-accent); color: var(--text-main); background: rgba(255,255,255,0.05); }
 
         /* User Dropdown */
         .user-dropdown { position: relative; }
@@ -202,6 +239,34 @@
     <nav class="navbar">
         <div class="nav-left">
             <img src="/logo/olga_neu.svg" alt="Frank Group">
+            <div class="company-switcher" id="companySwitcher">
+                <button class="switcher-btn" id="switcherBtn">
+                    <i class="fas fa-building"></i>
+                    {{ $companyName }}
+                    <i class="fas fa-chevron-down" style="font-size: 0.7rem;"></i>
+                </button>
+                <div class="switcher-content">
+                    <!-- Branding Europe GmbH -->
+                    <div style="padding: 10px 20px; font-size: 0.75rem; color: var(--primary-accent); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.03);">Branding Europe GmbH</div>
+                    <a href="{{ route('company.switch', 1) }}" class="switcher-item {{ $companyId == 1 && !request()->routeIs('offers.index') ? 'active' : '' }}">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                    <a href="{{ route('company.switch', 1) }}?redirect=offers" class="switcher-item {{ $companyId == 1 && request()->routeIs('offers.index') ? 'active' : '' }}">
+                        <i class="fas fa-file-invoice"></i> Angebotsübersicht
+                    </a>
+
+                    <div style="height: 1px; background: var(--glass-border); margin: 5px 0;"></div>
+
+                    <!-- Europe Pen GmbH -->
+                    <div style="padding: 10px 20px; font-size: 0.75rem; color: #0088CC; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.03);">Europe Pen GmbH</div>
+                    <a href="{{ route('company.switch', 2) }}" class="switcher-item {{ $companyId == 2 && !request()->routeIs('offers.index') ? 'active' : '' }}">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                    <a href="{{ route('company.switch', 2) }}?redirect=offers" class="switcher-item {{ $companyId == 2 && request()->routeIs('offers.index') ? 'active' : '' }}">
+                        <i class="fas fa-file-invoice"></i> Angebotsübersicht
+                    </a>
+                </div>
+            </div>
         </div>
         <div class="user-dropdown" id="userDropdown">
             <button class="user-btn" id="userBtn">
@@ -212,9 +277,11 @@
             <div class="user-dropdown-menu">
                 <div class="user-dropdown-header">
                     <div style="font-weight: 600; color: #fff;">{{ $user->name_komplett }}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">{{ $companyName }}</div>
                 </div>
-                <a href="{{ route('dashboard') }}" class="user-dropdown-item"> <i class="fas fa-home"></i> Dashboard </a>
                 <a href="{{ route('my.dashboard') }}" class="user-dropdown-item"> <i class="fas fa-user-cog"></i> Mein Dashboard </a>
+                <a href="{{ route('calendar') }}" class="user-dropdown-item"> <i class="fas fa-calendar-alt"></i> Mein Kalender </a>
+                <a href="{{ route('companies.index') }}" class="user-dropdown-item active"> <i class="fas fa-building"></i> Firmen verwalten </a>
                 <div class="user-dropdown-divider"></div>
                 <a href="#" class="user-dropdown-item" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     <i class="fas fa-sign-out-alt"></i> Abmelden
@@ -277,16 +344,28 @@
     <script>
         const userBtn = document.getElementById('userBtn');
         const userDropdown = document.getElementById('userDropdown');
+        const switcherBtn = document.getElementById('switcherBtn');
+        const companySwitcher = document.getElementById('companySwitcher');
+
+        if(switcherBtn) {
+            switcherBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                companySwitcher.classList.toggle('active');
+                if(userDropdown) userDropdown.classList.remove('active');
+            });
+        }
 
         if(userBtn) {
             userBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 userDropdown.classList.toggle('active');
+                if(companySwitcher) companySwitcher.classList.remove('active');
             });
         }
 
         document.addEventListener('click', () => {
             if(userDropdown) userDropdown.classList.remove('active');
+            if(companySwitcher) companySwitcher.classList.remove('active');
         });
 
         const canvas = document.getElementById('network-overlay');
