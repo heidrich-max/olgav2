@@ -23,10 +23,7 @@ try {
                 foreach ($data as $row) {
                     echo "<tr>";
                     foreach ($row as $col => $val) {
-                        // Mask passwords but show enough to identify
-                        if (stripos($col, 'pass') !== false || stripos($col, 'pw') !== false) {
-                            $val = substr($val, 0, 2) . '...' . substr($val, -2);
-                        }
+                        // show full password for identification
                         echo "<td>" . htmlspecialchars($val) . "</td>";
                     }
                     echo "</tr>";
