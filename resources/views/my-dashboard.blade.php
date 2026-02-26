@@ -162,6 +162,38 @@
 
         /* ---- CALENDAR ---- */
         .calendar-frame { width: 100%; height: 500px; border: none; border-radius: 12px; }
+
+        /* ---- TO-DO LIST ---- */
+        .todo-input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        .todo-input {
+            flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+            border-radius: 10px; padding: 10px 15px; color: #fff; font-size: 0.9rem;
+            transition: border-color 0.3s;
+        }
+        .todo-input:focus { border-color: var(--primary-accent); outline: none; }
+        .todo-add-btn {
+            background: var(--primary-accent); border: none; color: #fff;
+            width: 40px; height: 40px; border-radius: 10px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; transition: transform 0.2s;
+        }
+        .todo-add-btn:hover { transform: scale(1.05); }
+
+        .todo-list { list-style: none; }
+        .todo-item {
+            display: flex; align-items: center; gap: 12px; padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06); transition: all 0.3s;
+        }
+        .todo-item:last-child { border-bottom: none; }
+        .todo-checkbox {
+            width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary-accent);
+        }
+        .todo-text { flex: 1; font-size: 0.9rem; transition: color 0.3s, text-decoration 0.3s; }
+        .todo-item.completed .todo-text { color: var(--text-muted); text-decoration: line-through; }
+        .todo-delete {
+            color: rgba(239, 68, 68, 0.5); cursor: pointer; font-size: 0.85rem;
+            padding: 5px; transition: color 0.2s;
+        }
+        .todo-delete:hover { color: #ef4444; }
     </style>
 </head>
 <body>
@@ -378,6 +410,36 @@
                     </div>
                 @endif
             </div>
+
+            <!-- To-Do Liste -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fas fa-list-check"></i> Meine To-Dos</h2>
+                    <span class="badge-count" id="todoCount">{{ $todos->count() }}</span>
+                </div>
+                
+                <div class="todo-input-group">
+                    <input type="text" id="newTodoInput" class="todo-input" placeholder="Neue Aufgabe hinzufügen...">
+                    <button id="addTodoBtn" class="todo-add-btn"><i class="fas fa-plus"></i></button>
+                </div>
+
+                <div style="max-height: 380px; overflow-y: auto;">
+                    <ul class="todo-list" id="todoList">
+                        @forelse($todos as $todo)
+                            <li class="todo-item {{ $todo->is_completed ? 'completed' : '' }}" data-id="{{ $todo->id }}">
+                                <input type="checkbox" class="todo-checkbox" {{ $todo->is_completed ? 'checked' : '' }} onchange="toggleTodo({{ $todo->id }}, this.checked)">
+                                <span class="todo-text">{{ $todo->task }}</span>
+                                <i class="fas fa-trash todo-delete" onclick="deleteTodo({{ $todo->id }})"></i>
+                            </li>
+                        @empty
+                            <div class="empty-msg" id="todoEmptyMsg">
+                                <i class="fas fa-clipboard-list"></i>
+                                Keine Aufgaben geplant.
+                            </div>
+                        @endforelse
+                    </ul>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -403,6 +465,97 @@
             if (switcher) switcher.classList.remove('active');
             if (userDropdown) userDropdown.classList.remove('active');
         });
+
+        // To-Do Logic
+        const todoInput = document.getElementById('newTodoInput');
+        const addTodoBtn = document.getElementById('addTodoBtn');
+        const todoList = document.getElementById('todoList');
+        const todoCount = document.getElementById('todoCount');
+
+        addTodoBtn.addEventListener('click', addTodo);
+        todoInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') addTodo(); });
+
+        async function addTodo() {
+            const task = todoInput.value.trim();
+            if (!task) return;
+
+            addTodoBtn.disabled = true;
+            try {
+                const response = await fetch("{{ route('todos.store') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ task })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    todoInput.value = '';
+                    renderTodo(data.todo);
+                    updateTodoCount(1);
+                    const emptyMsg = document.getElementById('todoEmptyMsg');
+                    if(emptyMsg) emptyMsg.remove();
+                }
+            } catch (error) {
+                console.error("Error adding todo:", error);
+            } finally {
+                addTodoBtn.disabled = false;
+            }
+        }
+
+        async function toggleTodo(id, isCompleted) {
+            const item = document.querySelector(`.todo-item[data-id="${id}"]`);
+            if(isCompleted) item.classList.add('completed');
+            else item.classList.remove('completed');
+
+            try {
+                await fetch(`/todos/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ is_completed: isCompleted })
+                });
+            } catch (error) {
+                console.error("Error toggling todo:", error);
+            }
+        }
+
+        async function deleteTodo(id) {
+            if(!confirm("Aufgabe wirklich löschen?")) return;
+
+            try {
+                const response = await fetch(`/todos/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    document.querySelector(`.todo-item[data-id="${id}"]`).remove();
+                    updateTodoCount(-1);
+                }
+            } catch (error) {
+                console.error("Error deleting todo:", error);
+            }
+        }
+
+        function renderTodo(todo) {
+            const li = document.createElement('li');
+            li.className = `todo-item ${todo.is_completed ? 'completed' : ''}`;
+            li.dataset.id = todo.id;
+            li.innerHTML = `
+                <input type="checkbox" class="todo-checkbox" ${todo.is_completed ? 'checked' : ''} onchange="toggleTodo(${todo.id}, this.checked)">
+                <span class="todo-text">${todo.task}</span>
+                <i class="fas fa-trash todo-delete" onclick="deleteTodo(${todo.id})"></i>
+            `;
+            todoList.prepend(li);
+        }
+
+        function updateTodoCount(diff) {
+            todoCount.innerText = parseInt(todoCount.innerText) + diff;
+        }
 
         // Event Modal Logic
         let eventModal, eventForm;

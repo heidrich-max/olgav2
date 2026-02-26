@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
 use Spatie\GoogleCalendar\Event;
+use App\Models\Todo;
 
 class DashboardController extends Controller
 {
@@ -303,7 +304,13 @@ class DashboardController extends Controller
             \Log::error("Google Calendar Error (Dashboard): " . $e->getMessage());
         }
 
-        return view('my-dashboard', compact('user', 'myOffers', 'myOrders', 'calendarEvents'));
+        // To-Dos abrufen
+        $todos = Todo::where('user_id', Auth::id())
+            ->orderBy('is_completed', 'asc')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('my-dashboard', compact('user', 'myOffers', 'myOrders', 'calendarEvents', 'todos'));
     }
 
     public function calendar()

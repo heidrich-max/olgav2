@@ -138,6 +138,12 @@ Route::middleware(['auth'])->group(function () {
         }
     })->name('test.mail');
 
+    // To-Do Routes
+    Route::get('/todos', [\App\Http\Controllers\TodoController::class, 'index'])->name('todos.index');
+    Route::post('/todos', [\App\Http\Controllers\TodoController::class, 'store'])->name('todos.store');
+    Route::put('/todos/{id}', [\App\Http\Controllers\TodoController::class, 'update'])->name('todos.update');
+    Route::delete('/todos/{id}', [\App\Http\Controllers\TodoController::class, 'destroy'])->name('todos.destroy');
+
     Route::get('/debug-smtp/{id}', function ($id) {
         $project = \App\Models\CompanyProject::findOrFail($id);
         
