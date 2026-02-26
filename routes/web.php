@@ -144,6 +144,15 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/todos/{id}', [\App\Http\Controllers\TodoController::class, 'update'])->name('todos.update');
     Route::delete('/todos/{id}', [\App\Http\Controllers\TodoController::class, 'destroy'])->name('todos.destroy');
 
+    Route::get('/run-migrations', function() {
+        try {
+            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+            return "Migration erfolgreich: <br><pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
+        } catch (\Exception $e) {
+            return "Fehler bei der Migration: " . $e->getMessage();
+        }
+    })->name('run.migrations');
+
     Route::get('/debug-smtp/{id}', function ($id) {
         $project = \App\Models\CompanyProject::findOrFail($id);
         
