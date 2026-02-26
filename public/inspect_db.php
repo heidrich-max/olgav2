@@ -5,14 +5,15 @@ ini_set('display_errors', 1);
 try {
     $pdo = new PDO('mysql:host=127.0.0.1;port=3306;dbname=cms_frankgroup', 'cms_frankgroup', 'tpU~1t787');
     
-    echo "<h1>Tables in cms_frankgroup</h1>";
-    $stmt = $pdo->query("SHOW TABLES");
-    $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
-    echo "<ul>";
-    foreach ($tables as $table) {
-        echo "<li>$table</li>";
+    echo "<h1>Old Project Data Analysis</h1>";
+    $stmt = $pdo->query("SELECT id, projekt, firmenname, strasse, plz, ort, telefon, inhaber, ust_id, handelsregister FROM auftrag_projekt");
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    echo "<table border='1'><tr><th>ID</th><th>Projekt</th><th>Firma</th><th>Strasse</th><th>PLZ</th><th>Ort</th></tr>";
+    foreach ($data as $row) {
+        echo "<tr><td>{$row['id']}</td><td>{$row['projekt']}</td><td>{$row['firmenname']}</td><td>{$row['strasse']}</td><td>{$row['plz']}</td><td>{$row['ort']}</td></tr>";
     }
-    echo "</ul>";
+    echo "</table>";
+    echo "<hr>";
 
     $interesting = ['angebot_tabelle', 'angebot_artikel', 'angebot_details', 'angebot_status', 'angebot_status_a', 'rechnung', 'liefer', 'adresse', 'projekt'];
     
