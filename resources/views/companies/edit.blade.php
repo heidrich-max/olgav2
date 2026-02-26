@@ -170,6 +170,12 @@
                     @error('bg') <div class="error-message">{{ $message }}</div> @enderror
                 </div>
 
+                <div class="form-group">
+                    <label for="co">c/o</label>
+                    <input type="text" name="co" id="co" class="form-control" value="{{ old('co', $project->co) }}" placeholder="z.B. Musterfirma GmbH">
+                    @error('co') <div class="error-message">{{ $message }}</div> @enderror
+                </div>
+
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                     <div class="form-group">
                         <label for="strasse">Straße</label>
