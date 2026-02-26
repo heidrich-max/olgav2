@@ -5,33 +5,14 @@ ini_set('display_errors', 1);
 try {
     $pdo = new PDO('mysql:host=127.0.0.1;port=3306;dbname=cms_frankgroup', 'cms_frankgroup', 'tpU~1t787');
     
-    echo "<h1>Data Transfer Check</h1>";
-    $stmt = $pdo->query("SELECT * FROM auftrag_projekt");
-    $oldEntries = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    foreach ($oldEntries as $old) {
-        $updateStmt = $pdo->prepare("
-            UPDATE auftrag_projekt_firma 
-            SET smtp_host = :host,
-                smtp_port = :port,
-                smtp_user = :user,
-                smtp_password = :pass,
-                smtp_encryption = 'tls',
-                mail_from_address = :fromEmail,
-                mail_from_name = :fromName
-            WHERE projekt_id = :pId
-        ");
-        $updateStmt->execute([
-            'host' => $old['host'],
-            'port' => $old['port'],
-            'user' => $old['email_pas'],
-            'pass' => $old['passwort'],
-            'fromEmail' => $old['email_pas'],
-            'fromName' => $old['firmenname'],
-            'pId' => $old['id']
-        ]);
-        echo "Projekt {$old['projekt']}: Updated " . $updateStmt->rowCount() . " rows.<br>";
+    echo "<h1>Tables in cms_frankgroup</h1>";
+    $stmt = $pdo->query("SHOW TABLES");
+    $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    echo "<ul>";
+    foreach ($tables as $table) {
+        echo "<li>$table</li>";
     }
-    echo "<hr>";
+    echo "</ul>";
 
     $interesting = ['angebot_tabelle', 'angebot_artikel', 'angebot_details', 'angebot_status', 'angebot_status_a', 'rechnung', 'liefer', 'adresse', 'projekt'];
     
