@@ -118,4 +118,22 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/companies', [CompanyManagementController::class, 'index'])->name('companies.index');
     Route::get('/companies/{id}/edit', [CompanyManagementController::class, 'edit'])->name('companies.edit');
     Route::put('/companies/{id}', [CompanyManagementController::class, 'update'])->name('companies.update');
+
+    // Email Test Route
+    Route::get('/test-mail/{projectId}', function ($projectId) {
+        $project = \App\Models\CompanyProject::findOrFail($projectId);
+        
+        if (!$project->smtp_host) {
+            return "Fehler: Für das Projekt '{$project->name}' ist kein SMTP-Host konfiguriert.";
+        }
+
+        try {
+            $mailer = app(\App\Services\ProjectMailService::class)->getMailer($project);
+            $mailer->to('heidrich@frank.group')->send(new \App\Mail\ProjectTestMail($project->name));
+            
+            return "Erfolg! Test-E-Mail für Projekt '{$project->name}' wurde an heidrich@frank.group versendet (über {$project->smtp_host}).";
+        } catch (\Exception $e) {
+            return "Fehler beim Versenden der E-Mail für '{$project->name}': " . $e->getMessage();
+        }
+    })->name('test.mail');
 });
