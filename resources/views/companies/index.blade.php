@@ -247,6 +247,9 @@
                                         @if($project->co) c/o {{ $project->co }}<br> @endif
                                         {{ $project->strasse }}, {{ $project->plz }} {{ $project->ort }}<br>
                                         {{ $project->email }} | {{ $project->telefon }}
+                                        @if($project->smtp_host)
+                                            <br><span style="font-size: 0.75rem; color: #1DA1F2;"><i class="fas fa-server"></i> SMTP: {{ $project->smtp_host }}</span>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

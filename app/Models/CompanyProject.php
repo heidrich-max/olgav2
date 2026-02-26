@@ -24,5 +24,12 @@ class CompanyProject extends Model
         'inhaber',
         'ust_id',
         'handelsregister',
+        'smtp_host',
+        'smtp_port',
+        'smtp_user',
+        'smtp_password',
+        'smtp_encryption',
+        'mail_from_address',
+        'mail_from_name',
     ];
 }

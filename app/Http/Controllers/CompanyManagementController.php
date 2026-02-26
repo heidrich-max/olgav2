@@ -55,6 +55,13 @@ class CompanyManagementController extends Controller
             'inhaber' => 'nullable|string|max:255',
             'ust_id' => 'nullable|string|max:255',
             'handelsregister' => 'nullable|string|max:255',
+            'smtp_host' => 'nullable|string|max:255',
+            'smtp_port' => 'nullable|integer',
+            'smtp_user' => 'nullable|string|max:255',
+            'smtp_password' => 'nullable|string|max:255',
+            'smtp_encryption' => 'nullable|string|max:10',
+            'mail_from_address' => 'nullable|email|max:255',
+            'mail_from_name' => 'nullable|string|max:255',
         ]);
 
         // Fix hex color if # is missing

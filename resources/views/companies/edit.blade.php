@@ -227,6 +227,57 @@
                     </div>
                 </div>
 
+                <h2 style="margin: 30px 0 20px 0; font-size: 1.5rem; color: var(--primary-accent);">E-Mail-Konfiguration</h2>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label for="smtp_host">SMTP Host</label>
+                        <input type="text" name="smtp_host" id="smtp_host" class="form-control" value="{{ old('smtp_host', $project->smtp_host) }}" placeholder="z.B. smtp.ionos.de">
+                        @error('smtp_host') <div class="error-message">{{ $message }}</div> @enderror
+                    </div>
+                    <div class="form-group">
+                        <label for="smtp_port">SMTP Port</label>
+                        <input type="number" name="smtp_port" id="smtp_port" class="form-control" value="{{ old('smtp_port', $project->smtp_port) }}" placeholder="587">
+                        @error('smtp_port') <div class="error-message">{{ $message }}</div> @enderror
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label for="smtp_user">SMTP Benutzername</label>
+                        <input type="text" name="smtp_user" id="smtp_user" class="form-control" value="{{ old('smtp_user', $project->smtp_user) }}">
+                        @error('smtp_user') <div class="error-message">{{ $message }}</div> @enderror
+                    </div>
+                    <div class="form-group">
+                        <label for="smtp_password">SMTP Passwort</label>
+                        <input type="password" name="smtp_password" id="smtp_password" class="form-control" value="{{ old('smtp_password', $project->smtp_password) }}">
+                        @error('smtp_password') <div class="error-message">{{ $message }}</div> @enderror
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="smtp_encryption">SMTP Verschlüsselung</label>
+                    <select name="smtp_encryption" id="smtp_encryption" class="form-control">
+                        <option value="" {{ old('smtp_encryption', $project->smtp_encryption) == '' ? 'selected' : '' }}>Keine</option>
+                        <option value="tls" {{ old('smtp_encryption', $project->smtp_encryption) == 'tls' ? 'selected' : '' }}>TLS</option>
+                        <option value="ssl" {{ old('smtp_encryption', $project->smtp_encryption) == 'ssl' ? 'selected' : '' }}>SSL</option>
+                    </select>
+                    @error('smtp_encryption') <div class="error-message">{{ $message }}</div> @enderror
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label for="mail_from_address">Absender E-Mail (From Address)</label>
+                        <input type="email" name="mail_from_address" id="mail_from_address" class="form-control" value="{{ old('mail_from_address', $project->mail_from_address) }}">
+                        @error('mail_from_address') <div class="error-message">{{ $message }}</div> @enderror
+                    </div>
+                    <div class="form-group">
+                        <label for="mail_from_name">Absender Name (From Name)</label>
+                        <input type="text" name="mail_from_name" id="mail_from_name" class="form-control" value="{{ old('mail_from_name', $project->mail_from_name) }}">
+                        @error('mail_from_name') <div class="error-message">{{ $message }}</div> @enderror
+                    </div>
+                </div>
+
                 <button type="submit" class="btn-save">Änderungen speichern</button>
             </form>
         </div>
