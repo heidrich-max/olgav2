@@ -122,7 +122,7 @@ Route::middleware(['auth'])->group(function () {
     // Email Test Route
     Route::get('/test-mail/{projectId}', function ($projectId) {
         $project = \App\Models\CompanyProject::findOrFail($projectId);
-        $to = request('to', 'heidrich@frank.group');
+        $to = request('to', 'info@frank.group');
         
         if (!$project->smtp_host) {
             return "Fehler: Für das Projekt '{$project->name}' ist kein SMTP-Host konfiguriert.";

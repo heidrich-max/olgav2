@@ -450,7 +450,7 @@
 
         function sendTestMail(event) {
             event.stopPropagation();
-            const email = prompt("An welche Adresse soll die Test-Mail gesendet werden?", "heidrich@frank.group");
+            const email = prompt("An welche Adresse soll die Test-Mail gesendet werden?", "info@frank.group");
             if (email && email.includes('@')) {
                 window.location.href = "{{ route('test.mail', $project->id) }}?to=" + encodeURIComponent(email);
             } else if (email) {
