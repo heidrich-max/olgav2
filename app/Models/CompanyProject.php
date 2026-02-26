@@ -15,6 +15,7 @@ class CompanyProject extends Model
         'firma_id',
         'name_kuerzel',
         'bg',
+        'co',
         'strasse',
         'plz',
         'ort',

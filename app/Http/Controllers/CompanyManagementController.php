@@ -46,6 +46,7 @@ class CompanyManagementController extends Controller
             'name_kuerzel' => 'required|string|max:50',
             'bg' => 'required|string|max:7', // Hex color
             'firma_id' => 'required|integer|in:1,2',
+            'co' => 'nullable|string|max:255',
             'strasse' => 'nullable|string|max:255',
             'plz' => 'nullable|string|max:10',
             'ort' => 'nullable|string|max:255',

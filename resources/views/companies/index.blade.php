@@ -244,6 +244,7 @@
                                 <div>
                                     <div class="project-name">{{ $project->name }}</div>
                                     <div class="project-kuerzel">
+                                        @if($project->co) c/o {{ $project->co }}<br> @endif
                                         {{ $project->strasse }}, {{ $project->plz }} {{ $project->ort }}<br>
                                         {{ $project->email }} | {{ $project->telefon }}
                                     </div>
