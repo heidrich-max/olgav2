@@ -8,7 +8,7 @@ try {
 
     echo "<h1>Inspection of 'auftrag_projekt'</h1>";
 
-    $tableName = 'auftrag_projekt';
+    $tableName = 'auftrag_projekt_firma';
     
     // Check if table exists
     $stmt = $pdo->query("SHOW TABLES LIKE '$tableName'");
