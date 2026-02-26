@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\CompanyManagementController;
 use Illuminate\Support\Facades\DB;
 
 Route::get('/', function () {
@@ -108,4 +109,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/calendar', [DashboardController::class, 'calendar'])->name('calendar');
     Route::post('/calendar/event', [DashboardController::class, 'storeEvent'])->name('calendar.store');
     Route::get('/dashboard/switch/{id}', [DashboardController::class, 'switchCompany'])->name('company.switch');
+
+    // Firmenverwaltung
+    Route::get('/companies', [CompanyManagementController::class, 'index'])->name('companies.index');
+    Route::get('/companies/{id}/edit', [CompanyManagementController::class, 'edit'])->name('companies.edit');
+    Route::put('/companies/{id}', [CompanyManagementController::class, 'update'])->name('companies.update');
 });
