@@ -11,9 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasTable('todos')) {
+            Schema::dropIfExists('todos');
+        }
+
         Schema::create('todos', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedInteger('user_id');
             $table->string('task');
             $table->boolean('is_completed')->default(false);
             $table->timestamps();
