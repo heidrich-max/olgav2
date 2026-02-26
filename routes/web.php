@@ -5,6 +5,10 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CompanyManagementController;
 use Illuminate\Support\Facades\DB;
+use App\Services\ProjectMailService;
+use App\Models\CompanyProject;
+use App\Mail\ProjectTestMail;
+use Illuminate\Support\Facades\Mail;
 
 Route::get('/', function () {
     return redirect()->route('login');
