@@ -37,8 +37,7 @@ class ProjectMailService
         Config::set('mail.from.name', $project->mail_from_name ?? $project->name);
         
         // Purge the mailer if it was already resolved to force reconfiguration
-        app()->forgetInstances();
-        Mail::forgetMailers();
+        Mail::purge('project_mailer');
     }
 
     /**
