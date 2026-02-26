@@ -346,6 +346,14 @@
         .modal-footer {
             display: flex; justify-content: flex-end; gap: 15px; margin-top: 30px;
         }
+        .status-header-text {
+            font-weight: 400;
+            font-size: 1.8rem;
+            -webkit-text-fill-color: var(--status-color, var(--primary-accent));
+            background: none;
+            -webkit-background-clip: initial;
+            margin-left: 5px;
+        }
     </style>
 </head>
 <body>
@@ -421,7 +429,7 @@
                     <h1>
                         {{ $offer->angebotsnummer }} / {{ $offer->benutzer_kuerzel }}
                         @if($offer->letzter_status_name)
-                            <span style="color: {{ $offer->letzter_status_bg_hex ?? 'var(--primary-accent)' }}; font-weight: 400; font-size: 1.8rem;">
+                            <span class="status-header-text" style="--status-color: {{ $offer->letzter_status_bg_hex ?? 'var(--primary-accent)' }};">
                                 - {{ str_replace('Status ', '', $offer->letzter_status_name) }}
                             </span>
                         @endif
