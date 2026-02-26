@@ -137,4 +137,26 @@ Route::middleware(['auth'])->group(function () {
             return "Fehler beim Versenden der E-Mail für '{$project->name}': " . $e->getMessage();
         }
     })->name('test.mail');
+
+    Route::get('/debug-smtp/{id}', function ($id) {
+        $project = \App\Models\CompanyProject::findOrFail($id);
+        $mailerConfig = config('mail.mailers.project_mailer');
+        
+        return [
+            'name' => $project->name,
+            'host' => $project->smtp_host,
+            'port' => $project->smtp_port,
+            'user' => $project->smtp_user,
+            'encryption' => $project->smtp_encryption,
+            'has_password' => !empty($project->smtp_password),
+            'password_length' => strlen($project->smtp_password),
+            'from_address' => $project->mail_from_address,
+            'config_resolved' => [
+                'host' => $mailerConfig['host'] ?? 'N/A',
+                'port' => $mailerConfig['port'] ?? 'N/A',
+                'user' => $mailerConfig['username'] ?? 'N/A',
+                'encryption' => $mailerConfig['encryption'] ?? 'N/A',
+            ]
+        ];
+    });
 });
