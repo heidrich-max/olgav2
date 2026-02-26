@@ -450,10 +450,10 @@
                     <button type="button" class="btn-glass-success" id="openCloseModal">
                         <i class="fas fa-check-circle"></i> Abschließen
                     </button>
-                    @endif
                     <button class="btn-glass-primary">
                         <i class="fas fa-paper-plane"></i> Erinnerung senden
                     </button>
+                    @endif
                 </div>
             </div>
 
