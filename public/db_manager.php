@@ -8,11 +8,18 @@ try {
 
     echo "<h1>Database Manager</h1>";
 
-    foreach (['auftrag_projekt', 'auftrag_projekt_firma'] as $table) {
-        echo "<h2>Table: $table</h2>";
-        $stmt = $pdo->query("DESCRIBE $table");
-        $cols = $stmt->fetchAll(PDO::FETCH_COLUMN);
-        echo "<p>Columns: " . implode(", ", $cols) . "</p>";
+    $table = 'auftrag_projekt_firma';
+    echo "<h2>Table: $table</h2>";
+    $stmt = $pdo->query("SELECT * FROM $table LIMIT 5");
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($rows as $row) {
+        echo "<h3>Project: " . ($row['name'] ?? 'unbekannt') . "</h3>";
+        echo "<pre>";
+        foreach ($row as $k => $v) {
+            if (stripos($k, 'pass') !== false) $v = '********';
+            echo "$k: $v\n";
+        }
+        echo "</pre>";
     }
 
 } catch (Exception $e) {
