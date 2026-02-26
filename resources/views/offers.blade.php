@@ -357,6 +357,16 @@
             transition: all 0.3s ease;
         }
 
+        .status-pill.clickable:hover { opacity: 0.85; transform: scale(1.02); }
+
+        .todo-badge {
+            background: #ef4444; color: white; font-size: 0.65rem; font-weight: 700;
+            padding: 2px 6px; border-radius: 50px; margin-left: 5px;
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 18px; height: 18px; vertical-align: middle;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
         .status-pill:hover {
             background: rgba(255, 255, 255, 0.2);
             transform: translateY(-2px);
@@ -491,8 +501,11 @@
             <!-- Benutzer-Dropdown -->
             <div class="user-dropdown" id="userDropdown">
                 <button class="user-btn" id="userBtn">
-                    <i class="fas fa-user-circle" style="color: var(--accent-color); font-size: 1.1rem;"></i>
-                    {{ $user->name_komplett }}
+                    <i class="fas fa-user-circle" style="color: var(--primary-accent); font-size: 1.1rem;"></i>
+                    <span id="navUserName">{{ $user->name_komplett }}</span>
+                    @if(isset($openTodoCount) && $openTodoCount > 0)
+                        <span class="todo-badge" id="navTodoBadge">{{ $openTodoCount }}</span>
+                    @endif
                     <i class="fas fa-chevron-down" style="font-size: 0.65rem; color: var(--text-muted);"></i>
                 </button>
                 <div class="user-dropdown-menu">

@@ -114,6 +114,15 @@
             display: flex; align-items: center; gap: 12px; font-size: 0.9rem;
             transition: background 0.2s, color 0.2s;
         }
+        .user-dropdown-item.logout:hover { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+        .todo-badge {
+            background: #ef4444; color: white; font-size: 0.65rem; font-weight: 700;
+            padding: 2px 6px; border-radius: 50px; margin-left: 5px;
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 18px; height: 18px; vertical-align: middle;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
         .user-dropdown-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
         .user-dropdown-divider { height: 1px; background: var(--glass-border); margin: 6px 0; }
 
@@ -271,7 +280,10 @@
         <div class="user-dropdown" id="userDropdown">
             <button class="user-btn" id="userBtn">
                 <i class="fas fa-user-circle" style="color: var(--primary-accent); font-size: 1.1rem;"></i>
-                {{ $user->name_komplett }}
+                <span id="navUserName">{{ $user->name_komplett }}</span>
+                @if(isset($openTodoCount) && $openTodoCount > 0)
+                    <span class="todo-badge" id="navTodoBadge">{{ $openTodoCount }}</span>
+                @endif
                 <i class="fas fa-chevron-down" style="font-size: 0.65rem; color: var(--text-muted);"></i>
             </button>
             <div class="user-dropdown-menu">

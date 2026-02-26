@@ -194,6 +194,14 @@
             padding: 5px; transition: color 0.2s;
         }
         .todo-delete:hover { color: #ef4444; }
+
+        .todo-badge {
+            background: #ef4444; color: white; font-size: 0.65rem; font-weight: 700;
+            padding: 2px 6px; border-radius: 50px; margin-left: 5px;
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 18px; height: 18px; vertical-align: middle;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
 <body>
@@ -233,7 +241,10 @@
             <div class="user-dropdown" id="userDropdown">
                 <button class="user-btn" id="userBtn">
                     <i class="fas fa-user-circle" style="color: var(--primary-accent); font-size: 1.1rem;"></i>
-                    {{ $user->name_komplett }}
+                    <span id="navUserName">{{ $user->name_komplett }}</span>
+                    @if(isset($openTodoCount) && $openTodoCount > 0)
+                        <span class="todo-badge" id="navTodoBadge">{{ $openTodoCount }}</span>
+                    @endif
                     <i class="fas fa-chevron-down" style="font-size: 0.65rem; color: var(--text-muted);"></i>
                 </button>
                 <div class="user-dropdown-menu">
@@ -494,6 +505,7 @@
                     todoInput.value = '';
                     renderTodo(data.todo);
                     updateTodoCount(1);
+                    updateNavBadge(1);
                     const emptyMsg = document.getElementById('todoEmptyMsg');
                     if(emptyMsg) emptyMsg.remove();
                 }
@@ -508,6 +520,8 @@
             const item = document.querySelector(`.todo-item[data-id="${id}"]`);
             if(isCompleted) item.classList.add('completed');
             else item.classList.remove('completed');
+
+            updateNavBadge(isCompleted ? -1 : 1);
 
             try {
                 await fetch(`/todos/${id}`, {
@@ -526,6 +540,9 @@
         async function deleteTodo(id) {
             if(!confirm("Aufgabe wirklich löschen?")) return;
 
+            const item = document.querySelector(`.todo-item[data-id="${id}"]`);
+            const wasCompleted = item.classList.contains('completed');
+
             try {
                 const response = await fetch(`/todos/${id}`, {
                     method: 'DELETE',
@@ -533,8 +550,9 @@
                 });
                 const data = await response.json();
                 if (data.success) {
-                    document.querySelector(`.todo-item[data-id="${id}"]`).remove();
+                    item.remove();
                     updateTodoCount(-1);
+                    if(!wasCompleted) updateNavBadge(-1);
                 }
             } catch (error) {
                 console.error("Error deleting todo:", error);
@@ -555,6 +573,30 @@
 
         function updateTodoCount(diff) {
             todoCount.innerText = parseInt(todoCount.innerText) + diff;
+        }
+
+        function updateNavBadge(diff) {
+            const badge = document.getElementById('navTodoBadge');
+            const userName = document.getElementById('navUserName');
+            
+            if (!userName) return;
+
+            let currentCount = badge ? parseInt(badge.innerText) : 0;
+            let newCount = currentCount + diff;
+            
+            if (newCount > 0) {
+                if (!badge) {
+                    const newBadge = document.createElement('span');
+                    newBadge.className = 'todo-badge';
+                    newBadge.id = 'navTodoBadge';
+                    newBadge.innerText = newCount;
+                    userName.after(newBadge);
+                } else {
+                    badge.innerText = newCount;
+                }
+            } else if (badge) {
+                badge.remove();
+            }
         }
 
         // Event Modal Logic

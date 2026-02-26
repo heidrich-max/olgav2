@@ -80,6 +80,14 @@
         .fc .fc-event { border-radius: 4px; padding: 2px 4px; border: none !important; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
         .fc-theme-standard td, .fc-theme-standard th { border-color: rgba(255,255,255,0.08); }
         .fc-list { background: rgba(255,255,255,0.02); border-radius: 12px; }
+
+        .todo-badge {
+            background: #ef4444; color: white; font-size: 0.65rem; font-weight: 700;
+            padding: 2px 6px; border-radius: 50px; margin-left: 5px;
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 18px; height: 18px; vertical-align: middle;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
 <body>
@@ -97,7 +105,10 @@
             <a href="https://calendar.google.com" target="_blank" style="color: var(--text-muted); text-decoration: none; font-size: 0.9rem;">
                 <i class="fas fa-external-link-alt"></i> Zu Google
             </a>
-            <span style="font-size: 0.9rem; font-weight: 500;">{{ $user->name_komplett }}</span>
+            <span id="navUserName" style="font-size: 0.9rem; font-weight: 500;">{{ $user->name_komplett }}</span>
+            @if(isset($openTodoCount) && $openTodoCount > 0)
+                <span class="todo-badge" id="navTodoBadge">{{ $openTodoCount }}</span>
+            @endif
         </div>
     </nav>
 
