@@ -170,7 +170,42 @@
             margin-top: 5px;
         }
 
-        h2 { margin: 30px 0 20px 0; font-size: 1.5rem; color: var(--primary-accent); border: none; padding: 0; }
+        h2 { margin: 0; font-size: 1.5rem; color: var(--primary-accent); border: none; padding: 0; }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            margin-top: 20px;
+        }
+        .section-header:hover { opacity: 0.8; }
+        .section-header i.chevron { transition: transform 0.3s; }
+        .section-header.active i.chevron { transform: rotate(180deg); }
+
+        .collapsible-content {
+            display: none;
+            padding-top: 20px;
+        }
+        .collapsible-content.active { display: block; }
+
+        .btn-test-mail {
+            background: rgba(29, 161, 242, 0.15);
+            color: var(--primary-accent);
+            border: 1px solid var(--primary-accent);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-test-mail:hover { background: var(--primary-accent); color: white; }
     </style>
 </head>
 <body>
@@ -205,7 +240,7 @@
         </div>
 
         <div class="card">
-            <form action="{{ route('companies.update', $project->id) }}" method="POST">
+            <form action="{{ route('companies.update', $project->id) }}" method="POST" id="editForm">
                 @csrf
                 @method('PUT')
 
@@ -246,110 +281,131 @@
                     @error('co') <div class="error-message">{{ $message }}</div> @enderror
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <div class="form-group">
-                        <label for="strasse">Straße</label>
-                        <input type="text" name="strasse" id="strasse" class="form-control" value="{{ old('strasse', $project->strasse) }}">
-                        @error('strasse') <div class="error-message">{{ $message }}</div> @enderror
+                <!-- Adresse Sektion -->
+                <div class="section-header" onclick="toggleSection('addressSection')">
+                    <h2>Adresse & Kontaktdaten</h2>
+                    <i class="fas fa-chevron-down chevron"></i>
+                </div>
+                <div id="addressSection" class="collapsible-content">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label for="strasse">Straße</label>
+                            <input type="text" name="strasse" id="strasse" class="form-control" value="{{ old('strasse', $project->strasse) }}">
+                            @error('strasse') <div class="error-message">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="form-group">
+                            <label for="ort">Ort</label>
+                            <input type="text" name="ort" id="ort" class="form-control" value="{{ old('ort', $project->ort) }}">
+                            @error('ort') <div class="error-message">{{ $message }}</div> @enderror
+                        </div>
                     </div>
+
+                    <div style="display: grid; grid-template-columns: 120px 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label for="plz">PLZ</label>
+                            <input type="text" name="plz" id="plz" class="form-control" value="{{ old('plz', $project->plz) }}">
+                            @error('plz') <div class="error-message">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="form-group">
+                            <label for="telefon">Telefon</label>
+                            <input type="text" name="telefon" id="telefon" class="form-control" value="{{ old('telefon', $project->telefon) }}">
+                            @error('telefon') <div class="error-message">{{ $message }}</div> @enderror
+                        </div>
+                    </div>
+
                     <div class="form-group">
-                        <label for="ort">Ort</label>
-                        <input type="text" name="ort" id="ort" class="form-control" value="{{ old('ort', $project->ort) }}">
-                        @error('ort') <div class="error-message">{{ $message }}</div> @enderror
+                        <label for="email">E-Mail</label>
+                        <input type="email" name="email" id="email" class="form-control" value="{{ old('email', $project->email) }}">
+                        @error('email') <div class="error-message">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inhaber">Inhaber</label>
+                        <input type="text" name="inhaber" id="inhaber" class="form-control" value="{{ old('inhaber', $project->inhaber) }}">
+                        @error('inhaber') <div class="error-message">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label for="ust_id">USt-IdNr.</label>
+                            <input type="text" name="ust_id" id="ust_id" class="form-control" value="{{ old('ust_id', $project->ust_id) }}">
+                            @error('ust_id') <div class="error-message">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="form-group">
+                            <label for="handelsregister">Handelsregister</label>
+                            <input type="text" name="handelsregister" id="handelsregister" class="form-control" value="{{ old('handelsregister', $project->handelsregister) }}">
+                            @error('handelsregister') <div class="error-message">{{ $message }}</div> @enderror
+                        </div>
                     </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 120px 1fr; gap: 20px;">
-                    <div class="form-group">
-                        <label for="plz">PLZ</label>
-                        <input type="text" name="plz" id="plz" class="form-control" value="{{ old('plz', $project->plz) }}">
-                        @error('plz') <div class="error-message">{{ $message }}</div> @enderror
+                <!-- E-Mail Konfiguration Sektion -->
+                <div class="section-header" onclick="toggleSection('emailSection')">
+                    <div style="display: flex; align-items: center; gap: 20px;">
+                        <h2>E-Mail-Konfiguration</h2>
+                        @if($project->smtp_host)
+                            <button type="button" class="btn-test-mail" onclick="sendTestMail(event)">
+                                <i class="fas fa-paper-plane"></i> Test-Mail senden
+                            </button>
+                        @endif
                     </div>
+                    <i class="fas fa-chevron-down chevron"></i>
+                </div>
+                <div id="emailSection" class="collapsible-content">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label for="smtp_host">SMTP Host</label>
+                            <input type="text" name="smtp_host" id="smtp_host" class="form-control" value="{{ old('smtp_host', $project->smtp_host) }}" placeholder="z.B. smtp.ionos.de">
+                            @error('smtp_host') <div class="error-message">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="form-group">
+                            <label for="smtp_port">SMTP Port</label>
+                            <input type="number" name="smtp_port" id="smtp_port" class="form-control" value="{{ old('smtp_port', $project->smtp_port) }}" placeholder="587">
+                            @error('smtp_port') <div class="error-message">{{ $message }}</div> @enderror
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label for="smtp_user">SMTP Benutzername</label>
+                            <input type="text" name="smtp_user" id="smtp_user" class="form-control" value="{{ old('smtp_user', $project->smtp_user) }}">
+                            @error('smtp_user') <div class="error-message">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="form-group">
+                            <label for="smtp_password">SMTP Passwort</label>
+                            <input type="password" name="smtp_password" id="smtp_password" class="form-control" value="{{ old('smtp_password', $project->smtp_password) }}">
+                            @error('smtp_password') <div class="error-message">{{ $message }}</div> @enderror
+                        </div>
+                    </div>
+
                     <div class="form-group">
-                        <label for="telefon">Telefon</label>
-                        <input type="text" name="telefon" id="telefon" class="form-control" value="{{ old('telefon', $project->telefon) }}">
-                        @error('telefon') <div class="error-message">{{ $message }}</div> @enderror
+                        <label for="smtp_encryption">SMTP Verschlüsselung</label>
+                        <select name="smtp_encryption" id="smtp_encryption" class="form-control">
+                            <option value="" {{ old('smtp_encryption', $project->smtp_encryption) == '' ? 'selected' : '' }}>Keine</option>
+                            <option value="tls" {{ old('smtp_encryption', $project->smtp_encryption) == 'tls' ? 'selected' : '' }}>TLS</option>
+                            <option value="ssl" {{ old('smtp_encryption', $project->smtp_encryption) == 'ssl' ? 'selected' : '' }}>SSL</option>
+                        </select>
+                        @error('smtp_encryption') <div class="error-message">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label for="mail_from_address">Absender E-Mail (From Address)</label>
+                            <input type="email" name="mail_from_address" id="mail_from_address" class="form-control" value="{{ old('mail_from_address', $project->mail_from_address) }}">
+                            @error('mail_from_address') <div class="error-message">{{ $message }}</div> @enderror
+                        </div>
+                        <div class="form-group">
+                            <label for="mail_from_name">Absender Name (From Name)</label>
+                            <input type="text" name="mail_from_name" id="mail_from_name" class="form-control" value="{{ old('mail_from_name', $project->mail_from_name) }}">
+                            @error('mail_from_name') <div class="error-message">{{ $message }}</div> @enderror
+                        </div>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="email">E-Mail</label>
-                    <input type="email" name="email" id="email" class="form-control" value="{{ old('email', $project->email) }}">
-                    @error('email') <div class="error-message">{{ $message }}</div> @enderror
+                <div style="margin-top: 40px;">
+                    <button type="submit" class="btn-save">Änderungen speichern</button>
+                    <a href="{{ route('companies.index') }}" class="btn-cancel">Abbrechen</a>
                 </div>
-
-                <div class="form-group">
-                    <label for="inhaber">Inhaber</label>
-                    <input type="text" name="inhaber" id="inhaber" class="form-control" value="{{ old('inhaber', $project->inhaber) }}">
-                    @error('inhaber') <div class="error-message">{{ $message }}</div> @enderror
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <div class="form-group">
-                        <label for="ust_id">USt-IdNr.</label>
-                        <input type="text" name="ust_id" id="ust_id" class="form-control" value="{{ old('ust_id', $project->ust_id) }}">
-                        @error('ust_id') <div class="error-message">{{ $message }}</div> @enderror
-                    </div>
-                    <div class="form-group">
-                        <label for="handelsregister">Handelsregister</label>
-                        <input type="text" name="handelsregister" id="handelsregister" class="form-control" value="{{ old('handelsregister', $project->handelsregister) }}">
-                        @error('handelsregister') <div class="error-message">{{ $message }}</div> @enderror
-                    </div>
-                </div>
-
-                <h2>E-Mail-Konfiguration</h2>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <div class="form-group">
-                        <label for="smtp_host">SMTP Host</label>
-                        <input type="text" name="smtp_host" id="smtp_host" class="form-control" value="{{ old('smtp_host', $project->smtp_host) }}" placeholder="z.B. smtp.ionos.de">
-                        @error('smtp_host') <div class="error-message">{{ $message }}</div> @enderror
-                    </div>
-                    <div class="form-group">
-                        <label for="smtp_port">SMTP Port</label>
-                        <input type="number" name="smtp_port" id="smtp_port" class="form-control" value="{{ old('smtp_port', $project->smtp_port) }}" placeholder="587">
-                        @error('smtp_port') <div class="error-message">{{ $message }}</div> @enderror
-                    </div>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <div class="form-group">
-                        <label for="smtp_user">SMTP Benutzername</label>
-                        <input type="text" name="smtp_user" id="smtp_user" class="form-control" value="{{ old('smtp_user', $project->smtp_user) }}">
-                        @error('smtp_user') <div class="error-message">{{ $message }}</div> @enderror
-                    </div>
-                    <div class="form-group">
-                        <label for="smtp_password">SMTP Passwort</label>
-                        <input type="password" name="smtp_password" id="smtp_password" class="form-control" value="{{ old('smtp_password', $project->smtp_password) }}">
-                        @error('smtp_password') <div class="error-message">{{ $message }}</div> @enderror
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="smtp_encryption">SMTP Verschlüsselung</label>
-                    <select name="smtp_encryption" id="smtp_encryption" class="form-control">
-                        <option value="" {{ old('smtp_encryption', $project->smtp_encryption) == '' ? 'selected' : '' }}>Keine</option>
-                        <option value="tls" {{ old('smtp_encryption', $project->smtp_encryption) == 'tls' ? 'selected' : '' }}>TLS</option>
-                        <option value="ssl" {{ old('smtp_encryption', $project->smtp_encryption) == 'ssl' ? 'selected' : '' }}>SSL</option>
-                    </select>
-                    @error('smtp_encryption') <div class="error-message">{{ $message }}</div> @enderror
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <div class="form-group">
-                        <label for="mail_from_address">Absender E-Mail (From Address)</label>
-                        <input type="email" name="mail_from_address" id="mail_from_address" class="form-control" value="{{ old('mail_from_address', $project->mail_from_address) }}">
-                        @error('mail_from_address') <div class="error-message">{{ $message }}</div> @enderror
-                    </div>
-                    <div class="form-group">
-                        <label for="mail_from_name">Absender Name (From Name)</label>
-                        <input type="text" name="mail_from_name" id="mail_from_name" class="form-control" value="{{ old('mail_from_name', $project->mail_from_name) }}">
-                        @error('mail_from_name') <div class="error-message">{{ $message }}</div> @enderror
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-save">Änderungen speichern</button>
-                <a href="{{ route('companies.index') }}" class="btn-cancel">Abbrechen</a>
             </form>
         </div>
     </div>
@@ -384,6 +440,23 @@
                 colorPicker.value = val;
             }
         });
+
+        function toggleSection(id) {
+            const content = document.getElementById(id);
+            const header = content.previousElementSibling;
+            content.classList.toggle('active');
+            header.classList.toggle('active');
+        }
+
+        function sendTestMail(event) {
+            event.stopPropagation();
+            const email = prompt("An welche Adresse soll die Test-Mail gesendet werden?", "heidrich@frank.group");
+            if (email && email.includes('@')) {
+                window.location.href = "{{ route('test.mail', $project->id) }}?to=" + encodeURIComponent(email);
+            } else if (email) {
+                alert("Bitte eine gültige E-Mail-Adresse eingeben.");
+            }
+        }
     </script>
 </body>
 </html>

@@ -261,11 +261,6 @@
                                 </div>
                             </div>
                             <div style="display: flex; gap: 10px;">
-                                @if($project->smtp_host)
-                                    <a href="{{ route('test.mail', $project->id) }}" class="btn-edit" title="Test-Mail senden" style="background: rgba(29, 161, 242, 0.2); color: #1DA1F2;" onclick="return confirm('Test-Mail für {{ $project->name }} an heidrich@frank.group senden?')">
-                                        <i class="fas fa-paper-plane"></i>
-                                    </a>
-                                @endif
                                 <a href="{{ route('companies.edit', $project->id) }}" class="btn-edit" title="Bearbeiten">
                                     <i class="fas fa-edit"></i>
                                 </a>
