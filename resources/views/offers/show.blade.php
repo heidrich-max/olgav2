@@ -572,37 +572,40 @@
                             </tfoot>
                         </table>
                     </div>
-                <div class="history-section">
-                    <div class="history-card">
-                        <h2><i class="fas fa-history"></i> Verlauf & Notizen</h2>
-                        
-                        <div class="note-form">
-                            <form action="{{ route('offers.note.store', $offer->id) }}" method="POST">
-                                @csrf
-                                <textarea name="information" placeholder="Neue Notiz oder Historien-Eintrag verfassen..." required></textarea>
-                                <button type="submit" class="submit-note-btn">
-                                    <i class="fas fa-paper-plane"></i> Eintrag speichern
-                                </button>
-                            </form>
-                        </div>
+                </div>
 
-                        <div class="history-timeline">
-                            @forelse($history as $entry)
-                            <div class="history-item">
-                                <div class="history-item-header">
-                                    <span class="history-author">
-                                        <i class="fas fa-user-circle"></i> {{ $entry->user->name_komplett ?? 'Unbekannter Bearbeiter' }}
-                                    </span>
-                                    <span class="history-time">
-                                        {{ \Carbon\Carbon::parse($entry->timestamp)->format('d.m.Y H:i') }} Uhr
-                                    </span>
-                                </div>
-                                <div class="history-content">{!! nl2br(e($entry->information)) !!}</div>
+                <!-- Verlauf & Notizen -->
+                <div class="card glass-card history-card" style="grid-column: span 2;">
+                    <div class="card-header">
+                        <h2><i class="fas fa-history"></i> Verlauf & Notizen</h2>
+                    </div>
+                    
+                    <div class="note-form">
+                        <form action="{{ route('offers.note.store', $offer->id) }}" method="POST">
+                            @csrf
+                            <textarea name="information" placeholder="Neue Notiz oder Historien-Eintrag verfassen..." required></textarea>
+                            <button type="submit" class="submit-note-btn">
+                                <i class="fas fa-paper-plane"></i> Eintrag speichern
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="history-timeline">
+                        @forelse($history as $entry)
+                        <div class="history-item">
+                            <div class="history-item-header">
+                                <span class="history-author">
+                                    <i class="fas fa-user-circle"></i> {{ $entry->user->name_komplett ?? 'Unbekannter Bearbeiter' }}
+                                </span>
+                                <span class="history-time">
+                                    {{ \Carbon\Carbon::parse($entry->timestamp)->format('d.m.Y H:i') }} Uhr
+                                </span>
                             </div>
-                            @empty
-                            <p style="color: var(--text-muted); text-align: center; padding: 20px;">Noch kein Verlauf für dieses Angebot vorhanden.</p>
-                            @endforelse
+                            <div class="history-content">{!! nl2br(e($entry->information)) !!}</div>
                         </div>
+                        @empty
+                        <p style="color: var(--text-muted); text-align: center; padding: 20px;">Noch kein Verlauf für dieses Angebot vorhanden.</p>
+                        @endforelse
                     </div>
                 </div>
             </div>
