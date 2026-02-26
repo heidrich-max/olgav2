@@ -162,7 +162,6 @@
         .items-table th { text-align: left; color: var(--text-muted); padding: 12px 15px; font-weight: 500; border-bottom: 1px solid var(--glass-border); font-size: 0.85rem; }
         .items-table td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
         .items-table .amount { text-align: right; }
-        .art-nr { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; font-family: monospace; }
         .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; border: 1px solid transparent; }
 
         .summary-row td { padding: 10px 15px; text-align: right; border: none; color: var(--text-muted); }
@@ -548,7 +547,7 @@
                                 @forelse($items as $index => $item)
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
-                                    <td><code class="art-nr">{{ $item->art_nr }}</code></td>
+                                    <td>{{ $item->art_nr }}</td>
                                     <td>{{ number_format($item->menge, 0, ',', '.') }} {{ $item->einheit }}</td>
                                     <td>{!! nl2br(e($item->bezeichnung)) !!}</td>
                                     <td class="amount">{{ number_format($item->einzelpreis_netto, 2, ',', '.') }} €</td>
