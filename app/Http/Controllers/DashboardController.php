@@ -405,6 +405,14 @@ class DashboardController extends Controller
         $companyName = ($companyId == 1) ? 'Branding Europe GmbH' : 'Europe Pen GmbH';
         $accentColor = ($companyId == 1) ? '#1DA1F2' : '#0088CC';
 
+        // Status-Farben formatieren (analog zum Dashboard)
+        if (isset($offer->letzter_status_bg_hex) && $offer->letzter_status_bg_hex && strpos($offer->letzter_status_bg_hex, '#') !== 0) {
+            $offer->letzter_status_bg_hex = '#' . $offer->letzter_status_bg_hex;
+        }
+        if (isset($offer->letzter_status_farbe_hex) && $offer->letzter_status_farbe_hex && strpos($offer->letzter_status_farbe_hex, '#') !== 0) {
+            $offer->letzter_status_farbe_hex = '#' . $offer->letzter_status_farbe_hex;
+        }
+
         // Historie laden
         $history = AngebotInformation::with('user')
             ->where('angebot_id', $offer->id)

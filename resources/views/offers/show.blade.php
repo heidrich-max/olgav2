@@ -346,6 +346,19 @@
         .modal-footer {
             display: flex; justify-content: flex-end; gap: 15px; margin-top: 30px;
         }
+        .status-badge-header {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-left: 10px;
+            vertical-align: middle;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
     </style>
 </head>
 <body>
@@ -418,7 +431,14 @@
         <div class="container offer-detail">
             <div class="header-actions">
                 <div class="welcome-msg">
-                    <h1>{{ $offer->angebotsnummer }} / {{ $offer->benutzer_kuerzel }}</h1>
+                    <h1>
+                        {{ $offer->angebotsnummer }} / {{ $offer->benutzer_kuerzel }}
+                        @if($offer->letzter_status_name)
+                            <span class="status-badge-header" style="background-color: {{ $offer->letzter_status_bg_hex ?? 'rgba(255,255,255,0.1)' }}; color: {{ $offer->letzter_status_farbe_hex ?? '#fff' }};">
+                                {{ str_replace('Status ', '', $offer->letzter_status_name) }}
+                            </span>
+                        @endif
+                    </h1>
                 </div>
                 <div class="action-buttons">
                     @php
