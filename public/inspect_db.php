@@ -27,6 +27,15 @@ try {
         }
         
         if ($isInteresting) {
+            echo "<h1>Transferred Data Verification</h1>";
+    $stmt = $pdo->query("SELECT name, strasse, plz, ort, telefon, ust_id FROM auftrag_projekt_firma");
+    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    echo "<table border='1'><tr><th>Name</th><th>Strasse</th><th>PLZ</th><th>Ort</th><th>Tel</th><th>UStID</th></tr>";
+    foreach ($data as $row) {
+        echo "<tr><td>{$row['name']}</td><td>{$row['strasse']}</td><td>{$row['plz']}</td><td>{$row['ort']}</td><td>{$row['telefon']}</td><td>{$row['ust_id']}</td></tr>";
+    }
+    echo "</table>";
+    echo "<hr>";
             echo "<h2>Columns in $table</h2>";
             $stmt = $pdo->query("DESCRIBE $table");
             $cols = $stmt->fetchAll(PDO::FETCH_ASSOC);
