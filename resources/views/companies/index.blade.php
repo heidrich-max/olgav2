@@ -253,9 +253,16 @@
                                     </div>
                                 </div>
                             </div>
-                            <a href="{{ route('companies.edit', $project->id) }}" class="btn-edit" title="Bearbeiten">
-                                <i class="fas fa-edit"></i>
-                            </a>
+                            <div style="display: flex; gap: 10px;">
+                                @if($project->smtp_host)
+                                    <a href="{{ route('test.mail', $project->id) }}" class="btn-edit" title="Test-Mail senden" style="background: #1DA1F2; color: white;" onclick="return confirm('Test-Mail für {{ $project->name }} an heidrich@frank.group senden?')">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </a>
+                                @endif
+                                <a href="{{ route('companies.edit', $project->id) }}" class="btn-edit" title="Bearbeiten">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </div>
                         </div>
                     @endforeach
                 </div>
