@@ -6,10 +6,8 @@ try {
     $pdo = new PDO('mysql:host=127.0.0.1;port=3306;dbname=cms_frankgroup', 'cms_frankgroup', 'tpU~1t787');
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    echo "<h1>Inspection of 'auftrag_projekt'</h1>";
+    echo "<h1>Inspection of '$tableName'</h1>";
 
-    $tableName = 'auftrag_projekt_firma';
-    
     // Check if table exists
     $stmt = $pdo->query("SHOW TABLES LIKE '$tableName'");
     if ($stmt->rowCount() == 0) {
