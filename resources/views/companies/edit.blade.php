@@ -20,31 +20,73 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at top left, #1a2a44, #0f172a, #070b14);
+            background: url('/img/login_background.webp') no-repeat center center fixed;
+            background-size: cover;
             color: var(--text-main);
             min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        #network-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
         }
 
         .navbar {
+            position: sticky; top: 0; z-index: 100;
             background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(15px);
             padding: 12px 40px;
             display: flex; justify-content: space-between; align-items: center;
             border-bottom: 1px solid var(--glass-border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
 
+        .nav-left { display: flex; align-items: center; gap: 30px; }
         .navbar img { height: 38px; }
 
-        .container { padding: 40px; max-width: 800px; margin: 0 auto; }
+        /* User Dropdown */
+        .user-dropdown { position: relative; }
+        .user-btn {
+            background: none; border: none;
+            color: var(--text-main); cursor: pointer;
+            display: flex; align-items: center; gap: 10px;
+            font-size: 0.95rem; font-family: 'Inter', sans-serif;
+            padding: 8px 12px; border-radius: 10px;
+            transition: background 0.2s, border-color 0.2s;
+            border: 1px solid transparent;
+        }
+        .user-btn:hover { background: rgba(255,255,255,0.08); border-color: var(--glass-border); }
+        .user-dropdown-menu {
+            display: none; position: absolute; top: 110%; right: 0;
+            background: #1e293b; min-width: 240px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border-radius: 12px; overflow: hidden;
+            border: 1px solid var(--glass-border); z-index: 200;
+        }
+        .user-dropdown.active .user-dropdown-menu { display: block; }
+        .user-dropdown-header {
+            padding: 16px 20px;
+            background: rgba(255,255,255,0.04);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .user-dropdown-item {
+            padding: 12px 20px; color: var(--text-muted); text-decoration: none;
+            display: flex; align-items: center; gap: 12px; font-size: 0.9rem;
+            transition: background 0.2s, color 0.2s;
+        }
+        .user-dropdown-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
+        .user-dropdown-divider { height: 1px; background: var(--glass-border); margin: 6px 0; }
+
+        .container { position: relative; z-index: 10; padding: 40px; max-width: 900px; margin: 0 auto; }
 
         .header-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             margin-bottom: 30px;
         }
 
-        h1 { font-size: 2rem; font-weight: 700; background: linear-gradient(90deg, #fff, var(--primary-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        h1 { font-size: 2.2rem; font-weight: 700; background: linear-gradient(90deg, #fff, var(--primary-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
         .btn-back {
             background: var(--glass-bg);
@@ -114,24 +156,58 @@
             width: 100%;
             margin-top: 10px;
         }
-        .btn-save:hover { opacity: 0.9; transform: translateY(-2px); }
+        .btn-save:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(29,161,242,0.4); }
+
+        .btn-cancel {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        .btn-cancel:hover { color: #fca5a5; }
 
         .error-message {
             color: #fca5a5;
             font-size: 0.8rem;
             margin-top: 5px;
         }
+
+        h2 { margin: 30px 0 20px 0; font-size: 1.5rem; color: var(--primary-accent); border: none; padding: 0; }
     </style>
 </head>
 <body>
+    <canvas id="network-overlay"></canvas>
+
     <nav class="navbar">
-        <img src="/logo/olga_neu.svg" alt="Frank Group">
+        <div class="nav-left">
+            <img src="/logo/olga_neu.svg" alt="Frank Group">
+        </div>
+        <div class="user-dropdown" id="userDropdown">
+            <button class="user-btn" id="userBtn">
+                <i class="fas fa-user-circle" style="color: var(--primary-accent); font-size: 1.1rem;"></i>
+                {{ $user->name_komplett }}
+                <i class="fas fa-chevron-down" style="font-size: 0.65rem; color: var(--text-muted);"></i>
+            </button>
+            <div class="user-dropdown-menu">
+                <div class="user-dropdown-header">
+                    <div style="font-weight: 600; color: #fff;">{{ $user->name_komplett }}</div>
+                </div>
+                <a href="{{ route('dashboard') }}" class="user-dropdown-item"> <i class="fas fa-home"></i> Dashboard </a>
+                <a href="{{ route('companies.index') }}" class="user-dropdown-item"> <i class="fas fa-building"></i> Firmen verwalten </a>
+                <div class="user-dropdown-divider"></div>
+                <a href="#" class="user-dropdown-item logout" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    <i class="fas fa-sign-out-alt"></i> Abmelden
+                </a>
+            </div>
+        </div>
     </nav>
 
     <div class="container">
         <div class="header-section">
             <h1>Projekt bearbeiten</h1>
-            <a href="{{ route('companies.index') }}" class="btn-back"><i class="fas fa-arrow-left"></i> Abbrechen</a>
         </div>
 
         <div class="card">
@@ -227,7 +303,7 @@
                     </div>
                 </div>
 
-                <h2 style="margin: 30px 0 20px 0; font-size: 1.5rem; color: var(--primary-accent);">E-Mail-Konfiguration</h2>
+                <h2>E-Mail-Konfiguration</h2>
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                     <div class="form-group">
@@ -279,11 +355,28 @@
                 </div>
 
                 <button type="submit" class="btn-save">Änderungen speichern</button>
+                <a href="{{ route('companies.index') }}" class="btn-cancel">Abbrechen</a>
             </form>
         </div>
     </div>
 
+    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;"> @csrf </form>
+
     <script>
+        const userBtn = document.getElementById('userBtn');
+        const userDropdown = document.getElementById('userDropdown');
+
+        if(userBtn) {
+            userBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userDropdown.classList.toggle('active');
+            });
+        }
+
+        document.addEventListener('click', () => {
+            if(userDropdown) userDropdown.classList.remove('active');
+        });
+
         const colorPicker = document.getElementById('color_picker');
         const colorInput = document.getElementById('bg');
 
@@ -297,6 +390,38 @@
                 colorPicker.value = val;
             }
         });
+
+        const canvas = document.getElementById('network-overlay');
+        const ctx = canvas.getContext('2d');
+        let width, height, particles = [];
+        function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; initParticles(); }
+        class Particle {
+            constructor() { this.init(); }
+            init() { this.x = Math.random() * width; this.y = Math.random() * height; this.vx = (Math.random() - 0.5) * 0.3; this.vy = (Math.random() - 0.5) * 0.3; this.radius = 1.2; }
+            update() { this.x += this.vx; this.y += this.vy; if (this.x < 0 || this.x > width) this.vx *= -1; if (this.y < 0 || this.y > height) this.vy *= -1; }
+            draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = 'rgba(255, 255, 255, 0.3)'; ctx.fill(); }
+        }
+        function initParticles() { particles = []; for (let i = 0; i < 60; i++) particles.push(new Particle()); }
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach((p, i) => {
+                p.update(); p.draw();
+                for (let j = i + 1; j < particles.length; j++) {
+                    const p2 = particles[j];
+                    const dx = p.x - p2.x; const dy = p.y - p2.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 150) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 * (1 - dist / 150)})`;
+                        ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                }
+            });
+            requestAnimationFrame(animate);
+        }
+        window.addEventListener('resize', resize);
+        resize(); animate();
     </script>
 </body>
 </html>

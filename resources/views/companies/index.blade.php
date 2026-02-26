@@ -20,10 +20,18 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at top left, #1a2a44, #0f172a, #070b14);
+            background: url('/img/login_background.webp') no-repeat center center fixed;
+            background-size: cover;
             color: var(--text-main);
             min-height: 100vh;
             overflow-x: hidden;
+        }
+
+        #network-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
         }
 
         .navbar {
@@ -72,30 +80,14 @@
         .user-dropdown-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
         .user-dropdown-divider { height: 1px; background: var(--glass-border); margin: 6px 0; }
 
-        .container { position: relative; z-index: 10; padding: 40px; max-width: 1200px; margin: 0 auto; }
+        .container { position: relative; z-index: 10; padding: 40px; max-width: 1400px; margin: 0 auto; }
 
         .header-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             margin-bottom: 30px;
         }
 
-        h1 { font-size: 2rem; font-weight: 700; background: linear-gradient(90deg, #fff, var(--primary-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        h1 { font-size: 2.2rem; font-weight: 700; background: linear-gradient(90deg, #fff, var(--primary-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        .btn-back {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 600;
-            display: flex; align-items: center; gap: 8px;
-            transition: all 0.3s ease;
-        }
-        .btn-back:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); }
-
         .card {
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
@@ -118,7 +110,7 @@
 
         .project-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
             gap: 20px;
         }
 
@@ -146,37 +138,50 @@
         }
 
         .color-preview {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: white;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
         .project-name {
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 1.05rem;
         }
 
-        .project-kuerzel {
+        .project-details {
             font-size: 0.8rem;
             color: var(--text-muted);
-            margin-top: 2px;
+            margin-top: 4px;
+            line-height: 1.4;
         }
 
         .btn-edit {
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
             color: var(--text-muted);
-            font-size: 1.1rem;
-            transition: color 0.2s;
+            font-size: 1rem;
+            transition: all 0.2s;
+            text-decoration: none;
         }
 
         .btn-edit:hover {
-            color: var(--primary-accent);
+            background: rgba(255,255,255,0.1);
+            border-color: var(--primary-accent);
+            color: var(--text-main);
+            transform: scale(1.05);
         }
 
         .alert-success {
@@ -186,11 +191,14 @@
             padding: 15px 20px;
             border-radius: 12px;
             margin-bottom: 30px;
+            backdrop-filter: blur(10px);
         }
 
     </style>
 </head>
 <body>
+    <canvas id="network-overlay"></canvas>
+
     <nav class="navbar">
         <div class="nav-left">
             <img src="/logo/olga_neu.svg" alt="Frank Group">
@@ -224,7 +232,6 @@
 
         <div class="header-section">
             <h1>Firmen & Projekte verwalten</h1>
-            <a href="{{ route('dashboard') }}" class="btn-back"><i class="fas fa-arrow-left"></i> Zurück</a>
         </div>
 
         @foreach($groupedProjects as $firmaId => $projects)
@@ -243,19 +250,19 @@
                                 </div>
                                 <div>
                                     <div class="project-name">{{ $project->name }}</div>
-                                    <div class="project-kuerzel">
+                                    <div class="project-details">
                                         @if($project->co) c/o {{ $project->co }}<br> @endif
                                         {{ $project->strasse }}, {{ $project->plz }} {{ $project->ort }}<br>
                                         {{ $project->email }} | {{ $project->telefon }}
                                         @if($project->smtp_host)
-                                            <br><span style="font-size: 0.75rem; color: #1DA1F2;"><i class="fas fa-server"></i> SMTP: {{ $project->smtp_host }}</span>
+                                            <br><span style="font-size: 0.75rem; color: var(--primary-accent);"><i class="fas fa-server"></i> SMTP: {{ $project->smtp_host }}</span>
                                         @endif
                                     </div>
                                 </div>
                             </div>
                             <div style="display: flex; gap: 10px;">
                                 @if($project->smtp_host)
-                                    <a href="{{ route('test.mail', $project->id) }}" class="btn-edit" title="Test-Mail senden" style="background: #1DA1F2; color: white;" onclick="return confirm('Test-Mail für {{ $project->name }} an heidrich@frank.group senden?')">
+                                    <a href="{{ route('test.mail', $project->id) }}" class="btn-edit" title="Test-Mail senden" style="background: rgba(29, 161, 242, 0.2); color: #1DA1F2;" onclick="return confirm('Test-Mail für {{ $project->name }} an heidrich@frank.group senden?')">
                                         <i class="fas fa-paper-plane"></i>
                                     </a>
                                 @endif
@@ -286,6 +293,40 @@
         document.addEventListener('click', () => {
             if(userDropdown) userDropdown.classList.remove('active');
         });
+
+        const canvas = document.getElementById('network-overlay');
+        const ctx = canvas.getContext('2d');
+        let width, height, particles = [];
+        function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; initParticles(); }
+        class Particle {
+            constructor() { this.init(); }
+            init() { this.x = Math.random() * width; this.y = Math.random() * height; this.vx = (Math.random() - 0.5) * 0.3; this.vy = (Math.random() - 0.5) * 0.3; this.radius = 1.2; }
+            update() { this.x += this.vx; this.y += this.vy; if (this.x < 0 || this.x > width) this.vx *= -1; if (this.y < 0 || this.y > height) this.vy *= -1; }
+            draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = 'rgba(255, 255, 255, 0.3)'; ctx.fill(); }
+        }
+        function initParticles() { particles = []; for (let i = 0; i < 80; i++) particles.push(new Particle()); }
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach((p, i) => {
+                p.update(); p.draw();
+                for (let j = i + 1; j < particles.length; j++) {
+                    const p2 = particles[j];
+                    const dx = p.x - p2.x; const dy = p.y - p2.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 150) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 * (1 - dist / 150)})`;
+                        ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                }
+            });
+            requestAnimationFrame(animate);
+        }
+        window.addEventListener('resize', resize);
+        resize(); animate();
     </script>
+</body>
+</html>
 </body>
 </html>
