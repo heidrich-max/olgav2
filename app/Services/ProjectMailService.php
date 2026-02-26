@@ -25,11 +25,11 @@ class ProjectMailService
             'transport' => 'smtp',
             'host' => $project->smtp_host,
             'port' => $project->smtp_port ?? 587,
-            'encryption' => $project->smtp_encryption ?? 'tls',
+            'encryption' => $project->smtp_encryption ?: null,
             'username' => $project->smtp_user,
             'password' => $project->smtp_password,
             'timeout' => null,
-            'local_domain' => env('MAIL_EHLO_DOMAIN'),
+            'local_domain' => env('MAIL_EHLO_DOMAIN') ?: 'dev.frankgroup.net',
         ];
 
         Config::set('mail.mailers.project_mailer', $config);

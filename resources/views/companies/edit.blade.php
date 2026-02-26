@@ -373,7 +373,7 @@
                         </div>
                         <div class="form-group">
                             <label for="smtp_password">SMTP Passwort</label>
-                            <input type="password" name="smtp_password" id="smtp_password" class="form-control" value="{{ old('smtp_password', $project->smtp_password) }}">
+                            <input type="password" name="smtp_password" id="smtp_password" class="form-control" placeholder="Nur ausfüllen zum Ändern">
                             @error('smtp_password') <div class="error-message">{{ $message }}</div> @enderror
                         </div>
                     </div>

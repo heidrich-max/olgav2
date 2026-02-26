@@ -69,6 +69,11 @@ class CompanyManagementController extends Controller
             $validated['bg'] = '#' . $validated['bg'];
         }
 
+        // Prevent overwriting password if left empty (standard practice for edit forms)
+        if (!isset($validated['smtp_password']) || empty($validated['smtp_password'])) {
+            unset($validated['smtp_password']);
+        }
+
         $project->update($validated);
 
         return redirect()->route('companies.index')->with('success', 'Projekt erfolgreich aktualisiert.');
