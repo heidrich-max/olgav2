@@ -243,7 +243,10 @@
                                 </div>
                                 <div>
                                     <div class="project-name">{{ $project->name }}</div>
-                                    <div class="project-kuerzel">ID: {{ $project->id }} | Firma ID: {{ $project->firma_id }}</div>
+                                    <div class="project-kuerzel">
+                                        {{ $project->strasse }}, {{ $project->plz }} {{ $project->ort }}<br>
+                                        {{ $project->email }} | {{ $project->telefon }}
+                                    </div>
                                 </div>
                             </div>
                             <a href="{{ route('companies.edit', $project->id) }}" class="btn-edit" title="Bearbeiten">

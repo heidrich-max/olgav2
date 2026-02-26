@@ -170,6 +170,57 @@
                     @error('bg') <div class="error-message">{{ $message }}</div> @enderror
                 </div>
 
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label for="strasse">Straße</label>
+                        <input type="text" name="strasse" id="strasse" class="form-control" value="{{ old('strasse', $project->strasse) }}">
+                        @error('strasse') <div class="error-message">{{ $message }}</div> @enderror
+                    </div>
+                    <div class="form-group">
+                        <label for="ort">Ort</label>
+                        <input type="text" name="ort" id="ort" class="form-control" value="{{ old('ort', $project->ort) }}">
+                        @error('ort') <div class="error-message">{{ $message }}</div> @enderror
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 120px 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label for="plz">PLZ</label>
+                        <input type="text" name="plz" id="plz" class="form-control" value="{{ old('plz', $project->plz) }}">
+                        @error('plz') <div class="error-message">{{ $message }}</div> @enderror
+                    </div>
+                    <div class="form-group">
+                        <label for="telefon">Telefon</label>
+                        <input type="text" name="telefon" id="telefon" class="form-control" value="{{ old('telefon', $project->telefon) }}">
+                        @error('telefon') <div class="error-message">{{ $message }}</div> @enderror
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">E-Mail</label>
+                    <input type="email" name="email" id="email" class="form-control" value="{{ old('email', $project->email) }}">
+                    @error('email') <div class="error-message">{{ $message }}</div> @enderror
+                </div>
+
+                <div class="form-group">
+                    <label for="inhaber">Inhaber</label>
+                    <input type="text" name="inhaber" id="inhaber" class="form-control" value="{{ old('inhaber', $project->inhaber) }}">
+                    @error('inhaber') <div class="error-message">{{ $message }}</div> @enderror
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group">
+                        <label for="ust_id">USt-IdNr.</label>
+                        <input type="text" name="ust_id" id="ust_id" class="form-control" value="{{ old('ust_id', $project->ust_id) }}">
+                        @error('ust_id') <div class="error-message">{{ $message }}</div> @enderror
+                    </div>
+                    <div class="form-group">
+                        <label for="handelsregister">Handelsregister</label>
+                        <input type="text" name="handelsregister" id="handelsregister" class="form-control" value="{{ old('handelsregister', $project->handelsregister) }}">
+                        @error('handelsregister') <div class="error-message">{{ $message }}</div> @enderror
+                    </div>
+                </div>
+
                 <button type="submit" class="btn-save">Änderungen speichern</button>
             </form>
         </div>

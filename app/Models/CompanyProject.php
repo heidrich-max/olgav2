@@ -15,5 +15,13 @@ class CompanyProject extends Model
         'firma_id',
         'name_kuerzel',
         'bg',
+        'strasse',
+        'plz',
+        'ort',
+        'telefon',
+        'email',
+        'inhaber',
+        'ust_id',
+        'handelsregister',
     ];
 }
