@@ -27,9 +27,9 @@ try {
     $columns = array_keys($row);
     $output = "Spalten in Kunde.lvAngebote:\n" . implode("\n", $columns);
 
-    file_put_contents(storage_path('logs/jtl_columns.txt'), $output);
+    file_put_contents(__DIR__ . '/jtl_columns.txt', $output);
     
-    echo "<h1>Erfolg!</h1><p>Spalten wurden in storage/logs/jtl_columns.txt gespeichert.</p>";
+    echo "<h1>Erfolg!</h1><p>Spalten wurden in public/jtl_columns.txt gespeichert.</p>";
 
 } catch (Exception $e) {
     echo "<h1>Fehler</h1><pre>" . $e->getMessage() . "</pre>";
