@@ -5,6 +5,11 @@ use Illuminate\Support\Facades\DB;
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
 try {
+    $columns = DB::select('DESCRIBE auftrag_projekt_firma');
+    echo "<h1>Struktur von auftrag_projekt_firma:</h1><pre>";
+    print_r($columns);
+    echo "</pre>";
+
     $tables = DB::select('SHOW TABLES');
     echo "<h1>Tabellen:</h1><pre>";
     print_r($tables);
