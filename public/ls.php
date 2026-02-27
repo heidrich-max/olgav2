@@ -4,10 +4,10 @@ echo "<pre>";
 print_r($files);
 echo "</pre>";
 
-if (is_dir(__DIR__ . '/public')) {
-    echo "<h3>Public Directory:</h3>";
-    $filesPublic = scandir(__DIR__ . '/public');
+if (is_dir(__DIR__ . '/database/migrations')) {
+    echo "<h3>Migrations Directory:</h3>";
+    $filesMig = scandir(__DIR__ . '/database/migrations');
     echo "<pre>";
-    print_r($filesPublic);
+    print_r($filesMig);
     echo "</pre>";
 }
