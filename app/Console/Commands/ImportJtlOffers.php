@@ -85,7 +85,9 @@ class ImportJtlOffers extends Command
                            t1.cRechnungsadresseFirma, t1.cStatustext, t1.fAngebotswert, t1.cFirmenname,
                            t1.cRechnungsadresseStrasse, t1.cRechnungsadressePlz, t1.cRechnungsadresseOrt, 
                            t1.cRechnungsadresseLand, t1.cRechnungsadresseMail, t1.cRechnungsadresseKundennummer,
-                           t1.cRechnungsadresseTelefon,
+                           t1.cRechnungsadresseTelefon, t1.cRechnungsadresseMobilTelefon,
+                           t1.cRechnungsadresseAnrede, t1.cRechnungsadresseTitel,
+                           t1.cRechnungsadresseVorname, t1.cRechnungsadresseNachname,
                            t2.kAuftrag as ConvertedOrderId
                     FROM Kunde.lvAngebote t1
                     LEFT JOIN Verkauf.lvAuftragsverwaltung t2 ON t2.cExterneAuftragsnummer = t1.cAngebotsnummer
@@ -133,6 +135,11 @@ class ImportJtlOffers extends Command
                         'kunde_land' => $obj['cRechnungsadresseLand'] ?? null,
                         'kunde_mail' => $obj['cRechnungsadresseMail'] ?? null,
                         'kunde_telefon' => $obj['cRechnungsadresseTelefon'] ?? null,
+                        'ansprechpartner_mobil' => $obj['cRechnungsadresseMobilTelefon'] ?? null,
+                        'ansprechpartner_anrede' => $obj['cRechnungsadresseAnrede'] ?? null,
+                        'ansprechpartner_titel' => $obj['cRechnungsadresseTitel'] ?? null,
+                        'ansprechpartner_vorname' => $obj['cRechnungsadresseVorname'] ?? null,
+                        'ansprechpartner_nachname' => $obj['cRechnungsadresseNachname'] ?? null,
                         'kunden_nr' => $obj['cRechnungsadresseKundennummer'] ?? null,
                         'gueltig_bis' => null,
                     ];
