@@ -350,6 +350,8 @@ class DashboardController extends Controller
 
     public function storeEvent(Request $request)
     {
+        \Log::info("Google Calendar Store Start", $request->all());
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'start_date' => 'required|date',
@@ -372,20 +374,24 @@ class DashboardController extends Controller
                 
                 $event->startDate = $start;
                 $event->endDate = $end;
+                \Log::info("Setting All Day Event: $start to $end");
             } else {
                 $start = Carbon::parse($validated['start_date'] . ' ' . $validated['start_time']);
                 $end = Carbon::parse($validated['start_date'] . ' ' . $validated['end_time']);
                 
                 $event->startDateTime = $start;
                 $event->endDateTime = $end;
+                \Log::info("Setting Timed Event: $start to $end");
             }
 
-            $event->save();
+            $savedEvent = $event->save();
+            \Log::info("Event saved successfully", ['id' => $savedEvent->id ?? 'unknown']);
 
             return response()->json(['success' => true, 'message' => 'Termin erfolgreich erstellt!']);
 
         } catch (\Exception $e) {
             \Log::error("Google Calendar Store Error: " . $e->getMessage());
+            \Log::error($e->getTraceAsString());
             return response()->json(['success' => false, 'message' => 'Fehler: ' . $e->getMessage()], 500);
         }
     }
