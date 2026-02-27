@@ -328,12 +328,14 @@ class DashboardController extends Controller
                 $start = $event->startDateTime ?? $event->startDate;
                 $end = $event->endDateTime ?? $event->endDate;
                 
+                $isAllDay = $event->isAllDayEvent();
+                
                 return [
                     'id' => $event->id ?? uniqid(),
                     'title' => $event->name,
-                    'start' => $start ? $start->toIso8601String() : null,
-                    'end' => $end ? $end->toIso8601String() : null,
-                    'allDay' => $event->isAllDayEvent(),
+                    'start' => $isAllDay ? $start->toDateString() : $start->toIso8601String(),
+                    'end' => $isAllDay ? $end->toDateString() : $end->toIso8601String(),
+                    'allDay' => $isAllDay,
                     'location' => $event->location ?? '',
                     'description' => $event->description ?? '',
                     'color' => '#1DA1F2', 
@@ -370,11 +372,11 @@ class DashboardController extends Controller
 
             if ($request->has('all_day') && $validated['all_day']) {
                 $start = Carbon::parse($validated['start_date'])->startOfDay();
-                $end = Carbon::parse($validated['start_date'])->endOfDay();
+                $end = Carbon::parse($validated['start_date'])->addDay()->startOfDay();
                 
                 $event->startDate = $start;
                 $event->endDate = $end;
-                \Log::info("Setting All Day Event: $start to $end");
+                \Log::info("Setting All Day Event: $start to $end (exclusive)");
             } else {
                 $start = Carbon::parse($validated['start_date'] . ' ' . $validated['start_time']);
                 $end = Carbon::parse($validated['start_date'] . ' ' . $validated['end_time']);
