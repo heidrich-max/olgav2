@@ -15,41 +15,35 @@ class EmailSettingsController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $projects = CompanyProject::all();
         
-        // Aktive Firma aus Session oder Cookie (wie im DashboardController)
+        // Wir nehmen das erste Projekt als Referenz für die aktuelle Vorlage
+        $template = CompanyProject::first();
+        
+        // Aktive Firma aus Session oder Cookie
         $companyId = session('active_company_id', request()->cookie('active_company_id', 1));
         $companyName = ($companyId == 1) ? 'Branding Europe GmbH' : 'Europe Pen GmbH';
         $accentColor = ($companyId == 1) ? '#1DA1F2' : '#0088CC';
 
-        return view('settings.email', compact('user', 'projects', 'companyName', 'accentColor'));
+        return view('settings.email', compact('user', 'template', 'companyName', 'accentColor'));
     }
 
     /**
-     * Update the email settings for a project.
+     * Update the email settings for ALL projects.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        $project = CompanyProject::findOrFail($id);
-        
         $validated = $request->validate([
             'reminder_subject' => 'nullable|string|max:255',
             'reminder_text' => 'nullable|string',
             'bcc_address' => 'nullable|email|max:255',
             'bcc_enabled' => 'nullable|boolean',
-            'smtp_host' => 'nullable|string|max:255',
-            'smtp_port' => 'nullable|integer',
-            'smtp_user' => 'nullable|string|max:255',
-            'smtp_password' => 'nullable|string|max:255',
-            'smtp_encryption' => 'nullable|string|max:20',
-            'mail_from_address' => 'nullable|email|max:255',
-            'mail_from_name' => 'nullable|string|max:255',
         ]);
 
         $validated['bcc_enabled'] = $request->has('bcc_enabled');
 
-        $project->update($validated);
+        // Alle Projekte mit der gleichen Vorlage aktualisieren
+        CompanyProject::query()->update($validated);
 
-        return back()->with('success', "Einstellungen für {$project->name} wurden gespeichert.");
+        return back()->with('success', "Die E-Mail Vorlage wurde global für alle Projekte gespeichert.");
     }
 }

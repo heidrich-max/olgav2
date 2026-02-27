@@ -82,17 +82,18 @@
         .user-dropdown-divider { height: 1px; background: var(--glass-border); margin: 6px 0; }
 
         .container {
-            max-width: 1200px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 0 20px 40px;
         }
 
         .header-actions {
             margin-bottom: 30px;
+            text-align: center;
         }
 
         h1 {
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: 700;
             margin-bottom: 10px;
         }
@@ -102,106 +103,114 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-            margin-bottom: 30px;
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         }
 
         .form-label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             color: var(--text-muted);
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.08em;
         }
 
-        .form-control, .form-select {
+        .form-control {
             width: 100%;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.2);
             border: 1px solid var(--glass-border);
             border-radius: 12px;
-            padding: 12px 15px;
+            padding: 15px 18px;
             color: white;
             font-family: inherit;
-            font-size: 0.95rem;
+            font-size: 1rem;
             transition: all 0.3s ease;
         }
 
-        .form-control:focus, .form-select:focus {
+        .form-control:focus {
             outline: none;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.3);
             border-color: var(--primary-accent);
-            box-shadow: 0 0 15px rgba(29, 161, 242, 0.2);
+            box-shadow: 0 0 20px rgba(29, 161, 242, 0.2);
         }
 
         .btn-primary {
-            background: var(--primary-accent);
+            background: linear-gradient(135deg, var(--primary-accent), #0d8ddb);
             border: none;
             color: white;
-            padding: 12px 25px;
-            border-radius: 12px;
-            font-weight: 600;
+            padding: 16px 30px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 1.1rem;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
             width: 100%;
+            margin-top: 20px;
+            box-shadow: 0 10px 20px rgba(29, 161, 242, 0.3);
         }
 
         .btn-primary:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 50px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(29, 161, 242, 0.4);
+            filter: brightness(1.1);
         }
 
         .alert-success {
-            background: rgba(16, 185, 129, 0.2);
+            background: rgba(16, 185, 129, 0.15);
             border: 1px solid rgba(16, 185, 129, 0.3);
             color: #34d399;
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-check-switch { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            background: rgba(255,255,255,0.05);
             padding: 15px 20px;
             border-radius: 12px;
-            margin-bottom: 30px;
+            border: 1px solid var(--glass-border);
+            cursor: pointer;
+        }
+        
+        .form-check-switch input {
+            cursor: pointer;
+        }
+        
+        code { 
+            background: rgba(29, 161, 242, 0.15); 
+            color: var(--primary-accent);
+            padding: 3px 7px; 
+            border-radius: 6px; 
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
         }
 
-        .row { display: flex; flex-wrap: wrap; margin: 0 -15px; }
-        .col-md-7 { flex: 0 0 58.333333%; padding: 0 15px; }
-        .col-md-5 { flex: 0 0 41.666667%; padding: 0 15px; }
-        .col-6 { flex: 0 0 50%; padding: 0 15px; }
-        .col-md-8 { flex: 0 0 66.666667%; padding: 0 15px; }
-        .col-md-4 { flex: 0 0 33.333333%; padding: 0 15px; }
-        
-        @media (max-width: 768px) {
-            .col-md-7, .col-md-5, .col-md-8, .col-md-4 { flex: 0 0 100%; }
+        .placeholder-info {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+            border-left: 4px solid var(--primary-accent);
         }
-
-        .mb-3 { margin-bottom: 1rem; }
-        .mb-4 { margin-bottom: 1.5rem; }
-        .mb-5 { margin-bottom: 3rem; }
-        .mt-4 { margin-top: 1.5rem; }
-        .my-4 { margin-top: 1.5rem; margin-bottom: 1.5rem; }
-        
-        .form-check-switch { display: flex; align-items: center; gap: 10px; }
-        .form-check-input { width: 40px; height: 20px; }
-        
-        code { background: rgba(255,255,255,0.1); padding: 2px 5px; border-radius: 4px; font-family: monospace; }
-        hr { border: 0; border-top: 1px solid var(--glass-border); }
     </style>
 </head>
 <body>
@@ -246,107 +255,68 @@
 
     <div class="container">
         <div class="header-actions">
-            <h1>E-Mail Erinnerungseinstellungen</h1>
-            <p style="color: var(--text-muted);">Konfigurieren Sie hier die Vorlagen und SMTP-Daten für jedes Projekt.</p>
+            <h1>E-Mail Benachrichtigung</h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem;">Verwalten Sie hier die globale Vorlage für alle Projekt-Erinnerungen.</p>
         </div>
 
         @if(session('success'))
             <div class="alert-success">
-                <i class="fas fa-check-circle"></i> {{ session('success') }}
+                <i class="fas fa-check-circle" style="font-size: 1.5rem;"></i>
+                <span>{{ session('success') }}</span>
             </div>
         @endif
 
-        @foreach($projects as $project)
-        <div class="glass-card mb-5">
-            <div class="card-header">
-                <h2 style="font-size: 1.5rem; display: flex; align-items: center; gap: 15px;">
-                    <span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:{{ $project->bg ?? 'var(--primary-accent)' }};"></span>
-                    {{ $project->name }}
-                </h2>
-                <span class="badge" style="background: {{ $project->bg ?? 'rgba(255,255,255,0.1)' }}; color: {{ $project->co ?? '#fff' }}">
-                    {{ $project->name_kuerzel }}
-                </span>
-            </div>
-            
-            <form action="{{ route('settings.email.update', $project->id) }}" method="POST">
+        <div class="glass-card">
+            <form action="{{ route('settings.email.update') }}" method="POST">
                 @csrf
                 @method('PUT')
                 
-                <div class="row">
-                    <div class="col-md-7">
-                        <h3 style="font-size: 1.1rem; margin-bottom: 20px;"><i class="fas fa-file-alt"></i> E-Mail Vorlage</h3>
-                        <div class="mb-3">
-                            <label class="form-label">E-Mail Betreff</label>
-                            <input type="text" name="reminder_subject" class="form-control" 
-                                   value="{{ $project->reminder_subject }}" placeholder="z.B. Zahlungserinnerung zu Angebot {angebotsnummer}">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">E-Mail Text</label>
-                            <textarea name="reminder_text" class="form-control" rows="8">{{ $project->reminder_text }}</textarea>
-                            <p style="color: var(--text-muted); font-size: 0.75rem; margin-top: 10px;">
-                                Verfügbare Platzhalter: <code>{angebotsnummer}</code>, <code>{erstelldatum}</code>, <code>{firmenname}</code>, <code>{summe}</code>
-                            </p>
-                        </div>
-                        <hr class="my-4">
-                        <h3 style="font-size: 1.1rem; margin-bottom: 20px;"><i class="fas fa-copy"></i> BCC Einstellungen</h3>
-                        <div class="row" style="align-items: center;">
-                            <div class="col-md-8">
-                                <label class="form-label">BCC Adresse</label>
-                                <input type="email" name="bcc_address" class="form-control" value="{{ $project->bcc_address }}" placeholder="buchhaltung@frankgroup.net">
-                            </div>
-                            <div class="col-md-4 mt-4">
-                                <div class="form-check-switch">
-                                    <input type="checkbox" name="bcc_enabled" value="1" id="bcc_{{ $project->id }}" {{ $project->bcc_enabled ? 'checked' : '' }}>
-                                    <label for="bcc_{{ $project->id }}" style="font-size: 0.9rem;">Aktiviert</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="mb-4">
+                    <label class="form-label">E-Mail Betreff</label>
+                    <input type="text" name="reminder_subject" class="form-control" 
+                           value="{{ $template->reminder_subject ?? '' }}" placeholder="z.B. Zahlungserinnerung zu Angebot {angebotsnummer}">
+                </div>
 
-                    <div class="col-md-5">
-                        <h3 style="font-size: 1.1rem; margin-bottom: 20px;"><i class="fas fa-server"></i> SMTP Einstellungen</h3>
-                        <div class="mb-3">
-                            <label class="form-label">Absender E-Mail</label>
-                            <input type="email" name="mail_from_address" class="form-control" value="{{ $project->mail_from_address }}">
+                <div class="mb-4">
+                    <label class="form-label">E-Mail Text</label>
+                    <textarea name="reminder_text" class="form-control" rows="12" placeholder="Schreiben Sie hier den Inhalt der E-Mail...">{{ $template->reminder_text ?? '' }}</textarea>
+                    
+                    <div class="placeholder-info">
+                        <p style="font-size: 0.85rem; font-weight: 600; margin-bottom: 10px; color: #fff;">Dynamische Platzhalter:</p>
+                        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                            <code>{angebotsnummer}</code>
+                            <code>{erstelldatum}</code>
+                            <code>{firmenname}</code>
+                            <code>{summe}</code>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Absender Name</label>
-                            <input type="text" name="mail_from_name" class="form-control" value="{{ $project->mail_from_name }}">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">SMTP Host</label>
-                            <input type="text" name="smtp_host" class="form-control" value="{{ $project->smtp_host }}">
-                        </div>
-                        <div class="row">
-                            <div class="col-6 mb-3">
-                                <label class="form-label">Port</label>
-                                <input type="text" name="smtp_port" class="form-control" value="{{ $project->smtp_port }}">
-                            </div>
-                            <div class="col-6 mb-3">
-                                <label class="form-label">Verschlüsselung</label>
-                                <select name="smtp_encryption" class="form-select">
-                                    <option value="" {{ !$project->smtp_encryption ? 'selected' : '' }}>Keine</option>
-                                    <option value="tls" {{ $project->smtp_encryption == 'tls' ? 'selected' : '' }}>TLS</option>
-                                    <option value="ssl" {{ $project->smtp_encryption == 'ssl' ? 'selected' : '' }}>SSL</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Benutzername</label>
-                            <input type="text" name="smtp_user" class="form-control" value="{{ $project->smtp_user }}">
-                        </div>
-                        <div class="mb-4">
-                            <label class="form-label">Passwort</label>
-                            <input type="password" name="smtp_password" class="form-control" value="{{ $project->smtp_password }}">
-                        </div>
-                        <button type="submit" class="btn-primary">
-                            <i class="fas fa-save"></i> Einstellungen speichern
-                        </button>
                     </div>
                 </div>
+
+                <hr class="my-4" style="opacity: 0.1;">
+
+                <div class="row mb-4">
+                    <div style="flex: 1; padding: 0 15px;">
+                        <label class="form-label">BCC Kopie senden an</label>
+                        <input type="email" name="bcc_address" class="form-control" 
+                               value="{{ $template->bcc_address ?? '' }}" placeholder="z.B. buchhaltung@frankgroup.net">
+                    </div>
+                    <div style="padding: 0 15px; display: flex; align-items: flex-end;">
+                        <label class="form-check-switch" for="bcc_enabled">
+                            <input type="checkbox" name="bcc_enabled" value="1" id="bcc_enabled" {{ ($template->bcc_enabled ?? false) ? 'checked' : '' }}>
+                            <span style="font-weight: 600; font-size: 0.95rem;">BCC Aktivieren</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-save"></i> Globale Vorlage speichern
+                </button>
             </form>
         </div>
-        @endforeach
+
+        <p style="text-align: center; margin-top: 30px; color: var(--text-muted); font-size: 0.85rem; opacity: 0.6;">
+            <i class="fas fa-info-circle"></i> Die SMTP-Zugangsdaten werden sicher im Hintergrund verwaltet und hier nicht angezeigt.
+        </p>
     </div>
 
     <script>
