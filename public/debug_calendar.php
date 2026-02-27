@@ -10,7 +10,8 @@ use Carbon\Carbon;
 header('Content-Type: text/plain');
 
 try {
-    $events = Event::get();
+    $events = Event::get(Carbon::today(), Carbon::tomorrow());
+    echo "Time Range: " . Carbon::today()->toDateTimeString() . " to " . Carbon::tomorrow()->toDateTimeString() . "\n";
     echo "Total Events: " . count($events) . "\n\n";
 
     foreach ($events as $event) {
