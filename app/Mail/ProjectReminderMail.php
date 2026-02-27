@@ -49,7 +49,24 @@ class ProjectReminderMail extends Mailable
      */
     private function replacePlaceholders($text)
     {
+        // Dynamische Anrede generieren
+        $anrede = 'Sehr geehrte Damen und Herren,';
+        
+        $anrede_ap = trim($this->offer->anrede_ap ?? '');
+        $titel = trim($this->offer->titel_ap ?? '');
+        $nachname = trim($this->offer->nachname_ap ?? '');
+
+        if ($anrede_ap && $nachname) {
+            $titelString = $titel ? " $titel" : "";
+            if (strtolower($anrede_ap) === 'herr') {
+                $anrede = "Sehr geehrter Herr{$titelString} {$nachname},";
+            } elseif (strtolower($anrede_ap) === 'frau') {
+                $anrede = "Sehr geehrte Frau{$titelString} {$nachname},";
+            }
+        }
+
         $placeholders = [
+            '{anrede}' => $anrede,
             '{angebotsnummer}' => $this->offer->angebotsnummer,
             '{erstelldatum}' => date('d.m.Y', strtotime($this->offer->erstelldatum)),
             '{firmenname}' => $this->offer->firmenname,

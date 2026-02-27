@@ -347,11 +347,12 @@
 
                 <div class="mb-4">
                     <label class="form-label">E-Mail Text</label>
-                    <textarea name="reminder_text" class="form-control" rows="12" placeholder="Schreiben Sie hier den Inhalt der E-Mail...">{{ $template->reminder_text ?? '' }}</textarea>
+                    <textarea name="reminder_text" class="form-control" rows="12" placeholder="Schreiben Sie hier den Inhalt der E-Mail...">{{ $template->reminder_text ?? "{anrede}\n\nhiermit möchten wir Sie an unser Angebot {angebotsnummer} vom {erstelldatum} erinnern." }}</textarea>
                     
                     <div class="placeholder-info">
                         <p style="font-size: 0.85rem; font-weight: 600; margin-bottom: 10px; color: #fff;">Dynamische Platzhalter:</p>
                         <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                            <code>{anrede}</code>
                             <code>{angebotsnummer}</code>
                             <code>{erstelldatum}</code>
                             <code>{firmenname}</code>
