@@ -62,13 +62,13 @@ class GenerateOfferTodos extends Command
         // A) Offene Angebote (Ersterstellung)
         $openOffers = DB::table('angebot_tabelle')
             ->where('letzter_status_name', 'Status offen')
-            ->where('erstelldatum', $targetDate)
+            ->where('erstelldatum', '<=', $targetDate)
             ->get();
 
         // B) Angebote mit versendeter Erinnerung (Wiedervorlage nach 7 Tagen)
         $reminderOffers = DB::table('angebot_tabelle')
             ->where('letzter_status_name', 'Status Erinnerung versendet')
-            ->where('reminder_date', $targetDate)
+            ->where('reminder_date', '<=', $targetDate)
             ->get();
 
         $allTargetOffers = $openOffers->merge($reminderOffers);
