@@ -14,10 +14,16 @@ $kernel = $app->make(Kernel::class);
 $kernel->bootstrap();
 
 try {
-    echo "<h1>Migration läuft...</h1>";
-    $exitCode = Artisan::call('migrate', ['--force' => true]);
+    echo "<h1>Struktur von angebot_tabelle:</h1>";
+    $columns = DB::select("DESCRIBE angebot_tabelle");
+    echo "<pre>";
+    print_r($columns);
+    echo "</pre>";
+    
+    echo "<h1>Migration Status:</h1>";
+    Artisan::call('migrate:status');
     echo "<pre>" . Artisan::output() . "</pre>";
-    echo "<p>Exit Code: " . $exitCode . "</p>";
+
 } catch (\Exception $e) {
     echo "<h1>Fehler</h1><pre>" . $e->getMessage() . "</pre>";
 }
