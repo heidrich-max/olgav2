@@ -399,6 +399,70 @@ class DashboardController extends Controller
         }
     }
 
+    public function updateEvent(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'start_date' => 'required|date',
+            'start_time' => 'required_if:all_day,0',
+            'end_time' => 'required_if:all_day,0',
+            'all_day' => 'boolean',
+            'location' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:1000',
+        ]);
+
+        try {
+            $event = Event::find($id);
+            if (!$event) {
+                return response()->json(['success' => false, 'message' => 'Termin nicht gefunden.'], 404);
+            }
+
+            $event->name = $validated['title'];
+            $event->location = $validated['location'] ?? '';
+            $event->description = $validated['description'] ?? '';
+
+            if ($request->has('all_day') && $validated['all_day']) {
+                $start = Carbon::parse($validated['start_date'])->startOfDay();
+                $end = Carbon::parse($validated['start_date'])->addDay()->startOfDay();
+                
+                $event->startDate = $start;
+                $event->endDate = $end;
+            } else {
+                $start = Carbon::parse($validated['start_date'] . ' ' . $validated['start_time']);
+                $end = Carbon::parse($validated['start_date'] . ' ' . $validated['end_time']);
+                
+                $event->startDateTime = $start;
+                $event->endDateTime = $end;
+            }
+
+            $event->save();
+
+            return response()->json(['success' => true, 'message' => 'Termin erfolgreich aktualisiert!']);
+
+        } catch (\Exception $e) {
+            \Log::error("Google Calendar Update Error: " . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Fehler: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function deleteEvent($id)
+    {
+        try {
+            $event = Event::find($id);
+            if (!$event) {
+                return response()->json(['success' => false, 'message' => 'Termin nicht gefunden.'], 404);
+            }
+
+            $event->delete();
+
+            return response()->json(['success' => true, 'message' => 'Termin erfolgreich gelöscht!']);
+
+        } catch (\Exception $e) {
+            \Log::error("Google Calendar Delete Error: " . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Fehler: ' . $e->getMessage()], 500);
+        }
+    }
+
     public function showOffer($id)
     {
         $user = Auth::user();

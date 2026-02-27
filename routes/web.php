@@ -112,6 +112,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/my-dashboard', [DashboardController::class, 'myDashboard'])->name('my.dashboard');
     Route::get('/calendar', [DashboardController::class, 'calendar'])->name('calendar');
     Route::post('/calendar/event', [DashboardController::class, 'storeEvent'])->name('calendar.store');
+    Route::put('/calendar/event/{id}', [DashboardController::class, 'updateEvent'])->name('calendar.update');
+    Route::delete('/calendar/event/{id}', [DashboardController::class, 'deleteEvent'])->name('calendar.delete');
     Route::get('/dashboard/switch/{id}', [DashboardController::class, 'switchCompany'])->name('company.switch');
 
     // Firmenverwaltung

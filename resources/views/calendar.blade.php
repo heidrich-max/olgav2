@@ -147,10 +147,44 @@
                 },
                 eventTextColor: '#fff',
                 eventBackgroundColor: 'rgba(29, 161, 242, 0.6)',
-                eventBorderColor: 'transparent'
+                eventBorderColor: 'transparent',
+                eventClick: function(info) {
+                    editEvent(info.event);
+                }
             });
             calendar.render();
         });
+
+        function editEvent(event) {
+            openEventModal();
+            document.getElementById('modalTitle').innerText = 'Termin bearbeiten';
+            document.getElementById('eventId').value = event.id;
+            
+            const form = document.getElementById('eventForm');
+            form.title.value = event.title;
+            
+            const startStr = event.start.toISOString();
+            form.start_date.value = startStr.substring(0, 10);
+            
+            if (event.allDay) {
+                form.all_day.checked = true;
+                document.getElementById('timeFields').style.display = 'none';
+                form.start_time.value = '';
+                form.end_time.value = '';
+            } else {
+                form.all_day.checked = false;
+                document.getElementById('timeFields').style.display = 'grid';
+                form.start_time.value = startStr.substring(11, 16);
+                if (event.end) {
+                    form.end_time.value = event.end.toISOString().substring(11, 16);
+                }
+            }
+            
+            form.location.value = event.extendedProps.location || '';
+            form.description.value = event.extendedProps.description || '';
+            
+            document.getElementById('deleteBtn').style.display = 'inline-block';
+        }
 
         // Simple Background Animation
         const canvas = document.getElementById('network-overlay');
@@ -199,18 +233,42 @@
                     submitBtn.disabled = true;
                     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Speichere...';
 
+                    const eventId = document.getElementById('eventId').value;
+                    const url = eventId ? `{{ url('/calendar/event') }}/${eventId}` : "{{ route('calendar.store') }}";
+                    const method = eventId ? 'PUT' : 'POST';
+
                     const formData = new FormData(eventForm);
                     
-                    try {
-                        const response = await fetch("{{ route('calendar.store') }}", {
+                    // Workaround for PUT with FormData if browser/server constraints exist, 
+                    // but Laravel handles _method or JSON better for PUT.
+                    // We'll use JSON if it's a PUT.
+                    
+                    let fetchOptions;
+                    if (method === 'PUT') {
+                        const data = {};
+                        formData.forEach((value, key) => { data[key] = value; });
+                        fetchOptions = {
+                            method: 'PUT',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify(data)
+                        };
+                    } else {
+                        fetchOptions = {
                             method: 'POST',
                             body: formData,
                             headers: {
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
                                 'Accept': 'application/json'
                             }
-                        });
-
+                        };
+                    }
+                    
+                    try {
+                        const response = await fetch(url, fetchOptions);
                         const result = await response.json();
 
                         if (result.success) {
@@ -229,13 +287,57 @@
             }
         });
 
+        async function deleteEvent() {
+            const eventId = document.getElementById('eventId').value;
+            if (!eventId) return;
+
+            if (!confirm('Möchten Sie diesen Termin wirklich löschen?')) return;
+
+            const deleteBtn = document.getElementById('deleteBtn');
+            deleteBtn.disabled = true;
+            deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+            try {
+                const response = await fetch(`{{ url('/calendar/event') }}/${eventId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert('Termin gelöscht!');
+                    location.reload();
+                } else {
+                    alert('Fehler: ' + result.message);
+                }
+            } catch (error) {
+                alert('Ein Fehler ist aufgetreten: ' + error.message);
+            } finally {
+                deleteBtn.disabled = false;
+                deleteBtn.innerHTML = 'Löschen';
+            }
+        }
+            }
+        });
+
         function openEventModal() {
-            if (eventModal) eventModal.style.display = 'flex';
+            if (eventModal) {
+                eventModal.style.display = 'flex';
+                document.getElementById('modalTitle').innerText = 'Neuer Termin';
+                document.getElementById('eventId').value = '';
+                document.getElementById('deleteBtn').style.display = 'none';
+            }
         }
 
         function closeEventModal() {
             if (eventModal) eventModal.style.display = 'none';
-            if (eventForm) eventForm.reset();
+            if (eventForm) {
+                eventForm.reset();
+                document.getElementById('timeFields').style.display = 'grid';
+            }
         }
 
         window.addEventListener('resize', resize);
@@ -247,11 +349,12 @@
     <div id="eventModal" class="modal-overlay" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
         <div class="card" style="width: 100%; max-width: 500px; padding: 30px;">
             <div class="card-header" style="margin-bottom: 25px;">
-                <h2><i class="fas fa-calendar-plus"></i> Neuer Termin</h2>
+                <h2 id="modalTitle"><i class="fas fa-calendar-plus"></i> Neuer Termin</h2>
                 <button onclick="closeEventModal()" style="background:none; border:none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem;">&times;</button>
             </div>
             <form id="eventForm">
                 @csrf
+                <input type="hidden" id="eventId" name="event_id">
                 <div style="margin-bottom: 15px;">
                     <label style="display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px;">Titel</label>
                     <input type="text" name="title" required style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; padding: 10px; color: #fff;">
@@ -283,6 +386,7 @@
                     <textarea name="description" rows="3" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; padding: 10px; color: #fff; resize: vertical;"></textarea>
                 </div>
                 <div style="display: flex; gap: 10px;">
+                    <button type="button" id="deleteBtn" onclick="deleteEvent()" style="display:none; background: #ff4444; border: none; color: #fff; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600;">Löschen</button>
                     <button type="button" onclick="closeEventModal()" style="flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; padding: 12px; border-radius: 8px; cursor: pointer;">Abbrechen</button>
                     <button type="submit" style="flex: 2; background: var(--primary-accent); border: none; color: #fff; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600;">Speichern</button>
                 </div>
