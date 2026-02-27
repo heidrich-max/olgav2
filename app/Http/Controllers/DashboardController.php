@@ -321,7 +321,8 @@ class DashboardController extends Controller
         $calendarEvents = [];
         $eventsJson = '[]';
         try {
-            $calendarEvents = Event::get();
+            // Ab Beginn des aktuellen Monats laden, um auch vergangene/laufende Termine zu sehen
+            $calendarEvents = Event::get(Carbon::now()->startOfMonth(), Carbon::now()->addYear());
             
             // Für FullCalendar aufbereiten
             $formattedEvents = collect($calendarEvents)->map(function($event) {

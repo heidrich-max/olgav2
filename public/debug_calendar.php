@@ -12,8 +12,8 @@ header('Content-Type: text/plain');
 try {
     $calId = config('google-calendar.calendar_id');
     echo "Calendar ID: " . $calId . "\n";
-    $events = Event::get(); // Default: ab jetzt
-    echo "Total Events (ab jetzt): " . count($events) . "\n\n";
+    $events = Event::get(Carbon::now()->startOfMonth(), Carbon::now()->addYear());
+    echo "Total Events (ab Monatsanfang): " . count($events) . "\n\n";
 
     foreach ($events as $event) {
         echo "Name: " . $event->name . "\n";
