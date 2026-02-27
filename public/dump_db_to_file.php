@@ -14,25 +14,10 @@ $kernel = $app->make(Kernel::class);
 $kernel->bootstrap();
 
 try {
-    ob_start();
-    echo "Struktur von angebot_tabelle:\n";
-    $columns = DB::select("DESCRIBE angebot_tabelle");
-    foreach ($columns as $col) {
-        print_r($col);
-    }
-
-    echo "\nBeispiel-Datensatz:\n";
-    $sample = DB::table('angebot_tabelle')->first();
-    print_r($sample);
-
-    $output = ob_get_clean();
-    file_put_contents(__DIR__ . '/db_structure_dump.txt', $output);
-    
-    echo "<h1>Erfolg!</h1>";
-    echo "<p>Die Tabellenstruktur wurde in <b>public/db_structure_dump.txt</b> gespeichert.</p>";
-    echo "<p>Der Agent kann diese Informationen nun verarbeiten.</p>";
-
+    echo "<h1>Migration läuft...</h1>";
+    $exitCode = Artisan::call('migrate', ['--force' => true]);
+    echo "<pre>" . Artisan::output() . "</pre>";
+    echo "<p>Exit Code: " . $exitCode . "</p>";
 } catch (\Exception $e) {
-    echo "<h1>Fehler</h1>";
-    echo "<pre>" . $e->getMessage() . "</pre>";
+    echo "<h1>Fehler</h1><pre>" . $e->getMessage() . "</pre>";
 }
