@@ -467,9 +467,12 @@
                     </button>
 
                     @if(!str_contains(strtolower($offer->letzter_status_name ?? ''), 'erinnerung'))
-                    <button class="btn-glass-primary">
-                        <i class="fas fa-paper-plane"></i> Erinnerung senden
-                    </button>
+                    <form action="{{ route('offers.reminder.store', $offer->id) }}" method="POST" style="display:inline;">
+                        @csrf
+                        <button type="submit" class="btn-glass-primary">
+                            <i class="fas fa-paper-plane"></i> Erinnerung senden
+                        </button>
+                    </form>
                     @endif
                     @endif
                 </div>

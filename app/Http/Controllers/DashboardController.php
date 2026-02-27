@@ -604,4 +604,73 @@ class DashboardController extends Controller
             return back()->with('error', 'Fehler beim Abschließen: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Markiert ein Angebot als "Erinnerung versendet" und setzt das Wiedervorlage-Datum.
+     */
+    public function sendReminder(Request $request, $id)
+    {
+        $offer = DB::table('angebot_tabelle')->where('id', $id)->first();
+        if (!$offer) {
+            return back()->with('error', 'Angebot nicht gefunden.');
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // 1. Status Details für ID 2 (Erinnerung verschickt) holen
+            $status = DB::table('angebot_status')->where('id', 2)->first();
+            if (!$status) {
+                // Fallback falls Status 2 nicht existiert
+                $statusName = 'Status Erinnerung versendet';
+                $bg = 'warning';
+                $color = 'white';
+                $statusSh = 'EV';
+            } else {
+                $statusName = 'Status ' . $status->status_lg;
+                $bg = $status->bg;
+                $color = $status->color;
+                $statusSh = $status->status_sh;
+            }
+
+            // 2. angebot_tabelle aktualisieren
+            DB::table('angebot_tabelle')
+                ->where('id', $id)
+                ->update([
+                    'letzter_status'           => $statusSh,
+                    'letzter_status_name'      => $statusName,
+                    'letzter_status_bg_hex'    => $bg,
+                    'letzter_status_farbe_hex' => $color,
+                    'reminder_date'            => Carbon::now()->toDateString(),
+                    'reminder_count'           => DB::raw('reminder_count + 1')
+                ]);
+
+            // 3. In angebot_status_a loggen
+            DB::table('angebot_status_a')->insert([
+                'angebot_id' => $offer->id,
+                'projekt_id' => $offer->projekt_id,
+                'user_id'    => Auth::id(),
+                'status'     => 2
+            ]);
+
+            // 4. Notiz im Verlauf erstellen
+            AngebotInformation::create([
+                'angebot_id' => $offer->id,
+                'projekt_id' => $offer->projekt_id,
+                'user_id'    => Auth::id(),
+                'information' => "Erinnerung wurde versendet. Wiedervorlage in 7 Tagen.",
+            ]);
+
+            DB::commit();
+
+            // Automatisches To-Do entfernen (da die Erinnerung jetzt "erledigt" ist)
+            Todo::cleanupForOffer($offer->angebotsnummer);
+
+            return back()->with('success', 'Erinnerung wurde vermerkt. Nächste Wiedervorlage in 7 Tagen.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Fehler beim Senden der Erinnerung: ' . $e->getMessage());
+        }
+    }
 }

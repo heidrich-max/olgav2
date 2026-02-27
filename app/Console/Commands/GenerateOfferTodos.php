@@ -59,18 +59,27 @@ class GenerateOfferTodos extends Command
         // Der 7. Tag nach Erstellung entspricht einer Differenz von 6 Tagen
         $targetDate = Carbon::now()->subDays(6)->toDateString();
         
+        // A) Offene Angebote (Ersterstellung)
         $openOffers = DB::table('angebot_tabelle')
             ->where('letzter_status_name', 'Status offen')
             ->where('erstelldatum', $targetDate)
             ->get();
 
-        $this->info(count($openOffers) . " offene Angebote vom {$targetDate} gefunden.");
+        // B) Angebote mit versendeter Erinnerung (Wiedervorlage nach 7 Tagen)
+        $reminderOffers = DB::table('angebot_tabelle')
+            ->where('letzter_status_name', 'Status Erinnerung versendet')
+            ->where('reminder_date', $targetDate)
+            ->get();
+
+        $allTargetOffers = $openOffers->merge($reminderOffers);
+
+        $this->info(count($allTargetOffers) . " relevante Angebote für To-Dos gefunden.");
 
         // Benutzer-Mapping laden
         $userMap = DB::table('user')->get()->keyBy('name_komplett')->toArray();
         $createdCount = 0;
 
-        foreach ($openOffers as $offer) {
+        foreach ($allTargetOffers as $offer) {
             $userName = $offer->benutzer;
             $userData = $userMap[$userName] ?? null;
 
