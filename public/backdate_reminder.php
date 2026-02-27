@@ -46,14 +46,12 @@ try {
         ]);
 
     // 3. Historien-Eintrag (AngebotInformation)
-    DB::table('angebot_information')->insert([
+    DB::table('angebot_informationen')->insert([
         'angebot_id' => $offer->id,
         'projekt_id' => $offer->projekt_id,
         'user_id'    => 1, // System oder Admin
         'information' => "Nachträglicher Eintrag: Erinnerung wurde am {$backdate} versendet. Wiedervorlage-Logik aktiviert.",
-        'timestamp'   => $backdate . ' 09:00:00',
-        'created_at'  => $backdate . ' 09:00:00',
-        'updated_at'  => Carbon::now()
+        'timestamp'   => $backdate . ' 09:00:00'
     ]);
 
     echo "<h3 style='color: green;'>Erfolg!</h3>";
