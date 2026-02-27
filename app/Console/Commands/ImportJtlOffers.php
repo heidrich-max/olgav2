@@ -177,6 +177,11 @@ class ImportJtlOffers extends Command
                                 ->where('projekt_id', $projekt_id)
                                 ->update($data);
                             $totalUpdated++;
+
+                            // Automatisches To-Do entfernen, falls das Angebot nicht mehr offen ist
+                            if ($isConverted) {
+                                \App\Models\Todo::cleanupForOffer($data['angebotsnummer']);
+                            }
                         } else {
                             $data['projekt_firmenname_kuerzel'] = $firma->name_kuerzel;
                             $data['projekt_farbe_hex'] = $firma->bg;

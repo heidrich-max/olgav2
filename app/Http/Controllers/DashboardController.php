@@ -12,11 +12,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Cookie;
+use App\Models\Todo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
 use Spatie\GoogleCalendar\Event;
-use App\Models\Todo;
 
 class DashboardController extends Controller
 {
@@ -593,6 +593,10 @@ class DashboardController extends Controller
             ]);
 
             DB::commit();
+
+            // Automatisches To-Do entfernen, falls vorhanden
+            Todo::cleanupForOffer($offer->angebotsnummer);
+
             return back()->with('success', 'Angebot wurde erfolgreich abgeschlossen.');
 
         } catch (\Exception $e) {

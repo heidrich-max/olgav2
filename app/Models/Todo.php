@@ -15,4 +15,14 @@ class Todo extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * Entfernt automatisch generierte To-Dos für ein spezifisches Angebot.
+     */
+    public static function cleanupForOffer($offerNumber)
+    {
+        if (empty($offerNumber)) return;
+        
+        static::where('task', 'like', "Angebots-Nachverfolgung: {$offerNumber} %")->delete();
+    }
 }
