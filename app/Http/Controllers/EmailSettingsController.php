@@ -71,6 +71,7 @@ class EmailSettingsController extends Controller
             'firmenname' => 'Max Mustermann GmbH',
             'angebotssumme' => 1234.56,
             'ort' => 'Musterstadt',
+            'projektname' => 'Trinkflasche Life',
             'anrede_ap' => 'Herr',
             'titel_ap' => 'Dr.',
             'nachname_ap' => 'Mustermann',

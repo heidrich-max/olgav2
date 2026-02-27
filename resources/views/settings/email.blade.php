@@ -354,6 +354,7 @@
                         <div style="display: flex; flex-wrap: wrap; gap: 10px;">
                             <code>{anrede}</code>
                             <code>{stadt}</code>
+                            <code>{status}</code>
                             <code>{angebotsnummer}</code>
                             <code>{erstelldatum}</code>
                             <code>{firmenname}</code>

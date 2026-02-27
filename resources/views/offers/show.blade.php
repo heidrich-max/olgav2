@@ -537,9 +537,15 @@
                     </div>
                     <div class="info-list">
                         <div class="info-item">
-                            <span class="label">Projekt:</span>
+                            <span class="label">Projekt/Typ:</span>
                             <span>{{ $offer->projekt_firmenname }}</span>
                         </div>
+                        @if(!empty($offer->projektname))
+                        <div class="info-item">
+                            <span class="label">Status:</span>
+                            <span>{{ $offer->projektname }}</span>
+                        </div>
+                        @endif
                         <div class="info-item">
                             <span class="label">Angebotsdatum:</span>
                             <span>{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</span>
