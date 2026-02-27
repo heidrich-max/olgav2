@@ -28,8 +28,34 @@ class GenerateOfferTodos extends Command
      */
     public function handle()
     {
-        $this->info("Starte Generierung von automatischen To-Dos für Angebote...");
+        $this->info("Starte Generierung und Bereinigung von automatischen To-Dos für Angebote...");
         
+        // 1. CLEANUP: Bestehende To-Dos löschen, wenn das Angebot nicht mehr offen ist
+        $existingTodos = Todo::where('task', 'like', 'Angebots-Nachverfolgung: %')->get();
+        $deletedCount = 0;
+
+        foreach ($existingTodos as $todo) {
+            // Angebotsnummer aus dem Task-Text extrahieren (zwischen : und ()
+            if (preg_match('/Angebots-Nachverfolgung: (.*?) \(Kunde/', $todo->task, $matches)) {
+                $offerNum = trim($matches[1]);
+                
+                $offer = DB::table('angebot_tabelle')
+                    ->where('angebotsnummer', $offerNum)
+                    ->first();
+
+                // Wenn das Angebot nicht mehr existiert oder nicht mehr offen ist, To-Do löschen
+                if (!$offer || $offer->letzter_status_name !== 'Status offen') {
+                    $todo->delete();
+                    $deletedCount++;
+                }
+            }
+        }
+        
+        if ($deletedCount > 0) {
+            $this->info("{$deletedCount} veraltete To-Dos wurden entfernt.");
+        }
+
+        // 2. GENERIERUNG: Neue To-Dos für Angebote vom 7. Tag
         // Der 7. Tag nach Erstellung entspricht einer Differenz von 6 Tagen
         $targetDate = Carbon::now()->subDays(6)->toDateString();
         
@@ -70,6 +96,6 @@ class GenerateOfferTodos extends Command
             }
         }
 
-        $this->info("Fertig! {$createdCount} neue To-Dos erzeugt.");
+        $this->info("Fertig! {$createdCount} neue To-Dos erzeugt, {$deletedCount} bereinigt.");
     }
 }
