@@ -67,6 +67,7 @@ class ProjectReminderMail extends Mailable
 
         $placeholders = [
             '{anrede}' => $anrede,
+            '{stadt}' => $this->offer->ort ?? '',
             '{angebotsnummer}' => $this->offer->angebotsnummer,
             '{erstelldatum}' => date('d.m.Y', strtotime($this->offer->erstelldatum)),
             '{firmenname}' => $this->offer->firmenname,

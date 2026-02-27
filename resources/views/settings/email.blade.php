@@ -353,6 +353,7 @@
                         <p style="font-size: 0.85rem; font-weight: 600; margin-bottom: 10px; color: #fff;">Dynamische Platzhalter:</p>
                         <div style="display: flex; flex-wrap: wrap; gap: 10px;">
                             <code>{anrede}</code>
+                            <code>{stadt}</code>
                             <code>{angebotsnummer}</code>
                             <code>{erstelldatum}</code>
                             <code>{firmenname}</code>

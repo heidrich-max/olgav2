@@ -70,6 +70,7 @@ class EmailSettingsController extends Controller
             'erstelldatum' => date('Y-m-d'),
             'firmenname' => 'Max Mustermann GmbH',
             'angebotssumme' => 1234.56,
+            'ort' => 'Musterstadt',
             'anrede_ap' => 'Herr',
             'titel_ap' => 'Dr.',
             'nachname_ap' => 'Mustermann',
