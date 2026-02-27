@@ -13,6 +13,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->command('app:import-jtl-offers')->everyTenMinutes();
+        $schedule->command('app:generate-offer-todos')->dailyAt('08:00');
     }
 
     /**
