@@ -56,19 +56,19 @@ class GenerateOfferTodos extends Command
         }
 
         // 2. GENERIERUNG: Neue To-Dos für Angebote vom 7. Tag
-        // Der 7. Tag nach Erstellung entspricht einer Differenz von 6 Tagen
-        $targetDate = Carbon::now()->subDays(6)->toDateString();
+        // "Nächste Woche Montag 8 Uhr" bedeutet genau 7 Tage Differenz (Montag -> Montag)
+        $targetDate = Carbon::now()->subDays(7)->toDateString();
         
         // A) Offene Angebote (Ersterstellung)
         $openOffers = DB::table('angebot_tabelle')
             ->where('letzter_status_name', 'Status offen')
-            ->where('erstelldatum', '<=', $targetDate)
+            ->whereDate('erstelldatum', '<=', $targetDate)
             ->get();
 
         // B) Angebote mit versendeter Erinnerung (Wiedervorlage nach 7 Tagen)
         $reminderOffers = DB::table('angebot_tabelle')
             ->where('letzter_status_name', 'Status Erinnerung versendet')
-            ->where('reminder_date', '<=', $targetDate)
+            ->whereDate('reminder_date', '<=', $targetDate)
             ->get();
 
         $allTargetOffers = $openOffers->merge($reminderOffers);
