@@ -14,15 +14,19 @@ $kernel = $app->make(Kernel::class);
 $kernel->bootstrap();
 
 try {
-    echo "<h1>Struktur von angebot_tabelle:</h1>";
-    $columns = DB::select("DESCRIBE angebot_tabelle");
-    echo "<pre>";
-    print_r($columns);
-    echo "</pre>";
-    
-    echo "<h1>Migration Status:</h1>";
-    Artisan::call('migrate:status');
+    echo "<h1>1. Migration läuft...</h1>";
+    $exitMig = Artisan::call('migrate', ['--force' => true]);
     echo "<pre>" . Artisan::output() . "</pre>";
+    echo "<p>Migration Exit Code: " . $exitMig . "</p>";
+
+    echo "<h1>2. JTL-Import läuft...</h1>";
+    $exitImp = Artisan::call('app:import-jtl-offers');
+    echo "<pre>" . Artisan::output() . "</pre>";
+    echo "<p>Import Exit Code: " . $exitImp . "</p>";
+
+    if ($exitMig === 0 && $exitImp === 0) {
+        echo "<h2 style='color:green'>Alles erfolgreich ausgeführt!</h2>";
+    }
 
 } catch (\Exception $e) {
     echo "<h1>Fehler</h1><pre>" . $e->getMessage() . "</pre>";
