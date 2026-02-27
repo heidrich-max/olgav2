@@ -329,13 +329,13 @@ class DashboardController extends Controller
                 $end = $event->endDateTime ?? $event->endDate;
                 
                 return [
-                    'id' => $event->googleEvent->id,
+                    'id' => $event->id ?? uniqid(),
                     'title' => $event->name,
-                    'start' => $start->toIso8601String(),
-                    'end' => $end->toIso8601String(),
+                    'start' => $start ? $start->toIso8601String() : null,
+                    'end' => $end ? $end->toIso8601String() : null,
                     'allDay' => $event->isAllDayEvent(),
-                    'location' => $event->googleEvent->location ?? '',
-                    'description' => $event->googleEvent->description ?? '',
+                    'location' => $event->location ?? '',
+                    'description' => $event->description ?? '',
                     'color' => '#1DA1F2', 
                 ];
             });
