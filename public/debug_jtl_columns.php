@@ -25,11 +25,9 @@ try {
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     
     $columns = array_keys($row);
-    $output = "Spalten in Kunde.lvAngebote:\n" . implode("\n", $columns);
-
-    file_put_contents(__DIR__ . '/jtl_columns.txt', $output);
-    
-    echo "<h1>Erfolg!</h1><p>Spalten wurden in public/jtl_columns.txt gespeichert.</p>";
+    echo "<h1>Erfolg!</h1>";
+    echo "<p>Spalten in Kunde.lvAngebote:</p>";
+    echo "<pre>" . implode("\n", $columns) . "</pre>";
 
 } catch (Exception $e) {
     echo "<h1>Fehler</h1><pre>" . $e->getMessage() . "</pre>";
