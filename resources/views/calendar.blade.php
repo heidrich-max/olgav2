@@ -251,6 +251,7 @@
                 <button onclick="closeEventModal()" style="background:none; border:none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem;">&times;</button>
             </div>
             <form id="eventForm">
+                @csrf
                 <div style="margin-bottom: 15px;">
                     <label style="display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px;">Titel</label>
                     <input type="text" name="title" required style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; padding: 10px; color: #fff;">
