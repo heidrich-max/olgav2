@@ -498,6 +498,21 @@
                                 @if($offer->kunde_mail)
                                 <span class="contact-info"><i class="fas fa-envelope"></i> {{ $offer->kunde_mail }}</span>
                                 @endif
+
+                                @if($offer->ansprechpartner_vorname || $offer->ansprechpartner_nachname)
+                                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+                                    <h3 style="font-size: 0.75rem; margin-bottom: 8px;">Ansprechpartner</h3>
+                                    <strong>
+                                        {{ $offer->ansprechpartner_anrede }} 
+                                        {{ $offer->ansprechpartner_titel }} 
+                                        {{ $offer->ansprechpartner_vorname }} 
+                                        {{ $offer->ansprechpartner_nachname }}
+                                    </strong>
+                                    @if($offer->ansprechpartner_mobil)
+                                    <span class="contact-info"><i class="fas fa-mobile-alt"></i> {{ $offer->ansprechpartner_mobil }}</span>
+                                    @endif
+                                </div>
+                                @endif
                             </p>
                         </div>
                         <div class="address-box">
