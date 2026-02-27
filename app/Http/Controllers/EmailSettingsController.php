@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CompanyProject;
-use App\Mail\ProjectTestMail;
+use App\Mail\ProjectReminderMail;
 use App\Services\ProjectMailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -64,9 +64,17 @@ class EmailSettingsController extends Controller
 
         $project = CompanyProject::findOrFail($validated['project_id']);
         
+        // Dummy-Angebot für die Platzhalter erstellen
+        $dummyOffer = (object) [
+            'angebotsnummer' => 'TEST-12345',
+            'erstelldatum' => date('Y-m-d'),
+            'firmenname' => 'Max Mustermann GmbH',
+            'angebotssumme' => 1234.56,
+        ];
+        
         try {
             $mailer = $mailService->getMailer($project);
-            $mailer->to($validated['test_email'])->send(new ProjectTestMail($project->name));
+            $mailer->to($validated['test_email'])->send(new ProjectReminderMail($project, $dummyOffer));
             
             return back()->with('success', "Test-E-Mail über '{$project->name}' wurde erfolgreich an {$validated['test_email']} gesendet.");
         } catch (\Exception $e) {
