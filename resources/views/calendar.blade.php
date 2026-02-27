@@ -320,8 +320,6 @@
                 deleteBtn.innerHTML = 'Löschen';
             }
         }
-            }
-        });
 
         function openEventModal() {
             if (eventModal) {
