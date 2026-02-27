@@ -26,7 +26,7 @@ class ProjectReminderMail extends Mailable
 
         // Platzhalter ersetzen
         $this->customSubject = $this->replacePlaceholders($project->reminder_subject ?? 'Zahlungserinnerung zu Angebot {angebotsnummer}');
-        $this->customText = $this->replacePlaceholders($project->reminder_text ?? "Guten Tag,\n\nhiermit möchten wir Sie an unser Angebot {angebotsnummer} vom {erstelldatum} erinnern.");
+        $this->customText = $this->replacePlaceholders($project->reminder_text ?: "{anrede}\n\nhiermit möchten wir Sie an unser Angebot {angebotsnummer} vom {erstelldatum} erinnern.");
     }
 
     /**
