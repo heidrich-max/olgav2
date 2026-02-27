@@ -211,6 +211,53 @@
             margin-top: 15px;
             border-left: 4px solid var(--primary-accent);
         }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1000;
+        }
+        .modal.active { display: flex; align-items: center; justify-content: center; }
+        .modal-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            position: relative;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 30px;
+            width: 100%; max-width: 500px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            animation: modalIn 0.3s ease-out;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95) translateY(-20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .close-btn {
+            position: absolute; top: 20px; right: 20px;
+            background: none; border: none; color: var(--text-muted);
+            font-size: 1.2rem; cursor: pointer; transition: color 0.2s;
+        }
+        .close-btn:hover { color: white; }
+        .alert-error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #f87171;
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: slideDown 0.5s ease-out;
+        }
     </style>
 </head>
 <body>
@@ -266,6 +313,27 @@
             </div>
         @endif
 
+        @if(session('error'))
+            <div class="alert-error">
+                <i class="fas fa-exclamation-triangle" style="font-size: 1.5rem;"></i>
+                <span>{{ session('error') }}</span>
+            </div>
+        @endif
+
+        @if($errors->any())
+            <div class="alert-error" style="align-items: flex-start; flex-direction: column;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 1.5rem;"></i>
+                    <strong>Fehler beim Speichern/Senden:</strong>
+                </div>
+                <ul style="margin-left: 40px; margin-top: 10px; color: #fff;">
+                    @foreach ($errors->all() as $err)
+                        <li>{{ $err }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <div class="glass-card">
             <form action="{{ route('settings.email.update') }}" method="POST">
                 @csrf
@@ -308,10 +376,44 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn-primary">
-                    <i class="fas fa-save"></i> Globale Vorlage speichern
-                </button>
+                <div style="display: flex; gap: 15px; margin-top: 30px;">
+                    <button type="submit" class="btn-primary" style="margin-top: 0;">
+                        <i class="fas fa-save"></i> Globale Vorlage speichern
+                    </button>
+                    <button type="button" class="btn-primary" id="openTestModalBtn" style="margin-top: 0; background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);">
+                        <i class="fas fa-paper-plane"></i> Test-E-Mail senden
+                    </button>
+                </div>
             </form>
+        </div>
+
+        <!-- Test Modal -->
+        <div class="modal" id="testModal">
+            <div class="modal-overlay" id="closeTestModalOverlay"></div>
+            <div class="modal-content">
+                <button class="close-btn" id="closeTestModalBtn"><i class="fas fa-times"></i></button>
+                <h2 style="font-size: 1.5rem; margin-bottom: 20px;"><i class="fas fa-paper-plane" style="color: #10b981;"></i> Test-E-Mail senden</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px;">Wählen Sie ein Projekt, über dessen SMTP-Einstellungen die Testnachricht verschickt werden soll, und geben Sie eine Empfängeradresse ein.</p>
+                
+                <form action="{{ route('settings.email.test') }}" method="POST">
+                    @csrf
+                    <div class="mb-4">
+                        <label class="form-label">Projekt auswählen</label>
+                        <select name="project_id" class="form-control" required style="appearance: auto; background-color: rgba(0,0,0,0.4);">
+                            @foreach($projects as $proj)
+                                <option value="{{ $proj->id }}" style="background: #1e293b; color: #fff;">{{ $proj->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Empfänger E-Mail</label>
+                        <input type="email" name="test_email" class="form-control" placeholder="ihre.adresse@beispiel.de" required>
+                    </div>
+                    <button type="submit" class="btn-primary" style="background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);">
+                        <i class="fas fa-paper-plane"></i> Jetzt senden
+                    </button>
+                </form>
+            </div>
         </div>
 
         <p style="text-align: center; margin-top: 30px; color: var(--text-muted); font-size: 0.85rem; opacity: 0.6;">
@@ -333,6 +435,23 @@
         document.addEventListener('click', () => {
             if(userDropdown) userDropdown.classList.remove('active');
         });
+
+        // Test Modal Logic
+        const testModal = document.getElementById('testModal');
+        const openTestModalBtn = document.getElementById('openTestModalBtn');
+        const closeTestModalBtn = document.getElementById('closeTestModalBtn');
+        const closeTestModalOverlay = document.getElementById('closeTestModalOverlay');
+
+        if(openTestModalBtn) {
+            openTestModalBtn.addEventListener('click', () => {
+                testModal.classList.add('active');
+            });
+        }
+
+        const closeModal = () => testModal.classList.remove('active');
+
+        if(closeTestModalBtn) closeTestModalBtn.addEventListener('click', closeModal);
+        if(closeTestModalOverlay) closeTestModalOverlay.addEventListener('click', closeModal);
     </script>
 </body>
 </html>
