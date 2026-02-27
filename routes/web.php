@@ -141,6 +141,10 @@ Route::middleware(['auth'])->group(function () {
         }
     })->name('test.mail');
 
+    // E-Mail Einstellungen
+    Route::get('/settings/email', [\App\Http\Controllers\EmailSettingsController::class, 'index'])->name('settings.email.index');
+    Route::put('/settings/email/{id}', [\App\Http\Controllers\EmailSettingsController::class, 'update'])->name('settings.email.update');
+
     // To-Do Routes
     Route::get('/todos', [\App\Http\Controllers\TodoController::class, 'index'])->name('todos.index');
     Route::post('/todos', [\App\Http\Controllers\TodoController::class, 'store'])->name('todos.store');

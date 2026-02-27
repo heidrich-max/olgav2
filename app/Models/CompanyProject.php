@@ -31,5 +31,9 @@ class CompanyProject extends Model
         'smtp_encryption',
         'mail_from_address',
         'mail_from_name',
+        'reminder_subject',
+        'reminder_text',
+        'bcc_address',
+        'bcc_enabled',
     ];
 }

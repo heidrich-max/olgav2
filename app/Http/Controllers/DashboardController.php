@@ -661,6 +661,21 @@ class DashboardController extends Controller
                 'information' => "Erinnerung wurde versendet. Wiedervorlage in 7 Tagen.",
             ]);
 
+            // 5. E-Mail an Kunden versenden
+            $project = CompanyProject::find($offer->projekt_id);
+            if ($project && $project->smtp_host && $offer->kunde_mail) {
+                try {
+                    $projectMailService = app(\App\Services\ProjectMailService::class);
+                    $mailer = $projectMailService->getMailer($project);
+                    
+                    $mailer->to($offer->kunde_mail)->send(new \App\Mail\ProjectReminderMail($project, $offer));
+                } catch (\Exception $mailEx) {
+                    // Mail-Fehler loggen, aber Prozess nicht abbrechen? 
+                    // Der Benutzer möchte wahrscheinlich wissen, wenn die Mail NICHT rausging.
+                    throw new \Exception("Status aktualisiert, aber E-Mail-Versand fehlgeschlagen: " . $mailEx->getMessage());
+                }
+            }
+
             DB::commit();
 
             // Automatisches To-Do entfernen (da die Erinnerung jetzt "erledigt" ist)

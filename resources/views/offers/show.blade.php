@@ -424,6 +424,9 @@
                     <a href="{{ route('companies.index') }}" class="user-dropdown-item">
                         <i class="fas fa-building"></i> Firmen verwalten
                     </a>
+                    <a href="{{ route('settings.email.index') }}" class="user-dropdown-item">
+                        <i class="fas fa-envelope-open-text"></i> E-Mail Einstellungen
+                    </a>
                     <div class="user-dropdown-divider"></div>
                     <a href="#" class="user-dropdown-item logout" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         <i class="fas fa-sign-out-alt"></i> Abmelden
