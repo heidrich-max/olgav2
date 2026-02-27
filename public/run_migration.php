@@ -10,20 +10,26 @@
 require __DIR__ . '/../vendor/autoload.php';
 $app = require_once __DIR__ . '/../bootstrap/app.php';
 
+use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Contracts\Http\Kernel;
 
+// Bootstrap the console kernel to enable Facades and Artisan
 $kernel = $app->make(Kernel::class);
-$app->boot();
+$kernel->bootstrap();
 
 echo "<h1>OLGA - Datenbank Migration</h1>";
 echo "<pre>Starte 'php artisan migrate --force'...</pre>";
 
 try {
     // Führt den Migrations-Befehl aus
-    Artisan::call('migrate', ['--force' => true]);
+    $exitCode = Artisan::call('migrate', ['--force' => true]);
     
-    echo "<h3 style='color: green;'>Erfolg!</h3>";
+    if ($exitCode === 0) {
+        echo "<h3 style='color: green;'>Erfolg!</h3>";
+    } else {
+        echo "<h3 style='color: orange;'>Migration beendet mit Exit-Code: {$exitCode}</h3>";
+    }
+    
     echo "<pre>" . Artisan::output() . "</pre>";
     
     echo "<hr>";
