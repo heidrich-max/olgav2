@@ -26,7 +26,9 @@ class ProjectReminderMail extends Mailable
 
         // Platzhalter ersetzen
         $this->customSubject = $this->replacePlaceholders($project->reminder_subject ?? 'Zahlungserinnerung zu Angebot {angebotsnummer}');
-        $this->customText = $this->replacePlaceholders($project->reminder_text ?: "{anrede}\n\nhiermit möchten wir Sie an unser Angebot {angebotsnummer} vom {erstelldatum} erinnern.");
+        
+        $baseText = $project->reminder_text ?: "{anrede}\n\nhiermit möchten wir Sie an unser Angebot {angebotsnummer} vom {erstelldatum} erinnern.\n\nMit freundlichen Grüßen,\n{bearbeiter}\n\n---\n{signatur}";
+        $this->customText = $this->replacePlaceholders($baseText);
     }
 
     /**
@@ -65,6 +67,46 @@ class ProjectReminderMail extends Mailable
             }
         }
 
+        // Signatur generieren
+        $p = $this->project;
+        $signaturParts = [];
+        
+        // Zeile 1: Name - c/o
+        $line1 = $p->name;
+        if ($p->co) {
+            $line1 .= " - c/o " . $p->co;
+        }
+        $signaturParts[] = $line1;
+
+        // Zeile 2: Adresse
+        if ($p->strasse || ($p->plz && $p->ort)) {
+            $addr = "";
+            if ($p->strasse) $addr .= $p->strasse;
+            if ($p->plz || $p->ort) {
+                if ($addr) $addr .= " - ";
+                $addr .= trim(($p->plz ?? "") . " " . ($p->ort ?? ""));
+            }
+            if ($addr) $signaturParts[] = $addr;
+        }
+
+        // Zeile 3: Telefon
+        if ($p->telefon) {
+            $signaturParts[] = "Telefon: " . $p->telefon;
+        }
+
+        // Zeile 4: Inhaber & UST-ID
+        $line4Parts = [];
+        if ($p->inhaber) $line4Parts[] = "Inhaber: " . $p->inhaber;
+        if ($p->ust_id) $line4Parts[] = "Umsatzsteuer-Identnr.: " . $p->ust_id;
+        if ($line4Parts) $signaturParts[] = implode(" - ", $line4Parts);
+
+        // Zeile 5: Handelsregister
+        if ($p->handelsregister) {
+            $signaturParts[] = "Handelsregister: " . $p->handelsregister;
+        }
+
+        $signatur = implode("\n", $signaturParts);
+
         $placeholders = [
             '{anrede}' => $anrede,
             '{stadt}' => $this->offer->ort ?? '',
@@ -74,6 +116,7 @@ class ProjectReminderMail extends Mailable
             '{erstelldatum}' => date('d.m.Y', strtotime($this->offer->erstelldatum)),
             '{firmenname}' => $this->offer->firmenname,
             '{summe}' => number_format($this->offer->angebotssumme, 2, ',', '.') . ' €',
+            '{signatur}' => $signatur,
         ];
 
         return str_replace(array_keys($placeholders), array_values($placeholders), $text);

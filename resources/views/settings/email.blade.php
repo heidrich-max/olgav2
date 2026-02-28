@@ -364,6 +364,7 @@
                             <code>{erstelldatum}</code>
                             <code>{firmenname}</code>
                             <code>{summe}</code>
+                            <code>{signatur}</code>
                         </div>
                     </div>
                 </div>

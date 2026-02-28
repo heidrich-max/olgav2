@@ -77,6 +77,16 @@ class EmailSettingsController extends Controller
             'titel_ap' => 'Dr.',
             'nachname_ap' => 'Mustermann',
         ];
+
+        // Dummy Projektdaten für Signatur
+        $project->co = 'frank werbemittel e.K.';
+        $project->strasse = 'Belziger Straße 31b';
+        $project->plz = '06889';
+        $project->ort = 'Luth. Wittenberg';
+        $project->telefon = '+49 (0) 3491-6245150';
+        $project->inhaber = 'Fabian Frank';
+        $project->ust_id = 'DE251829850';
+        $project->handelsregister = 'HRA 4895';
         
         try {
             $mailer = $mailService->getMailer($project);
