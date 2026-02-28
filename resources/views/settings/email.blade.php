@@ -359,6 +359,7 @@
                             <code>{anrede}</code>
                             <code>{stadt}</code>
                             <code>{status}</code>
+                            <code>{bearbeiter}</code>
                             <code>{angebotsnummer}</code>
                             <code>{erstelldatum}</code>
                             <code>{firmenname}</code>

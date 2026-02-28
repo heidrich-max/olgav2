@@ -72,6 +72,7 @@ class EmailSettingsController extends Controller
             'angebotssumme' => 1234.56,
             'ort' => 'Musterstadt',
             'projektname' => 'Trinkflasche Life',
+            'benutzer' => 'Fabian Frank',
             'anrede_ap' => 'Herr',
             'titel_ap' => 'Dr.',
             'nachname_ap' => 'Mustermann',

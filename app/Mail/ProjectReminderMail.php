@@ -69,6 +69,7 @@ class ProjectReminderMail extends Mailable
             '{anrede}' => $anrede,
             '{stadt}' => $this->offer->ort ?? '',
             '{status}' => $this->offer->projektname ?? '',
+            '{bearbeiter}' => $this->offer->benutzer ?? '',
             '{angebotsnummer}' => $this->offer->angebotsnummer,
             '{erstelldatum}' => date('d.m.Y', strtotime($this->offer->erstelldatum)),
             '{firmenname}' => $this->offer->firmenname,
