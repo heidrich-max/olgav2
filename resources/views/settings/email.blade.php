@@ -195,6 +195,10 @@
             cursor: pointer;
         }
         
+        /* Utility Classes */
+        .mb-4 { margin-bottom: 25px; }
+        .my-4 { margin-top: 35px; margin-bottom: 35px; }
+        
         code { 
             background: rgba(29, 161, 242, 0.15); 
             color: var(--primary-accent);
@@ -363,27 +367,27 @@
                     </div>
                 </div>
 
-                <hr class="my-4" style="opacity: 0.1;">
+                <hr class="my-4" style="border: none; border-top: 1px solid rgba(255,255,255,0.1);">
 
-                <div class="row mb-4">
-                    <div style="flex: 1; padding: 0 15px;">
+                <div class="mb-4" style="display: flex; gap: 20px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 300px;">
                         <label class="form-label">BCC Kopie senden an</label>
                         <input type="email" name="bcc_address" class="form-control" 
                                value="{{ $template->bcc_address ?? '' }}" placeholder="z.B. buchhaltung@frankgroup.net">
                     </div>
-                    <div style="padding: 0 15px; display: flex; align-items: flex-end;">
-                        <label class="form-check-switch" for="bcc_enabled">
+                    <div style="display: flex; align-items: flex-end;">
+                        <label class="form-check-switch" for="bcc_enabled" style="height: 52px; margin-bottom: 0;">
                             <input type="checkbox" name="bcc_enabled" value="1" id="bcc_enabled" {{ ($template->bcc_enabled ?? false) ? 'checked' : '' }}>
                             <span style="font-weight: 600; font-size: 0.95rem;">BCC Aktivieren</span>
                         </label>
                     </div>
                 </div>
 
-                <div style="display: flex; gap: 15px; margin-top: 30px;">
-                    <button type="submit" class="btn-primary" style="margin-top: 0;">
+                <div style="display: flex; gap: 20px; margin-top: 40px; flex-wrap: wrap;">
+                    <button type="submit" class="btn-primary" style="margin-top: 0; flex: 1; min-width: 250px;">
                         <i class="fas fa-save"></i> Globale Vorlage speichern
                     </button>
-                    <button type="button" class="btn-primary" id="openTestModalBtn" style="margin-top: 0; background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);">
+                    <button type="button" class="btn-primary" id="openTestModalBtn" style="margin-top: 0; flex: 1; min-width: 250px; background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);">
                         <i class="fas fa-paper-plane"></i> Test-E-Mail senden
                     </button>
                 </div>
