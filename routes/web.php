@@ -133,26 +133,11 @@ Route::middleware(['auth'])->group(function () {
 
         try {
             $mailer = app(\App\Services\ProjectMailService::class)->getMailer($project);
+            $mailer->to($to)->send(new \App\Mail\ProjectTestMail($project));
             
-            // Dummy-Angebot für die Platzhalter
-            $dummyOffer = (object) [
-                'angebotsnummer' => 'TEST-12345',
-                'erstelldatum' => date('Y-m-d'),
-                'firmenname' => 'Max Mustermann GmbH',
-                'angebotssumme' => 1234.56,
-                'ort' => 'Musterstadt',
-                'projektname' => $project->name,
-                'benutzer' => auth()->user()->name_komplett ?? 'System',
-                'anrede_ap' => 'Herr',
-                'titel_ap' => 'Dr.',
-                'nachname_ap' => 'Mustermann',
-            ];
-
-            $mailer->to($to)->send(new ProjectReminderMail($project, $dummyOffer));
-            
-            return "Erfolg! Test-E-Mail für Projekt '{$project->name}' wurde an {$to} versendet (über {$project->smtp_host}).";
+            return "Erfolg! SMTP-Test für Projekt '{$project->name}' wurde an {$to} versendet (über {$project->smtp_host}).";
         } catch (\Exception $e) {
-            return "Fehler beim Versenden der E-Mail für '{$project->name}': " . $e->getMessage();
+            return "Fehler beim Versenden der SMTP-Test-Mail für '{$project->name}': " . $e->getMessage();
         }
     })->name('test.mail');
 
