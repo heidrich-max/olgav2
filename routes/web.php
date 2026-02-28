@@ -7,7 +7,7 @@ use App\Http\Controllers\CompanyManagementController;
 use Illuminate\Support\Facades\DB;
 use App\Services\ProjectMailService;
 use App\Models\CompanyProject;
-use App\Mail\ProjectTestMail;
+use App\Mail\ProjectReminderMail;
 use Illuminate\Support\Facades\Mail;
 
 Route::get('/', function () {
@@ -133,7 +133,22 @@ Route::middleware(['auth'])->group(function () {
 
         try {
             $mailer = app(\App\Services\ProjectMailService::class)->getMailer($project);
-            $mailer->to($to)->send(new \App\Mail\ProjectTestMail($project->name));
+            
+            // Dummy-Angebot für die Platzhalter
+            $dummyOffer = (object) [
+                'angebotsnummer' => 'TEST-12345',
+                'erstelldatum' => date('Y-m-d'),
+                'firmenname' => 'Max Mustermann GmbH',
+                'angebotssumme' => 1234.56,
+                'ort' => 'Musterstadt',
+                'projektname' => $project->name,
+                'benutzer' => auth()->user()->name_komplett ?? 'System',
+                'anrede_ap' => 'Herr',
+                'titel_ap' => 'Dr.',
+                'nachname_ap' => 'Mustermann',
+            ];
+
+            $mailer->to($to)->send(new ProjectReminderMail($project, $dummyOffer));
             
             return "Erfolg! Test-E-Mail für Projekt '{$project->name}' wurde an {$to} versendet (über {$project->smtp_host}).";
         } catch (\Exception $e) {
