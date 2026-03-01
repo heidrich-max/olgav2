@@ -348,7 +348,13 @@ class DashboardController extends Controller
             \Log::error("Google Calendar Error (Full): " . $e->getMessage());
         }
 
-        return view('calendar', compact('user', 'calendarEvents', 'eventsJson'));
+        // Firmen-Kontext für die Navigation
+        $companyId = session('active_company_id', request()->cookie('active_company_id', 1));
+        if (!in_array($companyId, [1, 2])) { $companyId = 1; }
+        $companyName = ($companyId == 1) ? 'Branding Europe GmbH' : 'Europe Pen GmbH';
+        $accentColor = ($companyId == 1) ? '#1DA1F2' : '#0088CC';
+
+        return view('calendar', compact('user', 'calendarEvents', 'eventsJson', 'companyId', 'companyName', 'accentColor'));
     }
 
     public function storeEvent(Request $request)
