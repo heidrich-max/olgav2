@@ -20,19 +20,12 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: url('/img/login_background.webp') no-repeat center center fixed;
-            background-size: cover;
+            background: radial-gradient(circle at top left, #1a2a44, #0f172a, #070b14);
             color: var(--text-main);
             min-height: 100vh;
             overflow-x: hidden;
         }
 
-        #network-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
 
         .navbar {
             position: sticky; top: 0; z-index: 100;
@@ -365,8 +358,6 @@
     </style>
 </head>
 <body>
-    <canvas id="network-overlay"></canvas>
-
     <nav class="navbar">
         <div class="nav-left">
             <img src="/logo/olga_neu.svg" alt="Frank Group">
@@ -752,38 +743,8 @@
             if (e.target === closeOfferModal) closeModal();
         });
 
-        // Network Animation
-        const canvas = document.getElementById('network-overlay');
-        const ctx = canvas.getContext('2d');
-        let width, height, particles = [];
-        function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; initParticles(); }
-        class Particle {
-            constructor() { this.init(); }
-            init() { this.x = Math.random() * width; this.y = Math.random() * height; this.vx = (Math.random() - 0.5) * 0.3; this.vy = (Math.random() - 0.5) * 0.3; this.radius = 1.2; }
-            update() { this.x += this.vx; this.y += this.vy; if (this.x < 0 || this.x > width) this.vx *= -1; if (this.y < 0 || this.y > height) this.vy *= -1; }
-            draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = 'rgba(255, 255, 255, 0.3)'; ctx.fill(); }
-        }
-        function initParticles() { particles = []; for (let i = 0; i < 80; i++) particles.push(new Particle()); }
-        function animate() {
-            ctx.clearRect(0, 0, width, height);
-            particles.forEach((p, i) => {
-                p.update(); p.draw();
-                for (let j = i + 1; j < particles.length; j++) {
-                    const p2 = particles[j];
-                    const dx = p.x - p2.x; const dy = p.y - p2.y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 150) {
-                        ctx.beginPath();
-                        ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 * (1 - dist / 150)})`;
-                        ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y);
-                        ctx.stroke();
-                    }
-                }
-            });
-            requestAnimationFrame(animate);
-        }
         window.addEventListener('resize', resize);
-        resize(); animate();
+        resize();
     </script>
 </body>
 </html>
