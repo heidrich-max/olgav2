@@ -171,7 +171,7 @@
         .amount.highlight { color: var(--primary-accent); }
 
         /* Buttons glass style */
-        .btn-glass-default, .btn-glass-primary, .btn-glass-success {
+        .btn-glass-default, .btn-glass-primary, .btn-glass-success, .btn-glass-warning {
             padding: 10px 20px; border-radius: 12px; text-decoration: none; border: 1px solid var(--glass-border);
             font-size: 0.9rem; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s;
             cursor: pointer; background: var(--glass-bg); color: #fff;
