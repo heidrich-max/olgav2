@@ -2,7 +2,7 @@
 // update_todos_table.php
 // Dieses Script fügt die Spalte 'is_system' zur Tabelle 'todos' hinzu.
 
-use Illuminate\Database\Capsule\Manager as Capsule;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 
 // Laravel initialisieren
@@ -11,8 +11,8 @@ $app = require_once __DIR__ . '/../bootstrap/app.php';
 $app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
 
 try {
-    if (!Capsule::schema()->hasColumn('todos', 'is_system')) {
-        Capsule::schema()->table('todos', function (Blueprint $table) {
+    if (!Schema::hasColumn('todos', 'is_system')) {
+        Schema::table('todos', function (Blueprint $table) {
             $table->boolean('is_system')->default(false)->after('is_completed');
         });
         echo "Spalte 'is_system' erfolgreich zur Tabelle 'todos' hinzugefügt.\n";
