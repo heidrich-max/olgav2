@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('app:import-jtl-offers')->everyTenMinutes();
         $schedule->command('app:generate-offer-todos')->dailyAt('08:00');
+        $schedule->command('wiedervorlage:process')->dailyAt('07:30');
     }
 
     /**
