@@ -718,25 +718,50 @@ class DashboardController extends Controller
         try {
             DB::beginTransaction();
 
-            // 1. In angebot_tabelle speichern
-            DB::table('angebot_tabelle')
-                ->where('id', $id)
-                ->update([
-                    'wiedervorlage_datum' => $validated['wiedervorlage_datum'],
-                    'wiedervorlage_text'  => $validated['wiedervorlage_text'],
+            $wiedervorlageDatum = \Carbon\Carbon::parse($validated['wiedervorlage_datum']);
+            $isToday = $wiedervorlageDatum->isToday();
+
+            if ($isToday) {
+                // Sofort ein ToDo erstellen
+                \App\Models\Todo::create([
+                    'user_id' => $offer->benutzer_id ?? Auth::id(),
+                    'task' => "Wiedervorlage Angebot {$offer->angebotsnummer}: {$validated['wiedervorlage_text']}",
+                    'is_completed' => false,
                 ]);
+
+                // In angebot_tabelle leeren (bzw. nicht setzen), da bereits als ToDo vorhanden
+                DB::table('angebot_tabelle')
+                    ->where('id', $id)
+                    ->update([
+                        'wiedervorlage_datum' => null,
+                        'wiedervorlage_text'  => null,
+                    ]);
+                
+                $infoText = "Wiedervorlage für HEUTE vermerkt (ToDo sofort erstellt): " . $validated['wiedervorlage_text'];
+            } else {
+                // In angebot_tabelle speichern für spätere Verarbeitung
+                DB::table('angebot_tabelle')
+                    ->where('id', $id)
+                    ->update([
+                        'wiedervorlage_datum' => $validated['wiedervorlage_datum'],
+                        'wiedervorlage_text'  => $validated['wiedervorlage_text'],
+                    ]);
+                
+                $infoText = "Wiedervorlage am " . $wiedervorlageDatum->format('d.m.Y') . " vermerkt: " . $validated['wiedervorlage_text'];
+            }
 
             // 2. Notiz im Verlauf erstellen
             \App\Models\AngebotInformation::create([
                 'angebot_id' => $offer->id,
                 'projekt_id' => $offer->projekt_id,
                 'user_id'    => Auth::id(),
-                'information' => "Wiedervorlage am " . \Carbon\Carbon::parse($validated['wiedervorlage_datum'])->format('d.m.Y') . " vermerkt: " . $validated['wiedervorlage_text'],
+                'information' => $infoText,
             ]);
 
             DB::commit();
 
-            return back()->with('success', 'Wiedervorlage wurde erfolgreich gespeichert.');
+            $msg = $isToday ? 'Wiedervorlage für heute wurde als ToDo erstellt.' : 'Wiedervorlage wurde erfolgreich gespeichert.';
+            return back()->with('success', $msg);
 
         } catch (\Exception $e) {
             DB::rollBack();
