@@ -52,6 +52,7 @@ class ProcessWiedervorlage extends Command
                     'user_id' => $offer->benutzer_id ?? 1, // Fallback auf Admin/User 1
                     'task' => $taskText,
                     'is_completed' => false,
+                    'is_system' => true,
                 ]);
             }
 

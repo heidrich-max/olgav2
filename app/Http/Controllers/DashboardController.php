@@ -748,6 +748,7 @@ class DashboardController extends Controller
                     'user_id' => $offer->benutzer_id ?? Auth::id(),
                     'task' => "Wiedervorlage Angebot {$offer->angebotsnummer}: {$validated['wiedervorlage_text']}",
                     'is_completed' => false,
+                    'is_system' => true,
                 ]);
 
                 // In angebot_tabelle SPEICHERN (nicht leeren), damit es in der View sichtbar bleibt

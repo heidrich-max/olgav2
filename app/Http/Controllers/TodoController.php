@@ -35,6 +35,11 @@ class TodoController extends Controller
     public function update(Request $request, $id)
     {
         $todo = Todo::where('user_id', Auth::id())->findOrFail($id);
+        
+        if ($todo->is_system) {
+            return response()->json(['success' => false, 'message' => 'System-ToDos können nicht manuell geändert werden.'], 403);
+        }
+
         $todo->update([
             'is_completed' => $request->is_completed,
         ]);
@@ -45,6 +50,11 @@ class TodoController extends Controller
     public function destroy($id)
     {
         $todo = Todo::where('user_id', Auth::id())->findOrFail($id);
+
+        if ($todo->is_system) {
+            return response()->json(['success' => false, 'message' => 'System-ToDos können nicht manuell gelöscht werden.'], 403);
+        }
+
         $todo->delete();
 
         return response()->json(['success' => true]);
