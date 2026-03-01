@@ -440,10 +440,16 @@
                 <div style="max-height: 380px; overflow-y: auto;">
                     <ul class="todo-list" id="todoList">
                         @forelse($todos as $todo)
-                            <li class="todo-item {{ $todo->is_completed ? 'completed' : '' }}" data-id="{{ $todo->id }}">
-                                <input type="checkbox" class="todo-checkbox" {{ $todo->is_completed ? 'checked' : '' }} onchange="toggleTodo({{ $todo->id }}, this.checked)">
+                            <li class="todo-item {{ $todo->is_completed ? 'completed' : '' }}" data-id="{{ $todo->id }}" data-system="{{ $todo->is_system ? '1' : '0' }}">
+                                @if(!$todo->is_system)
+                                    <input type="checkbox" class="todo-checkbox" {{ $todo->is_completed ? 'checked' : '' }} onchange="toggleTodo({{ $todo->id }}, this.checked)">
+                                @else
+                                    <i class="fas fa-robot" style="color: var(--primary-accent); font-size: 0.8rem; margin-right: 5px;" title="System-Aufgabe"></i>
+                                @endif
                                 <span class="todo-text">{{ $todo->task }}</span>
-                                <i class="fas fa-trash todo-delete" onclick="deleteTodo({{ $todo->id }})"></i>
+                                @if(!$todo->is_system)
+                                    <i class="fas fa-trash todo-delete" onclick="deleteTodo({{ $todo->id }})"></i>
+                                @endif
                             </li>
                         @empty
                             <div class="empty-msg" id="todoEmptyMsg">
@@ -566,11 +572,22 @@
             const li = document.createElement('li');
             li.className = `todo-item ${todo.is_completed ? 'completed' : ''}`;
             li.dataset.id = todo.id;
-            li.innerHTML = `
-                <input type="checkbox" class="todo-checkbox" ${todo.is_completed ? 'checked' : ''} onchange="toggleTodo(${todo.id}, this.checked)">
-                <span class="todo-text">${todo.task}</span>
-                <i class="fas fa-trash todo-delete" onclick="deleteTodo(${todo.id})"></i>
-            `;
+            li.dataset.system = todo.is_system ? '1' : '0';
+            
+            let html = '';
+            if (!todo.is_system) {
+                html += `<input type="checkbox" class="todo-checkbox" ${todo.is_completed ? 'checked' : ''} onchange="toggleTodo(${todo.id}, this.checked)">`;
+            } else {
+                html += `<i class="fas fa-robot" style="color: var(--primary-accent); font-size: 0.8rem; margin-right: 5px;" title="System-Aufgabe"></i>`;
+            }
+            
+            html += `<span class="todo-text">${todo.task}</span>`;
+            
+            if (!todo.is_system) {
+                html += `<i class="fas fa-trash todo-delete" onclick="deleteTodo(${todo.id})"></i>`;
+            }
+            
+            li.innerHTML = html;
             todoList.prepend(li);
         }
 
