@@ -700,15 +700,36 @@ class DashboardController extends Controller
      */
     public function storeWiedervorlage(Request $request, $id)
     {
-        $validated = $request->validate([
-            'wiedervorlage_datum' => 'required|date|after_or_equal:today',
-            'wiedervorlage_text'  => 'required|string|max:500',
-        ]);
-
         $offer = DB::table('angebot_tabelle')->where('id', $id)->first();
         if (!$offer) {
             return back()->with('error', 'Angebot nicht gefunden.');
         }
+
+        // Falls gelöscht werden soll
+        if ($request->input('action') === 'delete') {
+            try {
+                DB::table('angebot_tabelle')->where('id', $id)->update([
+                    'wiedervorlage_datum' => null,
+                    'wiedervorlage_text'  => null,
+                ]);
+
+                \App\Models\AngebotInformation::create([
+                    'angebot_id' => $offer->id,
+                    'projekt_id' => $offer->projekt_id,
+                    'user_id'    => Auth::id(),
+                    'information' => "Wiedervorlage wurde entfernt.",
+                ]);
+
+                return back()->with('success', 'Wiedervorlage wurde entfernt.');
+            } catch (\Exception $e) {
+                return back()->with('error', 'Fehler beim Löschen: ' . $e->getMessage());
+            }
+        }
+
+        $validated = $request->validate([
+            'wiedervorlage_datum' => 'required|date|after_or_equal:today',
+            'wiedervorlage_text'  => 'required|string|max:500',
+        ]);
 
         // Status-Prüfung: Darf nicht angenommen oder abgeschlossen sein
         if (in_array($offer->letzter_status_name, ['Status angenommen', 'Status abgeschlossen'])) {
@@ -747,7 +768,7 @@ class DashboardController extends Controller
                         'wiedervorlage_text'  => $validated['wiedervorlage_text'],
                     ]);
                 
-                $infoText = "Wiedervorlage am " . $wiedervorlageDatum->format('d.m.Y') . " vermerkt: " . $validated['wiedervorlage_text'];
+                $infoText = "Wiedervorlage geändert/vermerkt für " . $wiedervorlageDatum->format('d.m.Y') . ": " . $validated['wiedervorlage_text'];
             }
 
             // 2. Notiz im Verlauf erstellen

@@ -487,7 +487,11 @@
                     </button>
 
                     <button type="button" class="btn-glass-warning" id="openWiedervorlageModal">
-                        <i class="fas fa-calendar-plus"></i> Wiedervorlage
+                        @if($offer->wiedervorlage_datum)
+                            <i class="fas fa-edit"></i> Wiedervorlage bearbeiten
+                        @else
+                            <i class="fas fa-calendar-plus"></i> Wiedervorlage
+                        @endif
                     </button>
 
                     @if(!str_contains(strtolower($offer->letzter_status_name ?? ''), 'erinnerung'))
@@ -740,19 +744,24 @@
                         <label for="wiedervorlage_datum">Datum</label>
                         <input type="date" name="wiedervorlage_datum" id="wiedervorlage_datum" 
                                class="form-control" required min="{{ date('Y-m-d') }}"
-                               value="{{ date('Y-m-d', strtotime('+7 days')) }}">
+                               value="{{ $offer->wiedervorlage_datum ?? date('Y-m-d', strtotime('+7 days')) }}">
                     </div>
 
                     <div class="form-group">
                         <label for="wiedervorlage_text">Notiz / Grund</label>
                         <textarea name="wiedervorlage_text" id="wiedervorlage_text" 
                                 class="form-control" rows="3" required 
-                                placeholder="z.B. Erneuter Anruf nötig, Kunde wartet auf Budget-Freigabe..."></textarea>
+                                placeholder="z.B. Erneuter Anruf nötig, Kunde wartet auf Budget-Freigabe...">{{ $offer->wiedervorlage_text ?? '' }}</textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
+                    @if($offer->wiedervorlage_datum)
+                        <button type="submit" name="action" value="delete" class="btn-glass-default" style="border-color: #ef4444; color: #fca5a5;">
+                            <i class="fas fa-trash-alt"></i> Löschen
+                        </button>
+                    @endif
                     <button type="button" class="btn-glass-default" id="cancelWiedervorlageBtn">Abbrechen</button>
-                    <button type="submit" class="btn-glass-primary">Speichern</button>
+                    <button type="submit" name="action" value="save" class="btn-glass-primary">Speichern</button>
                 </div>
             </form>
         </div>
