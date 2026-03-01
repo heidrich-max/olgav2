@@ -182,6 +182,9 @@
         .btn-glass-success { border-color: #10b981; }
         .btn-glass-success:hover { background: rgba(16, 185, 129, 0.2); }
 
+        .btn-glass-warning { border-color: #f59e0b; }
+        .btn-glass-warning:hover { background: rgba(245, 158, 11, 0.2); }
+
         /* ---- HISTORY / NOTES SECTION ---- */
         .history-section {
             margin-top: 40px;
@@ -773,6 +776,8 @@
                 closeOfferModal.classList.add('active');
             });
         }
+
+        const closeModal = () => closeOfferModal.classList.remove('active');
 
         if (cancelCloseBtn) cancelCloseBtn.addEventListener('click', closeModal);
         if (closeModalIcon) closeModalIcon.addEventListener('click', closeModal);
