@@ -12,9 +12,24 @@ use Illuminate\Support\Facades\DB;
 class EmailSettingsController extends Controller
 {
     /**
-     * Display the email settings page.
+     * Display the email settings overview page.
      */
     public function index()
+    {
+        $user = Auth::user();
+        
+        // Aktive Firma aus Session oder Cookie
+        $companyId = session('active_company_id', request()->cookie('active_company_id', 1));
+        $companyName = ($companyId == 1) ? 'Branding Europe GmbH' : 'Europe Pen GmbH';
+        $accentColor = ($companyId == 1) ? '#1DA1F2' : '#0088CC';
+
+        return view('settings.email.index', compact('user', 'companyName', 'accentColor'));
+    }
+
+    /**
+     * Display the offer reminder settings page.
+     */
+    public function offerReminder()
     {
         $user = Auth::user();
         
@@ -29,7 +44,7 @@ class EmailSettingsController extends Controller
         $companyName = ($companyId == 1) ? 'Branding Europe GmbH' : 'Europe Pen GmbH';
         $accentColor = ($companyId == 1) ? '#1DA1F2' : '#0088CC';
 
-        return view('settings.email', compact('user', 'template', 'projects', 'companyName', 'accentColor'));
+        return view('settings.email.offer_reminder', compact('user', 'template', 'projects', 'companyName', 'accentColor'));
     }
 
     /**
