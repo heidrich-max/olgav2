@@ -322,6 +322,15 @@
             position: relative;
         }
 
+        .modal-header {
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 15px;
+        }
+
         .modal-header h2, .modal-header h3 { color: #fff; font-size: 1.4rem; margin: 0; display: flex; align-items: center; gap: 12px; }
         .modal-header h2 i { color: var(--primary-accent); }
         
