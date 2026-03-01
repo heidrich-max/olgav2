@@ -322,33 +322,47 @@
             position: relative;
         }
 
-        .modal-header {
-            margin-bottom: 20px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-
-        .modal-header h3 { color: var(--primary-accent); font-size: 1.4rem; margin: 0; }
+        .modal-header h2, .modal-header h3 { color: #fff; font-size: 1.4rem; margin: 0; display: flex; align-items: center; gap: 12px; }
+        .modal-header h2 i { color: var(--primary-accent); }
         
-        .close-modal-btn {
-            background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem;
+        .close-modal, .close-modal-btn {
+            background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.5rem;
+            transition: color 0.2s;
         }
+        .close-modal:hover, .close-modal-btn:hover { color: #fff; }
+
+        .modal-body { padding: 10px 0; }
 
         .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 10px; color: var(--text-muted); font-size: 0.9rem; }
+        .form-group label { display: block; margin-bottom: 8px; color: #fff; font-size: 0.95rem; font-weight: 500; }
         
-        .custom-select {
+        .form-control, .custom-select {
             width: 100%;
-            background: rgba(15, 23, 42, 0.4);
+            background: rgba(15, 23, 42, 0.6);
             border: 1px solid var(--glass-border);
             border-radius: 10px;
-            padding: 12px;
+            padding: 12px 15px;
             color: #fff;
-            appearance: none;
-            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            box-sizing: border-box;
         }
 
+        .form-control:focus, .custom-select:focus {
+            outline: none;
+            border-color: var(--primary-accent);
+            background: rgba(15, 23, 42, 0.8);
+            box-shadow: 0 0 0 4px rgba(29, 161, 242, 0.1);
+        }
+
+        textarea.form-control { resize: vertical; min-height: 80px; }
+
         .modal-footer {
-            display: flex; justify-content: flex-end; gap: 15px; margin-top: 30px;
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
         }
         .status-header-text {
             font-weight: 400;
