@@ -6,9 +6,9 @@
  */
 
 // Lade Laravel Umgebung (falls möglich) oder definiere DB-Zugriff manuell
-// Da wir uns im Root-Verzeichnis befinden sollten:
-require __DIR__ . '/vendor/autoload.php';
-$app = require_once __DIR__ . '/bootstrap/app.php';
+// Da wir uns im public-Verzeichnis befinden sollten:
+require __DIR__ . '/../vendor/autoload.php';
+$app = require_once __DIR__ . '/../bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
 
