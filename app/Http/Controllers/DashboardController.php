@@ -750,12 +750,12 @@ class DashboardController extends Controller
                     'is_completed' => false,
                 ]);
 
-                // In angebot_tabelle leeren (bzw. nicht setzen), da bereits als ToDo vorhanden
+                // In angebot_tabelle SPEICHERN (nicht leeren), damit es in der View sichtbar bleibt
                 DB::table('angebot_tabelle')
                     ->where('id', $id)
                     ->update([
-                        'wiedervorlage_datum' => null,
-                        'wiedervorlage_text'  => null,
+                        'wiedervorlage_datum' => $validated['wiedervorlage_datum'],
+                        'wiedervorlage_text'  => $validated['wiedervorlage_text'],
                     ]);
                 
                 $infoText = "Wiedervorlage für HEUTE vermerkt (ToDo sofort erstellt): " . $validated['wiedervorlage_text'];

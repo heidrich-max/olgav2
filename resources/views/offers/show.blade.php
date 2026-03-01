@@ -809,7 +809,9 @@
             });
         }
 
-        const closeModal = () => closeOfferModal.classList.remove('active');
+        const closeModal = () => {
+            if (closeOfferModal) closeOfferModal.classList.remove('active');
+        };
 
         if (cancelCloseBtn) cancelCloseBtn.addEventListener('click', closeModal);
         if (closeModalIcon) closeModalIcon.addEventListener('click', closeModal);
@@ -820,20 +822,22 @@
         const cancelWiedervorlageBtn = document.getElementById('cancelWiedervorlageBtn');
         const closeWiedervorlageIcon = document.getElementById('closeWiedervorlageIcon');
 
+        const closeWiedervorlage = () => {
+            if (wiedervorlageModal) wiedervorlageModal.classList.remove('active');
+        };
+
         if (openWiedervorlageModal) {
             openWiedervorlageModal.addEventListener('click', () => {
-                wiedervorlageModal.classList.add('active');
+                if (wiedervorlageModal) wiedervorlageModal.classList.add('active');
             });
         }
-
-        const closeWiedervorlage = () => wiedervorlageModal.classList.remove('active');
 
         if (cancelWiedervorlageBtn) cancelWiedervorlageBtn.addEventListener('click', closeWiedervorlage);
         if (closeWiedervorlageIcon) closeWiedervorlageIcon.addEventListener('click', closeWiedervorlage);
 
         window.addEventListener('click', (e) => {
-            if (e.target === closeOfferModal) closeModal();
-            if (e.target === wiedervorlageModal) closeWiedervorlage();
+            if (closeOfferModal && e.target === closeOfferModal) closeModal();
+            if (wiedervorlageModal && e.target === wiedervorlageModal) closeWiedervorlage();
         });
 
         window.addEventListener('resize', resize);
