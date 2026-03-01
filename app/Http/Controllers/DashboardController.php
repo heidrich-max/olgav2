@@ -713,6 +713,9 @@ class DashboardController extends Controller
                     'wiedervorlage_text'  => null,
                 ]);
 
+                // ToDoS löschen
+                \App\Models\Todo::where('offer_id', $offer->id)->where('is_system', true)->delete();
+
                 \App\Models\AngebotInformation::create([
                     'angebot_id' => $offer->id,
                     'projekt_id' => $offer->projekt_id,
@@ -738,6 +741,9 @@ class DashboardController extends Controller
 
         try {
             DB::beginTransaction();
+
+            // Bestehende System-ToDos für dieses Angebot aufräumen (verhindert Duplikate/veraltete Texte)
+            \App\Models\Todo::where('offer_id', $offer->id)->where('is_system', true)->delete();
 
             $wiedervorlageDatum = \Carbon\Carbon::parse($validated['wiedervorlage_datum']);
             $isToday = $wiedervorlageDatum->isToday();
