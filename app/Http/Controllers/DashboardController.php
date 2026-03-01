@@ -694,4 +694,53 @@ class DashboardController extends Controller
             return back()->with('error', 'Fehler beim Senden der Erinnerung: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Speichert eine manuelle Wiedervorlage für ein Angebot.
+     */
+    public function storeWiedervorlage(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'wiedervorlage_datum' => 'required|date|after_or_equal:today',
+            'wiedervorlage_text'  => 'required|string|max:500',
+        ]);
+
+        $offer = DB::table('angebot_tabelle')->where('id', $id)->first();
+        if (!$offer) {
+            return back()->with('error', 'Angebot nicht gefunden.');
+        }
+
+        // Status-Prüfung: Darf nicht angenommen oder abgeschlossen sein
+        if (in_array($offer->letzter_status_name, ['Status angenommen', 'Status abgeschlossen'])) {
+            return back()->with('error', 'Wiedervorlage für angenommene oder abgeschlossene Angebote nicht möglich.');
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // 1. In angebot_tabelle speichern
+            DB::table('angebot_tabelle')
+                ->where('id', $id)
+                ->update([
+                    'wiedervorlage_datum' => $validated['wiedervorlage_datum'],
+                    'wiedervorlage_text'  => $validated['wiedervorlage_text'],
+                ]);
+
+            // 2. Notiz im Verlauf erstellen
+            \App\Models\AngebotInformation::create([
+                'angebot_id' => $offer->id,
+                'projekt_id' => $offer->projekt_id,
+                'user_id'    => Auth::id(),
+                'information' => "Wiedervorlage am " . \Carbon\Carbon::parse($validated['wiedervorlage_datum'])->format('d.m.Y') . " vermerkt: " . $validated['wiedervorlage_text'],
+            ]);
+
+            DB::commit();
+
+            return back()->with('success', 'Wiedervorlage wurde erfolgreich gespeichert.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Fehler beim Speichern der Wiedervorlage: ' . $e->getMessage());
+        }
+    }
 }

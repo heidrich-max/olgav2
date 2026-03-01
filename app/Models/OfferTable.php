@@ -8,4 +8,5 @@ class OfferTable extends Model
 {
     protected $table = 'angebot_tabelle';
     public $timestamps = false;
+    protected $fillable = ['wiedervorlage_datum', 'wiedervorlage_text'];
 }

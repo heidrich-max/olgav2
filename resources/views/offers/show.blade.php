@@ -460,6 +460,10 @@
                         <i class="fas fa-check-circle"></i> Abschließen
                     </button>
 
+                    <button type="button" class="btn-glass-warning" id="openWiedervorlageModal">
+                        <i class="fas fa-calendar-plus"></i> Wiedervorlage
+                    </button>
+
                     @if(!str_contains(strtolower($offer->letzter_status_name ?? ''), 'erinnerung'))
                     <form action="{{ route('offers.reminder.store', $offer->id) }}" method="POST" style="display:inline;">
                         @csrf
@@ -692,6 +696,42 @@
         </div>
     </div>
 
+    <!-- Wiedervorlage Modal -->
+    <div id="wiedervorlageModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-calendar-plus"></i> Wiedervorlage vermerken</h2>
+                <button class="close-modal" id="closeWiedervorlageIcon">&times;</button>
+            </div>
+            <form action="{{ route('offers.wiedervorlage.store', $offer->id) }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <p style="margin-bottom: 20px; color: var(--text-muted); font-size: 0.9rem;">
+                        Wann soll dieses Angebot erneut geprüft werden? Am gewählten Tag wird automatisch ein ToDo für dich erstellt.
+                    </p>
+                    
+                    <div class="form-group">
+                        <label for="wiedervorlage_datum">Datum</label>
+                        <input type="date" name="wiedervorlage_datum" id="wiedervorlage_datum" 
+                               class="form-control" required min="{{ date('Y-m-d') }}"
+                               value="{{ date('Y-m-d', strtotime('+7 days')) }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="wiedervorlage_text">Notiz / Grund</label>
+                        <textarea name="wiedervorlage_text" id="wiedervorlage_text" 
+                                class="form-control" rows="3" required 
+                                placeholder="z.B. Erneuter Anruf nötig, Kunde wartet auf Budget-Freigabe..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-glass-default" id="cancelWiedervorlageBtn">Abbrechen</button>
+                    <button type="submit" class="btn-glass-primary">Speichern</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Company Switcher
         const switcherBtn = document.getElementById('switcherBtn');
@@ -734,13 +774,29 @@
             });
         }
 
-        const closeModal = () => closeOfferModal.classList.remove('active');
-
         if (cancelCloseBtn) cancelCloseBtn.addEventListener('click', closeModal);
         if (closeModalIcon) closeModalIcon.addEventListener('click', closeModal);
 
+        // Wiedervorlage Modal
+        const openWiedervorlageModal = document.getElementById('openWiedervorlageModal');
+        const wiedervorlageModal = document.getElementById('wiedervorlageModal');
+        const cancelWiedervorlageBtn = document.getElementById('cancelWiedervorlageBtn');
+        const closeWiedervorlageIcon = document.getElementById('closeWiedervorlageIcon');
+
+        if (openWiedervorlageModal) {
+            openWiedervorlageModal.addEventListener('click', () => {
+                wiedervorlageModal.classList.add('active');
+            });
+        }
+
+        const closeWiedervorlage = () => wiedervorlageModal.classList.remove('active');
+
+        if (cancelWiedervorlageBtn) cancelWiedervorlageBtn.addEventListener('click', closeWiedervorlage);
+        if (closeWiedervorlageIcon) closeWiedervorlageIcon.addEventListener('click', closeWiedervorlage);
+
         window.addEventListener('click', (e) => {
             if (e.target === closeOfferModal) closeModal();
+            if (e.target === wiedervorlageModal) closeWiedervorlage();
         });
 
         window.addEventListener('resize', resize);
