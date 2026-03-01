@@ -746,6 +746,7 @@ class DashboardController extends Controller
                 // Sofort ein ToDo erstellen
                 \App\Models\Todo::create([
                     'user_id' => $offer->benutzer_id ?? Auth::id(),
+                    'offer_id' => $offer->id,
                     'task' => "Wiedervorlage Angebot {$offer->angebotsnummer}: {$validated['wiedervorlage_text']}",
                     'is_completed' => false,
                     'is_system' => true,

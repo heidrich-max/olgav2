@@ -440,7 +440,12 @@
                 <div style="max-height: 380px; overflow-y: auto;">
                     <ul class="todo-list" id="todoList">
                         @forelse($todos as $todo)
-                            <li class="todo-item {{ $todo->is_completed ? 'completed' : '' }}" data-id="{{ $todo->id }}" data-system="{{ $todo->is_system ? '1' : '0' }}">
+                            <li class="todo-item {{ $todo->is_completed ? 'completed' : '' }}" 
+                                data-id="{{ $todo->id }}" 
+                                data-system="{{ $todo->is_system ? '1' : '0' }}"
+                                data-offer-id="{{ $todo->offer_id ?? '' }}"
+                                style="{{ $todo->offer_id ? 'cursor: pointer;' : '' }}"
+                                onclick="handleTodoClick(event, this)">
                                 @if(!$todo->is_system)
                                     <input type="checkbox" class="todo-checkbox" {{ $todo->is_completed ? 'checked' : '' }} onchange="toggleTodo({{ $todo->id }}, this.checked)">
                                 @else
@@ -573,6 +578,12 @@
             li.className = `todo-item ${todo.is_completed ? 'completed' : ''}`;
             li.dataset.id = todo.id;
             li.dataset.system = todo.is_system ? '1' : '0';
+            li.dataset.offerId = todo.offer_id || '';
+            
+            if (todo.offer_id) {
+                li.style.cursor = 'pointer';
+            }
+            li.setAttribute('onclick', 'handleTodoClick(event, this)');
             
             let html = '';
             if (!todo.is_system) {
@@ -593,6 +604,18 @@
 
         function updateTodoCount(diff) {
             todoCount.innerText = parseInt(todoCount.innerText) + diff;
+        }
+
+        function handleTodoClick(event, element) {
+            // Wenn Checkbox oder Lösch-Icon geklickt wurde, nicht navigieren
+            if (event.target.classList.contains('todo-checkbox') || event.target.classList.contains('todo-delete')) {
+                return;
+            }
+
+            const offerId = element.dataset.offerId;
+            if (offerId) {
+                window.location.href = `/offers/${offerId}?from=my.dashboard`;
+            }
         }
 
         function updateNavBadge(diff) {

@@ -50,6 +50,7 @@ class ProcessWiedervorlage extends Command
             if (!$existing) {
                 \App\Models\Todo::create([
                     'user_id' => $offer->benutzer_id ?? 1, // Fallback auf Admin/User 1
+                    'offer_id' => $offer->id,
                     'task' => $taskText,
                     'is_completed' => false,
                     'is_system' => true,
