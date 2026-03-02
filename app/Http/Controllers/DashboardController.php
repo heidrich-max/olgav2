@@ -810,4 +810,12 @@ class DashboardController extends Controller
             return back()->with('error', 'Fehler beim Speichern der Wiedervorlage: ' . $e->getMessage());
         }
     }
+
+    public function manufacturers()
+    {
+        $user = auth()->user();
+        $manufacturers = DB::table('hersteller')->get();
+
+        return view('manufacturers', compact('user', 'manufacturers'));
+    }
 }

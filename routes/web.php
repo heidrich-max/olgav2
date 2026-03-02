@@ -155,6 +155,9 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/todos/{id}', [\App\Http\Controllers\TodoController::class, 'update'])->name('todos.update');
     Route::delete('/todos/{id}', [\App\Http\Controllers\TodoController::class, 'destroy'])->name('todos.destroy');
 
+    // Hersteller-Übersicht
+    Route::get('/manufacturers', [DashboardController::class, 'manufacturers'])->name('manufacturers.index');
+
     Route::get('/run-migrations', function() {
         try {
             \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);

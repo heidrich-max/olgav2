@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>OLGA - Übersicht Hersteller</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-accent: #ef4444; /* Rot für Hersteller gemessen am Screenshot */
+            --glass-bg: rgba(255, 255, 255, 0.12);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-main: #ffffff;
+            --text-muted: #cbd5e1;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: url('/img/login_background.webp') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        #network-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ---- NAVBAR ---- */
+        .navbar {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(15px);
+            padding: 12px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--glass-border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+        .nav-left { display: flex; align-items: center; gap: 30px; }
+        .navbar img { height: 38px; }
+
+        /* User Dropdown Styles from my-dashboard */
+        .user-dropdown { position: relative; }
+        .user-btn {
+            background: none; border: none;
+            color: var(--text-main); cursor: pointer;
+            display: flex; align-items: center; gap: 8px;
+            font-size: 0.95rem; font-family: 'Inter', sans-serif;
+            padding: 6px 10px; border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .user-btn:hover { background: rgba(255,255,255,0.08); }
+        .user-dropdown-menu {
+            display: none; position: absolute; top: 110%; right: 0;
+            background: #1e293b; min-width: 220px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border-radius: 12px; overflow: hidden;
+            border: 1px solid var(--glass-border); z-index: 200;
+        }
+        .user-dropdown.active .user-dropdown-menu { display: block; }
+        .user-dropdown-header {
+            padding: 14px 18px;
+            background: rgba(255,255,255,0.04);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .user-dropdown-header .user-name { font-weight: 600; font-size: 0.9rem; color: #fff; }
+        .user-dropdown-header .user-role { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+        .user-dropdown-item {
+            padding: 11px 18px; color: var(--text-muted); text-decoration: none;
+            display: flex; align-items: center; gap: 10px; font-size: 0.85rem;
+            transition: background 0.2s, color 0.2s;
+        }
+        .user-dropdown-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
+        .user-dropdown-item.active { color: var(--primary-accent); background: rgba(29,161,242,0.07); }
+        .user-dropdown-item.logout { color: #fca5a5; }
+        .user-dropdown-item.logout:hover { background: rgba(239,68,68,0.1); color: #fff; }
+        .user-dropdown-divider { height: 1px; background: var(--glass-border); margin: 4px 0; }
+
+        /* ---- LAYOUT ---- */
+        .container { position: relative; z-index: 10; padding: 40px; max-width: 1400px; margin: 0 auto; }
+
+        .header-section { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .header-section h1 { font-size: 2.2rem; font-weight: 700; background: linear-gradient(90deg, #fff, var(--primary-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .btn-add {
+            background: var(--primary-accent); border: none; color: #fff;
+            padding: 10px 20px; border-radius: 10px; cursor: pointer;
+            font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 10px;
+            text-decoration: none; transition: transform 0.2s;
+        }
+        .btn-add:hover { transform: translateY(-2px); }
+
+        /* ---- FILTERS ---- */
+        .filters-glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px; padding: 20px; margin-bottom: 30px;
+            display: flex; gap: 20px; align-items: center;
+        }
+        .search-input {
+            flex: 1; background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border);
+            border-radius: 8px; padding: 10px 15px; color: #fff; font-size: 0.9rem;
+        }
+        .search-input:focus { border-color: var(--primary-accent); outline: none; }
+
+        /* ---- TABLE ---- */
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px; padding: 25px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .data-table th { 
+            text-align: left; color: var(--text-muted); padding: 12px 10px; 
+            font-weight: 600; font-size: 0.75rem; text-transform: uppercase; 
+            letter-spacing: 0.05em; border-bottom: 2px solid rgba(255,255,255,0.12);
+        }
+        .data-table td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.06); color: var(--text-main); }
+        .data-table tr:hover { background: rgba(255,255,255,0.03); }
+        
+        .btn-edit {
+            background: var(--primary-accent); color: #fff; border: none;
+            padding: 4px 12px; border-radius: 6px; font-size: 0.75rem; 
+            cursor: pointer; text-decoration: none; font-weight: 600;
+        }
+
+        .lang-badge {
+            background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border);
+            padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="network-overlay"></canvas>
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="{{ route('dashboard') }}"><img src="/logo/olga_neu.svg" alt="Frank Group"></a>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="user-dropdown" id="userDropdown">
+                <button class="user-btn" id="userBtn">
+                    <i class="fas fa-user-circle" style="color: var(--primary-accent); font-size: 1.1rem;"></i>
+                    <span>{{ $user->name_komplett }}</span>
+                    <i class="fas fa-chevron-down" style="font-size: 0.65rem; color: var(--text-muted);"></i>
+                </button>
+                <div class="user-dropdown-menu">
+                    <div class="user-dropdown-header">
+                        <div class="user-name">{{ $user->name_komplett }}</div>
+                        <div class="user-role">Eingeloggt</div>
+                    </div>
+                    <a href="{{ route('my.dashboard') }}" class="user-dropdown-item">
+                        <i class="fas fa-user-cog"></i> Mein Dashboard
+                    </a>
+                    <a href="{{ route('manufacturers.index') }}" class="user-dropdown-item active">
+                        <i class="fas fa-industry"></i> Hersteller (Neu)
+                    </a>
+                    <div class="user-dropdown-divider"></div>
+                    <a href="#" class="user-dropdown-item logout" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        <i class="fas fa-sign-out-alt"></i> Abmelden
+                    </a>
+                </div>
+            </div>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+            </form>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header-section">
+            <div>
+                <h1>Übersicht Hersteller</h1>
+            </div>
+            <a href="#" class="btn-add">
+                <i class="fas fa-plus"></i> Hersteller hinzufügen
+            </a>
+        </div>
+
+        <div class="filters-glass">
+            <i class="fas fa-search" style="color: var(--text-muted);"></i>
+            <input type="text" id="manufacturerSearch" class="search-input" placeholder="Nach Hersteller, HN oder Ansprechpartner suchen...">
+        </div>
+
+        <div class="card">
+            <table class="data-table" id="manufacturersTable">
+                <thead>
+                    <tr>
+                        <th>HN</th>
+                        <th>Firmenname</th>
+                        <th>Ansprechpartner</th>
+                        <th>Telefon</th>
+                        <th>E-Mail</th>
+                        <th>Internetseite</th>
+                        <th>Sprache</th>
+                        <th>Aktion</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($manufacturers as $m)
+                    <tr>
+                        <td style="font-weight: 700; color: var(--text-muted);">{{ $m->hn ?? sprintf('%03d', $m->id) }}</td>
+                        <td style="font-weight: 600;">{{ $m->firmenname }}</td>
+                        <td>{{ $m->ansprechpartner }}</td>
+                        <td>{{ $m->telefon }}</td>
+                        <td><a href="mailto:{{ $m->email }}" style="color: var(--primary-accent); text-decoration: none;">{{ $m->email }}</a></td>
+                        <td>
+                            @if($m->internetseite)
+                            <a href="{{ $m->internetseite }}" target="_blank" style="color: #60a5fa; text-decoration: none;">
+                                <i class="fas fa-external-link-alt"></i> Link
+                            </a>
+                            @endif
+                        </td>
+                        <td><span class="lang-badge">{{ $m->sprache ?? 'deutsch' }}</span></td>
+                        <td>
+                            <a href="#" class="btn-edit">bearbeiten</a>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // User Dropdown
+        const userDropdown = document.getElementById('userDropdown');
+        document.getElementById('userBtn').addEventListener('click', e => {
+            e.stopPropagation();
+            userDropdown.classList.toggle('active');
+        });
+        document.addEventListener('click', () => userDropdown.classList.remove('active'));
+
+        // Search Logic
+        document.getElementById('manufacturerSearch').addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#manufacturersTable tbody tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(term) ? '' : 'none';
+            });
+        });
+
+        // Network Animation (Copy from Dashboard)
+        const canvas = document.getElementById('network-overlay');
+        const ctx = canvas.getContext('2d');
+        let width, height, particles = [];
+        function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; initParticles(); }
+        class Particle {
+            constructor() { this.init(); }
+            init() { this.x = Math.random() * width; this.y = Math.random() * height; this.vx = (Math.random() - 0.5) * 0.3; this.vy = (Math.random() - 0.5) * 0.3; this.radius = 1.2; }
+            update() { this.x += this.vx; this.y += this.vy; if (this.x < 0 || this.x > width) this.vx *= -1; if (this.y < 0 || this.y > height) this.vy *= -1; }
+            draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = 'rgba(255, 255, 255, 0.3)'; ctx.fill(); }
+        }
+        function initParticles() { particles = []; for (let i = 0; i < 80; i++) particles.push(new Particle()); }
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach((p, i) => {
+                p.update(); p.draw();
+                for (let j = i + 1; j < particles.length; j++) {
+                    const p2 = particles[j];
+                    const dx = p.x - p2.x; const dy = p.y - p2.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 150) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 * (1 - dist / 150)})`;
+                        ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+                    }
+                }
+            });
+            requestAnimationFrame(animate);
+        }
+        window.addEventListener('resize', resize);
+        resize(); animate();
+    </script>
+</body>
+</html>

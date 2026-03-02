@@ -258,6 +258,9 @@
                     <a href="{{ route('calendar') }}" class="user-dropdown-item">
                         <i class="fas fa-calendar-alt"></i> Mein Kalender
                     </a>
+                    <a href="{{ route('manufacturers.index') }}" class="user-dropdown-item">
+                        <i class="fas fa-industry"></i> Hersteller
+                    </a>
                     <a href="{{ route('companies.index') }}" class="user-dropdown-item">
                         <i class="fas fa-building"></i> Firmen verwalten
                     </a>
