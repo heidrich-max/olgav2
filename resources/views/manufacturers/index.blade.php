@@ -285,6 +285,7 @@
                         <th>Telefon</th>
                         <th>E-Mail</th>
                         <th>Internetseite</th>
+                        <th>Info</th>
                         <th>Sprache</th>
                         <th>Aktion</th>
                     </tr>
@@ -305,6 +306,7 @@
                             </a>
                             @endif
                         </td>
+                        <td><span style="font-size: 0.75rem; color: var(--text-muted); display: block; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $m->herstellerinformation }}">{{ $m->herstellerinformation }}</span></td>
                         <td><span class="lang-badge">{{ $m->sprache_id ?? '1' }}</span></td>
                         <td>
                             <a href="{{ route('manufacturers.edit', $m->id) }}" class="btn-edit">bearbeiten</a>

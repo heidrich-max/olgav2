@@ -56,6 +56,7 @@ class ManufacturerController extends Controller
             'telefon' => $request->telefon ?? '',
             'email' => $request->email ?? '',
             'internetseite' => $request->internetseite ?? '',
+            'herstellerinformation' => $request->herstellerinformation ?? '',
             'sprache_id' => $request->sprache_id ?? 1,
         ];
 
@@ -100,6 +101,7 @@ class ManufacturerController extends Controller
             'telefon' => $request->telefon ?? '',
             'email' => $request->email ?? '',
             'internetseite' => $request->internetseite ?? '',
+            'herstellerinformation' => $request->herstellerinformation ?? '',
             'sprache_id' => $request->sprache_id ?? 1,
         ];
 

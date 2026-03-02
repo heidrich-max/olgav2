@@ -280,6 +280,11 @@
                         <input type="text" name="internetseite" id="internetseite" class="form-control" value="{{ old('internetseite', $manufacturer->internetseite ?? ($manufacturer->Internetseite ?? '')) }}">
                     </div>
 
+                    <div class="form-group full-width">
+                        <label for="herstellerinformation">Herstellerinformationen</label>
+                        <textarea name="herstellerinformation" id="herstellerinformation" class="form-control" rows="4" placeholder="Zusätzliche Informationen zum Hersteller...">{{ old('herstellerinformation', $manufacturer->herstellerinformation) }}</textarea>
+                    </div>
+
                     <div class="form-group">
                         <label for="sprache_id">Sprache (ID)</label>
                         <input type="text" name="sprache_id" id="sprache_id" class="form-control" value="{{ old('sprache_id', $manufacturer->sprache_id ?? '1') }}">
