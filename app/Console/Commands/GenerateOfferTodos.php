@@ -43,8 +43,9 @@ class GenerateOfferTodos extends Command
                     ->where('angebotsnummer', $offerNum)
                     ->first();
 
-                // Wenn das Angebot nicht mehr existiert oder nicht mehr offen ist, To-Do löschen
-                if (!$offer || $offer->letzter_status_name !== 'Status offen') {
+                // Wenn das Angebot nicht mehr existiert oder einen Status hat, der kein To-Do benötigt (nicht 'offen' und nicht 'erinnerung versendet')
+                $keepStatuses = ['Status offen', 'Status Erinnerung versendet'];
+                if (!$offer || !in_array($offer->letzter_status_name, $keepStatuses)) {
                     $todo->delete();
                     $deletedCount++;
                 }
@@ -90,9 +91,10 @@ class GenerateOfferTodos extends Command
 
             $taskText = "Angebots-Nachverfolgung: {$offer->angebotsnummer} (Kunde anrufen oder Erinnerung senden)";
             
-            // Prüfen, ob bereits existiert
+            // Prüfen, ob bereits ein OFFENES To-Do existiert
             $exists = Todo::where('user_id', $userData->id)
                 ->where('task', $taskText)
+                ->where('is_completed', false)
                 ->exists();
 
             if (!$exists) {
