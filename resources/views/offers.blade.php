@@ -603,7 +603,7 @@
                     <tbody>
                         @foreach($offers as $offer)
                         <tr onclick="window.location='{{ route('offers.show', $offer->id) }}?from=offers'" 
-                            style="cursor: pointer; background: {{ $offer->letzter_status_bg_hex ? $offer->letzter_status_bg_hex . '15' : 'rgba(255,255,255,0.02)' }}; border-left: 4px solid {{ $offer->letzter_status_bg_hex ?? 'transparent' }};">
+                            style="cursor: pointer; background: {{ $offer->letzter_status_bg_hex ? $offer->letzter_status_bg_hex . '25' : 'rgba(255,255,255,0.02)' }}; border-left: 4px solid {{ $offer->letzter_status_bg_hex ?? 'transparent' }};">
                             <td style="padding-left: 15px;">{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</td>
                             <td>
                                 <a href="{{ route('offers.show', $offer->id) }}?from=offers" style="text-decoration: none; color: inherit;">

@@ -224,6 +224,17 @@ class DashboardController extends Controller
                 'salesperson' => $selectedSalesperson
             ]);
 
+        // Ensure colors have # for offers (Paginator collection)
+        $offers->getCollection()->transform(function($offer) {
+            if (isset($offer->letzter_status_bg_hex) && $offer->letzter_status_bg_hex && strpos($offer->letzter_status_bg_hex, '#') !== 0) {
+                $offer->letzter_status_bg_hex = '#' . $offer->letzter_status_bg_hex;
+            }
+            if (isset($offer->letzter_status_farbe_hex) && $offer->letzter_status_farbe_hex && strpos($offer->letzter_status_farbe_hex, '#') !== 0) {
+                $offer->letzter_status_farbe_hex = '#' . $offer->letzter_status_farbe_hex;
+            }
+            return $offer;
+        });
+
         $companyName = ($companyId == 1) ? 'Branding Europe GmbH' : 'Europe Pen GmbH';
         $accentColor = ($companyId == 1) ? '#1DA1F2' : '#0088CC';
 
