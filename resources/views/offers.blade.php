@@ -620,7 +620,7 @@
                                 {{ number_format($offer->angebotssumme, 2, ',', '.') }} €
                             </td>
                             <td>
-                                <span class="badge" style="color: {{ $offer->letzter_status_farbe_hex }}; background: {{ $offer->letzter_status_bg_hex . '20' }}; border-color: {{ $offer->letzter_status_bg_hex }}">
+                                <span class="badge" style="color: {{ $offer->letzter_status_farbe_hex }}; background: {{ $offer->letzter_status_bg_hex . '20' }}">
                                     {{ $offer->letzter_status_name }}
                                 </span>
                             </td>
