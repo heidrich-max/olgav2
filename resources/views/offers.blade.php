@@ -353,8 +353,8 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
             padding: 8px 16px;
             border-radius: 50px;
             color: white;
@@ -381,7 +381,6 @@
 
         .status-pill.active {
             background: var(--accent-color);
-            border-color: var(--accent-color);
             box-shadow: 0 4px 15px rgba(29, 161, 242, 0.3);
         }
 
