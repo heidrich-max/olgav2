@@ -364,6 +364,7 @@
                     </div>
                     <a href="{{ route('my.dashboard') }}" class="user-dropdown-item"> <i class="fas fa-user-cog"></i> Mein Dashboard </a>
                     <a href="{{ route('calendar') }}" class="user-dropdown-item"> <i class="fas fa-calendar-alt"></i> Mein Kalender </a>
+                    <a href="{{ route('manufacturers.index') }}" class="user-dropdown-item {{ request()->routeIs('manufacturers.*') ? 'active' : '' }}"> <i class="fas fa-industry"></i> Hersteller </a>
                     <a href="{{ route('companies.index') }}" class="user-dropdown-item"> <i class="fas fa-building"></i> Firmen verwalten </a>
                     <a href="{{ route('settings.email.index') }}" class="user-dropdown-item active"> <i class="fas fa-envelope-open-text"></i> E-Mail Einstellungen </a>
                     <div class="user-dropdown-divider"></div>
