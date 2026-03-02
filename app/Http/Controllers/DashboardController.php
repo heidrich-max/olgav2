@@ -818,6 +818,12 @@ class DashboardController extends Controller
             ->orderBy('herstellernummer', 'asc')
             ->get();
 
-        return view('manufacturers', compact('user', 'manufacturers'));
+        // Debug: List first 20 HN and IDs
+        $debug = $manufacturers->take(20)->map(function($m) {
+            return "ID:{$m->id}/HN:{$m->herstellernummer}";
+        })->implode(' | ');
+        throw new \Exception("SORT_DEBUG: " . $debug);
+
+        return view('manufacturers', compact('user', $manufacturers));
     }
 }
