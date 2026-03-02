@@ -48,14 +48,14 @@ class ManufacturerController extends Controller
         ]);
 
         $insertData = [
-            'herstellernummer' => $request->herstellernummer,
+            'herstellernummer' => $request->herstellernummer ?? '',
             'firmenname' => $request->firmenname,
-            'anrede' => $request->anrede,
-            'vorname' => $request->vorname,
-            'nachname' => $request->nachname,
-            'telefon' => $request->telefon,
-            'email' => $request->email,
-            'internetseite' => $request->internetseite,
+            'anrede' => $request->anrede ?? '',
+            'vorname' => $request->vorname ?? '',
+            'nachname' => $request->nachname ?? '',
+            'telefon' => $request->telefon ?? '',
+            'email' => $request->email ?? '',
+            'internetseite' => $request->internetseite ?? '',
             'sprache_id' => $request->sprache_id ?? 1,
         ];
 
@@ -92,15 +92,15 @@ class ManufacturerController extends Controller
         ]);
 
         $updateData = [
-            'herstellernummer' => $request->herstellernummer,
+            'herstellernummer' => $request->herstellernummer ?? '',
             'firmenname' => $request->firmenname,
-            'anrede' => $request->anrede,
-            'vorname' => $request->vorname,
-            'nachname' => $request->nachname,
-            'telefon' => $request->telefon,
-            'email' => $request->email,
-            'internetseite' => $request->internetseite,
-            'sprache_id' => $request->sprache_id,
+            'anrede' => $request->anrede ?? '',
+            'vorname' => $request->vorname ?? '',
+            'nachname' => $request->nachname ?? '',
+            'telefon' => $request->telefon ?? '',
+            'email' => $request->email ?? '',
+            'internetseite' => $request->internetseite ?? '',
+            'sprache_id' => $request->sprache_id ?? 1,
         ];
 
         DB::table('hersteller')->where('id', $id)->update($updateData);
