@@ -816,13 +816,6 @@ class DashboardController extends Controller
         $user = auth()->user();
         $manufacturers = DB::table('hersteller')->get();
 
-        // Debug: Throw exception with columns of first entry
-        if ($manufacturers->isNotEmpty()) {
-            $first = (array)$manufacturers->first();
-            $cols = implode(', ', array_keys($first));
-            throw new \Exception("HERSTELLER_COLUMNS: " . $cols);
-        }
-
         return view('manufacturers', compact('user', 'manufacturers'));
     }
 }

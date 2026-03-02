@@ -211,19 +211,20 @@
                 <tbody>
                     @foreach($manufacturers as $m)
                     <tr>
-                        <td style="font-weight: 700; color: var(--text-muted);">{{ $m->hn ?? sprintf('%03d', $m->id) }}</td>
+                        <td style="font-weight: 700; color: var(--text-muted);">{{ $m->herstellernummer ?? sprintf('%03d', $m->id) }}</td>
                         <td style="font-weight: 600;">{{ $m->firmenname }}</td>
-                        <td>{{ $m->ansprechpartner }}</td>
+                        <td>{{ trim(($m->anrede ?? '') . ' ' . ($m->vorname ?? '') . ' ' . ($m->nachname ?? '')) }}</td>
                         <td>{{ $m->telefon }}</td>
                         <td><a href="mailto:{{ $m->email }}" style="color: var(--primary-accent); text-decoration: none;">{{ $m->email }}</a></td>
                         <td>
-                            @if($m->internetseite)
-                            <a href="{{ $m->internetseite }}" target="_blank" style="color: #60a5fa; text-decoration: none;">
+                            @php $web = $m->Internetseite ?? $m->internetseite ?? null; @endphp
+                            @if($web)
+                            <a href="{{ str_starts_with($web, 'http') ? $web : 'https://' . $web }}" target="_blank" style="color: #60a5fa; text-decoration: none;">
                                 <i class="fas fa-external-link-alt"></i> Link
                             </a>
                             @endif
                         </td>
-                        <td><span class="lang-badge">{{ $m->sprache ?? 'deutsch' }}</span></td>
+                        <td><span class="lang-badge">{{ $m->sprache_id ?? '1' }}</span></td>
                         <td>
                             <a href="#" class="btn-edit">bearbeiten</a>
                         </td>
