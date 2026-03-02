@@ -79,7 +79,7 @@ try {
             } else {
                 $reason = "Sollte eigentlich ein ToDo haben (7+ Tage offen)";
             }
-        } elseif ($offer->letzter_status_name === 'Status Erinnerung versendet') {
+        } elseif ($offer->letzter_status_name === 'Status Erinnerung verschickt') {
             if (!$offer->reminder_date) {
                 $reason = "<b>FEHLER: reminder_date ist NULL</b> (System weiß nicht, wann die 7 Tage um sind)";
             } elseif ($offer->reminder_date > $targetDate) {
