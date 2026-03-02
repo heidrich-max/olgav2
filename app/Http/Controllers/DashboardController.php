@@ -641,7 +641,7 @@ class DashboardController extends Controller
             $status = DB::table('angebot_status')->where('id', 2)->first();
             if (!$status) {
                 // Fallback falls Status 2 nicht existiert
-                $statusName = 'Status Erinnerung versendet';
+                $statusName = 'Status Erinnerung verschickt';
                 $bg = 'warning';
                 $color = 'white';
                 $statusSh = 'EV';

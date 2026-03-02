@@ -43,8 +43,8 @@ class GenerateOfferTodos extends Command
                     ->where('angebotsnummer', $offerNum)
                     ->first();
 
-                // Wenn das Angebot nicht mehr existiert oder einen Status hat, der kein To-Do benötigt (nicht 'offen' und nicht 'erinnerung versendet')
-                $keepStatuses = ['Status offen', 'Status Erinnerung versendet'];
+                // Wenn das Angebot nicht mehr existiert oder einen Status hat, der kein To-Do benötigt (nicht 'offen' und nicht 'erinnerung verschickt')
+                $keepStatuses = ['Status offen', 'Status Erinnerung verschickt'];
                 if (!$offer || !in_array($offer->letzter_status_name, $keepStatuses)) {
                     $todo->delete();
                     $deletedCount++;
@@ -68,7 +68,7 @@ class GenerateOfferTodos extends Command
 
         // B) Angebote mit versendeter Erinnerung (Wiedervorlage nach 7 Tagen)
         $reminderOffers = DB::table('angebot_tabelle')
-            ->where('letzter_status_name', 'Status Erinnerung versendet')
+            ->where('letzter_status_name', 'Status Erinnerung verschickt')
             ->whereDate('reminder_date', '<=', $targetDate)
             ->get();
 
@@ -93,7 +93,7 @@ class GenerateOfferTodos extends Command
                 continue;
             }
 
-            if (($offer->todo_type ?? '') === 'followup' || $offer->letzter_status_name === 'Status Erinnerung versendet') {
+            if (($offer->todo_type ?? '') === 'followup' || $offer->letzter_status_name === 'Status Erinnerung verschickt') {
                 $taskText = "Angebots-Nachverfolgung (Erneuter Kontakt): {$offer->angebotsnummer} (Kunde telefonisch nachfassen)";
             } else {
                 $taskText = "Angebots-Nachverfolgung: {$offer->angebotsnummer} (Kunde anrufen oder 1. Erinnerung senden)";
