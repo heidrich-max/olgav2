@@ -9,6 +9,7 @@ use App\Services\ProjectMailService;
 use App\Models\CompanyProject;
 use App\Mail\ProjectReminderMail;
 use App\Http\Controllers\EmailSettingsController;
+use App\Http\Controllers\ManufacturerController;
 use Illuminate\Support\Facades\Mail;
 
 Route::get('/', function () {
