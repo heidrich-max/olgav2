@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>OLGA - Übersicht Hersteller</title>
+    <title>OLGA - Hersteller Übersicht</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
 
@@ -47,6 +47,31 @@
         .nav-left { display: flex; align-items: center; gap: 30px; }
         .navbar img { height: 38px; }
 
+        .company-switcher { position: relative; display: inline-block; }
+        .switcher-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 8px 16px; border-radius: 10px;
+            color: var(--text-main); cursor: pointer; font-size: 0.9rem;
+            display: flex; align-items: center; gap: 10px; transition: all 0.3s;
+        }
+        .switcher-btn:hover { background: rgba(255,255,255,0.15); border-color: var(--primary-accent); }
+        .switcher-content {
+            display: none; position: absolute; top: 100%; left: 0;
+            background: #1e293b; min-width: 220px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border-radius: 10px; margin-top: 8px; overflow: hidden;
+            border: 1px solid var(--glass-border);
+        }
+        .company-switcher.active .switcher-content { display: block; }
+        .switcher-item {
+            padding: 12px 20px; color: var(--text-muted); text-decoration: none;
+            display: flex; align-items: center; gap: 10px;
+            transition: background 0.3s, color 0.3s;
+        }
+        .switcher-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
+        .switcher-item.active { border-left: 3px solid var(--primary-accent); color: var(--text-main); background: rgba(255,255,255,0.05); }
+
         /* User Dropdown Styles from my-dashboard */
         .user-dropdown { position: relative; }
         .user-btn {
@@ -83,6 +108,14 @@
         .user-dropdown-item.logout { color: #fca5a5; }
         .user-dropdown-item.logout:hover { background: rgba(239,68,68,0.1); color: #fff; }
         .user-dropdown-divider { height: 1px; background: var(--glass-border); margin: 4px 0; }
+
+        .todo-badge {
+            background: #ef4444; color: white; font-size: 0.65rem; font-weight: 700;
+            padding: 2px 6px; border-radius: 50px; margin-left: 5px;
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 18px; height: 18px; vertical-align: middle;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
 
         /* ---- LAYOUT ---- */
         .container { position: relative; z-index: 10; padding: 40px; max-width: 1400px; margin: 0 auto; }
@@ -147,6 +180,30 @@
     <nav class="navbar">
         <div class="nav-left">
             <a href="{{ route('dashboard') }}"><img src="/logo/olga_neu.svg" alt="Frank Group"></a>
+            <div class="company-switcher" id="companySwitcher">
+                <button class="switcher-btn" id="switcherBtn">
+                    <i class="fas fa-building"></i>
+                    Firmenansicht
+                    <i class="fas fa-chevron-down" style="font-size: 0.7rem;"></i>
+                </button>
+                <div class="switcher-content">
+                    <div style="padding: 10px 20px; font-size: 0.75rem; color: #1DA1F2; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.03);">Branding Europe GmbH</div>
+                    <a href="{{ route('company.switch', 1) }}" class="switcher-item">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                    <a href="{{ route('company.switch', 1) }}?redirect=offers" class="switcher-item">
+                        <i class="fas fa-file-invoice"></i> Angebotsübersicht
+                    </a>
+                    <div style="height: 1px; background: var(--glass-border); margin: 5px 0;"></div>
+                    <div style="padding: 10px 20px; font-size: 0.75rem; color: #0088CC; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.03);">Europe Pen GmbH</div>
+                    <a href="{{ route('company.switch', 2) }}" class="switcher-item">
+                        <i class="fas fa-home"></i> Dashboard
+                    </a>
+                    <a href="{{ route('company.switch', 2) }}?redirect=offers" class="switcher-item">
+                        <i class="fas fa-file-invoice"></i> Angebotsübersicht
+                    </a>
+                </div>
+            </div>
         </div>
 
         <div style="display: flex; align-items: center; gap: 10px;">
@@ -154,6 +211,9 @@
                 <button class="user-btn" id="userBtn">
                     <i class="fas fa-user-circle" style="color: var(--primary-accent); font-size: 1.1rem;"></i>
                     <span>{{ $user->name_komplett }}</span>
+                    @if(isset($openTodoCount) && $openTodoCount > 0)
+                        <span class="todo-badge">{{ $openTodoCount }}</span>
+                    @endif
                     <i class="fas fa-chevron-down" style="font-size: 0.65rem; color: var(--text-muted);"></i>
                 </button>
                 <div class="user-dropdown-menu">
@@ -164,8 +224,17 @@
                     <a href="{{ route('my.dashboard') }}" class="user-dropdown-item">
                         <i class="fas fa-user-cog"></i> Mein Dashboard
                     </a>
+                    <a href="{{ route('calendar') }}" class="user-dropdown-item">
+                        <i class="fas fa-calendar-alt"></i> Mein Kalender
+                    </a>
                     <a href="{{ route('manufacturers.index') }}" class="user-dropdown-item active">
-                        <i class="fas fa-industry"></i> Hersteller (Neu)
+                        <i class="fas fa-industry"></i> Hersteller
+                    </a>
+                    <a href="{{ route('companies.index') }}" class="user-dropdown-item">
+                        <i class="fas fa-building"></i> Firmen verwalten
+                    </a>
+                    <a href="{{ route('settings.email.index') }}" class="user-dropdown-item">
+                        <i class="fas fa-envelope-open-text"></i> E-Mail Einstellungen
                     </a>
                     <div class="user-dropdown-divider"></div>
                     <a href="#" class="user-dropdown-item logout" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -182,7 +251,7 @@
     <div class="container">
         <div class="header-section">
             <div>
-                <h1>Übersicht Hersteller</h1>
+                <h1>Hersteller Übersicht</h1>
             </div>
             <a href="#" class="btn-add">
                 <i class="fas fa-plus"></i> Hersteller hinzufügen
@@ -236,13 +305,26 @@
     </div>
 
     <script>
+        // Company Switcher
+        const companySwitcher = document.getElementById('companySwitcher');
+        document.getElementById('switcherBtn').addEventListener('click', e => {
+            e.stopPropagation();
+            companySwitcher.classList.toggle('active');
+            userDropdown.classList.remove('active');
+        });
+
         // User Dropdown
         const userDropdown = document.getElementById('userDropdown');
         document.getElementById('userBtn').addEventListener('click', e => {
             e.stopPropagation();
             userDropdown.classList.toggle('active');
+            companySwitcher.classList.remove('active');
         });
-        document.addEventListener('click', () => userDropdown.classList.remove('active'));
+
+        document.addEventListener('click', () => {
+            userDropdown.classList.remove('active');
+            companySwitcher.classList.remove('active');
+        });
 
         // Search Logic
         document.getElementById('manufacturerSearch').addEventListener('input', function(e) {
