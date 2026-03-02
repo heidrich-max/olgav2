@@ -72,6 +72,10 @@ class GenerateOfferTodos extends Command
             ->whereDate('reminder_date', '<=', $targetDate)
             ->get();
 
+        // Markiere die Angebote für unterschiedliche Texte
+        foreach($openOffers as $o) { $o->todo_type = 'first'; }
+        foreach($reminderOffers as $o) { $o->todo_type = 'followup'; }
+
         $allTargetOffers = $openOffers->merge($reminderOffers);
 
         $this->info(count($allTargetOffers) . " relevante Angebote für To-Dos gefunden.");
@@ -89,7 +93,11 @@ class GenerateOfferTodos extends Command
                 continue;
             }
 
-            $taskText = "Angebots-Nachverfolgung: {$offer->angebotsnummer} (Kunde anrufen oder Erinnerung senden)";
+            if (($offer->todo_type ?? '') === 'followup' || $offer->letzter_status_name === 'Status Erinnerung versendet') {
+                $taskText = "Angebots-Nachverfolgung (Erneuter Kontakt): {$offer->angebotsnummer} (Kunde telefonisch nachfassen)";
+            } else {
+                $taskText = "Angebots-Nachverfolgung: {$offer->angebotsnummer} (Kunde anrufen oder 1. Erinnerung senden)";
+            }
             
             // Prüfen, ob bereits ein OFFENES To-Do existiert
             $exists = Todo::where('user_id', $userData->id)

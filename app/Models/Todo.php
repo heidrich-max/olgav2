@@ -29,7 +29,7 @@ class Todo extends Model
             $query->where('offer_id', $offerId);
         } else {
             $query->where(function($q) use ($offerNumber) {
-                $q->where('task', 'like', "Angebots-Nachverfolgung: {$offerNumber}%")
+                $q->where('task', 'like', "Angebots-Nachverfolgung%: {$offerNumber}%")
                   ->orWhere('task', 'like', "Wiedervorlage Angebot {$offerNumber}%");
             });
         }
