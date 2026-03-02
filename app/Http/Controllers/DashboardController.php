@@ -8,6 +8,8 @@ use App\Models\OfferTable;
 use App\Models\AngebotInformation;
 use App\Models\AngebotAblehnen;
 use App\Models\AngebotAbgeschlossen;
+use App\Models\CompanyProject;
+use App\Mail\ProjectReminderMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
