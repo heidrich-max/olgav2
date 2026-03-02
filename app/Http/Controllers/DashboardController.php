@@ -815,22 +815,9 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
         
-        // Debug: Find '000' or similar
-        $hnZero = DB::table('hersteller')->where('herstellernummer', '000')->first();
-        $idZero = DB::table('hersteller')->where('id', 0)->first();
-        
         $manufacturers = DB::table('hersteller')
-            ->orderByRaw('herstellernummer IS NULL ASC') // NULLs last
-            ->orderBy('herstellernummer', 'asc')
-            ->orderBy('id', 'asc')
+            ->orderByRaw("COALESCE(NULLIF(herstellernummer, ''), LPAD(id, 3, '0')) ASC")
             ->get();
-
-        $debug = "HN_000: " . ($hnZero ? 'YES' : 'NO') . " | ID_0: " . ($idZero ? 'YES' : 'NO') . " | FIRST_20: ";
-        $debug .= $manufacturers->take(20)->map(function($m) {
-            return "ID:{$m->id}/HN:'{$m->herstellernummer}'";
-        })->implode(' | ');
-        
-        throw new \Exception("SORT_DEBUG_V2: " . $debug);
 
         return view('manufacturers', compact('user', 'manufacturers'));
     }
