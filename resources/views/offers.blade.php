@@ -22,7 +22,8 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at top left, #1a2a44, #0f172a, #070b14);
+            background: url('/img/login_background.webp') no-repeat center center fixed;
+            background-size: cover;
             color: var(--text-main);
             min-height: 100vh;
             overflow-x: hidden;
@@ -197,8 +198,14 @@
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
+        tr {
+            transition: all 0.2s ease;
+        }
+
         tr:hover {
-            background: rgba(255,255,255,0.03);
+            background: rgba(255,255,255,0.08) !important;
+            transform: scale(1.002);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
         .badge {
@@ -501,7 +508,7 @@
             <!-- Benutzer-Dropdown -->
             <div class="user-dropdown" id="userDropdown">
                 <button class="user-btn" id="userBtn">
-                    <i class="fas fa-user-circle" style="color: var(--primary-accent); font-size: 1.1rem;"></i>
+                    <i class="fas fa-user-circle" style="color: var(--accent-color); font-size: 1.1rem;"></i>
                     <span id="navUserName">{{ $user->name_komplett }}</span>
                     @if(isset($openTodoCount) && $openTodoCount > 0)
                         <span class="todo-badge" id="navTodoBadge">{{ $openTodoCount }}</span>
@@ -595,8 +602,9 @@
                     </thead>
                     <tbody>
                         @foreach($offers as $offer)
-                        <tr onclick="window.location='{{ route('offers.show', $offer->id) }}?from=offers'" style="cursor: pointer;">
-                            <td>{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</td>
+                        <tr onclick="window.location='{{ route('offers.show', $offer->id) }}?from=offers'" 
+                            style="cursor: pointer; background: {{ $offer->letzter_status_bg_hex ? $offer->letzter_status_bg_hex . '15' : 'rgba(255,255,255,0.02)' }}; border-left: 4px solid {{ $offer->letzter_status_bg_hex ?? 'transparent' }};">
+                            <td style="padding-left: 15px;">{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</td>
                             <td>
                                 <a href="{{ route('offers.show', $offer->id) }}?from=offers" style="text-decoration: none; color: inherit;">
                                     <strong>{{ $offer->angebotsnummer }}</strong>
@@ -612,7 +620,7 @@
                                 {{ number_format($offer->angebotssumme, 2, ',', '.') }} €
                             </td>
                             <td>
-                                <span class="badge" style="color: {{ $offer->letzter_status_farbe_hex }}; border-color: {{ $offer->letzter_status_bg_hex }}">
+                                <span class="badge" style="color: {{ $offer->letzter_status_farbe_hex }}; background: {{ $offer->letzter_status_bg_hex . '20' }}; border-color: {{ $offer->letzter_status_bg_hex }}">
                                     {{ $offer->letzter_status_name }}
                                 </span>
                             </td>
@@ -658,57 +666,57 @@
         });
 
 
-        // Simple Network Animation (simplified from dashboard)
+        // Advanced Particle Animation
         const canvas = document.getElementById('network-overlay');
         const ctx = canvas.getContext('2d');
         let width, height, particles = [];
 
-        function init() {
+        function resize() {
             width = canvas.width = window.innerWidth;
             height = canvas.height = window.innerHeight;
             particles = [];
-            for(let i=0; i<60; i++) {
+            const count = Math.floor((width * height) / 15000);
+            for(let i=0; i<count; i++) {
                 particles.push({
                     x: Math.random() * width,
                     y: Math.random() * height,
-                    vx: (Math.random() - 0.5) * 0.5,
-                    vy: (Math.random() - 0.5) * 0.5
+                    vx: (Math.random() - 0.5) * 0.4,
+                    vy: (Math.random() - 0.5) * 0.4,
+                    r: Math.random() * 2 + 1
                 });
             }
         }
 
         function animate() {
             ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = 'rgba(29, 161, 242, 0.5)';
-            ctx.strokeStyle = 'rgba(29, 161, 242, 0.1)';
-
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+            
             particles.forEach((p, i) => {
-                p.x += p.vx;
-                p.y += p.vy;
-                if(p.x < 0 || p.x > width) p.vx *= -1;
-                if(p.y < 0 || p.y > height) p.vy *= -1;
-
+                p.x += p.vx; p.y += p.vy;
+                if (p.x < 0 || p.x > width) p.vx *= -1;
+                if (p.y < 0 || p.y > height) p.vy *= -1;
+                
                 ctx.beginPath();
-                ctx.arc(p.x, p.y, 2, 0, Math.PI*2);
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
                 ctx.fill();
 
-                for(let j=i+1; j<particles.length; j++) {
+                for (let j = i + 1; j < particles.length; j++) {
                     const p2 = particles[j];
-                    const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
-                    if(dist < 150) {
+                    const dx = p.x - p2.x; const dy = p.y - p2.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 150) {
                         ctx.beginPath();
-                        ctx.moveTo(p.x, p.y);
-                        ctx.lineTo(p2.x, p2.y);
-                        ctx.stroke();
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${0.08 * (1 - dist / 150)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
                     }
                 }
             });
             requestAnimationFrame(animate);
         }
 
-        window.addEventListener('resize', init);
-        init();
-        animate();
+        window.addEventListener('resize', resize);
+        resize(); animate();
     </script>
 </body>
 </html>
