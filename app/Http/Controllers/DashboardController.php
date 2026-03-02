@@ -814,7 +814,9 @@ class DashboardController extends Controller
     public function manufacturers()
     {
         $user = auth()->user();
-        $manufacturers = DB::table('hersteller')->get();
+        $manufacturers = DB::table('hersteller')
+            ->orderBy('herstellernummer', 'asc')
+            ->get();
 
         return view('manufacturers', compact('user', 'manufacturers'));
     }
