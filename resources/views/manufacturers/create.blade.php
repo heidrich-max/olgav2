@@ -265,19 +265,10 @@
                         @error('email') <div class="error-msg">{{ $message }}</div> @enderror
                     </div>
 
-                    <div class="form-group">
-                        <label for="internetseite">Internetseite</label>
-                        <input type="text" name="internetseite" id="internetseite" class="form-control" value="{{ old('internetseite') }}" placeholder="www.beispiel.de">
-                    </div>
 
                     <div class="form-group full-width">
                         <label for="herstellerinformation">Herstellerinformationen</label>
                         <textarea name="herstellerinformation" id="herstellerinformation" class="form-control" rows="4" placeholder="Zusätzliche Informationen zum Hersteller...">{{ old('herstellerinformation') }}</textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="sprache_id">Sprache (ID)</label>
-                        <input type="text" name="sprache_id" id="sprache_id" class="form-control" value="{{ old('sprache_id', '1') }}">
                     </div>
                 </div>
 

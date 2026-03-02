@@ -284,9 +284,7 @@
                         <th>Ansprechpartner</th>
                         <th>Telefon</th>
                         <th>E-Mail</th>
-                        <th>Internetseite</th>
                         <th>Info</th>
-                        <th>Sprache</th>
                         <th>Aktion</th>
                     </tr>
                 </thead>
@@ -298,16 +296,7 @@
                         <td>{{ trim(($m->anrede ?? '') . ' ' . ($m->vorname ?? '') . ' ' . ($m->nachname ?? '')) }}</td>
                         <td>{{ $m->telefon }}</td>
                         <td><a href="mailto:{{ $m->email }}" style="color: var(--primary-accent); text-decoration: none;">{{ $m->email }}</a></td>
-                        <td>
-                            @php $web = $m->Internetseite ?? $m->internetseite ?? null; @endphp
-                            @if($web)
-                            <a href="{{ str_starts_with($web, 'http') ? $web : 'https://' . $web }}" target="_blank" style="color: #60a5fa; text-decoration: none;">
-                                <i class="fas fa-external-link-alt"></i> Link
-                            </a>
-                            @endif
-                        </td>
-                        <td><span style="font-size: 0.75rem; color: var(--text-muted); display: block; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $m->herstellerinformation }}">{{ $m->herstellerinformation }}</span></td>
-                        <td><span class="lang-badge">{{ $m->sprache_id ?? '1' }}</span></td>
+                        <td><span style="font-size: 0.75rem; color: var(--text-muted); display: block; max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $m->herstellerinformation }}">{{ $m->herstellerinformation }}</span></td>
                         <td>
                             <a href="{{ route('manufacturers.edit', $m->id) }}" class="btn-edit">bearbeiten</a>
                         </td>
