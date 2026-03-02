@@ -214,7 +214,7 @@
             border-radius: 8px;
             font-size: 0.75rem;
             font-weight: 600;
-            border: 1px solid transparent;
+            border: none;
         }
 
         .amount {
@@ -620,9 +620,9 @@
                                 {{ number_format($offer->angebotssumme, 2, ',', '.') }} €
                             </td>
                             <td>
-                                <span class="badge" style="color: {{ $offer->letzter_status_farbe_hex }}; background: {{ $offer->letzter_status_bg_hex . '20' }}">
+                                <b style="color: {{ $offer->letzter_status_farbe_hex }}; font-size: 0.85rem;">
                                     {{ $offer->letzter_status_name }}
-                                </span>
+                                </b>
                             </td>
                         </tr>
                         @endforeach
