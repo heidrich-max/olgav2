@@ -107,4 +107,11 @@ class ManufacturerController extends Controller
 
         return redirect()->route('manufacturers.index')->with('success', 'Hersteller erfolgreich aktualisiert.');
     }
+
+    public function destroy($id)
+    {
+        DB::table('hersteller')->where('id', $id)->delete();
+
+        return redirect()->route('manufacturers.index')->with('success', 'Hersteller erfolgreich gelöscht.');
+    }
 }

@@ -142,6 +142,15 @@
         }
         .btn-save:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); opacity: 0.9; }
 
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4);
+            padding: 14px; border-radius: 10px; font-size: 1rem; font-weight: 700;
+            cursor: pointer; width: 100%; margin-top: 20px; transition: all 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            text-decoration: none;
+        }
+        .btn-delete:hover { background: #ef4444; color: #fff; transform: translateY(-2px); }
+
         .error-msg { color: #fca5a5; font-size: 0.75rem; margin-top: 5px; }
     </style>
 </head>
@@ -279,6 +288,14 @@
 
                 <button type="submit" class="btn-save">
                     <i class="fas fa-save"></i> Änderungen speichern
+                </button>
+            </form>
+
+            <form action="{{ route('manufacturers.destroy', $manufacturer->id) }}" method="POST" onsubmit="return confirm('Möchten Sie diesen Hersteller wirklich unwiderruflich löschen?');">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn-delete">
+                    <i class="fas fa-trash-alt"></i> Hersteller löschen
                 </button>
             </form>
         </div>

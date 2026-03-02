@@ -162,6 +162,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/manufacturers', [ManufacturerController::class, 'store'])->name('manufacturers.store');
     Route::get('/manufacturers/{id}/edit', [ManufacturerController::class, 'edit'])->name('manufacturers.edit');
     Route::put('/manufacturers/{id}', [ManufacturerController::class, 'update'])->name('manufacturers.update');
+    Route::delete('/manufacturers/{id}', [ManufacturerController::class, 'destroy'])->name('manufacturers.destroy');
 
     Route::get('/run-migrations', function() {
         try {
