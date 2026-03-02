@@ -266,6 +266,11 @@ class DashboardController extends Controller
         $user = Auth::user();
         $userName = $user->name_komplett;
 
+        $companyId = Session::get('active_company_id', request()->cookie('active_company_id', 1));
+        if (!in_array($companyId, [1, 2])) { $companyId = 1; }
+        $companyName = ($companyId == 1) ? 'Branding Europe GmbH' : 'Europe Pen GmbH';
+        $accentColor = ($companyId == 1) ? '#1DA1F2' : '#0088CC';
+
         // Eigene offene Angebote (alle Firmen, kein abgeschlossener Status)
         $myOffers = DB::table('angebot_tabelle')
             ->where('benutzer', $userName)
@@ -323,7 +328,7 @@ class DashboardController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('my-dashboard', compact('user', 'myOffers', 'myOrders', 'calendarEvents', 'todos'));
+        return view('my-dashboard', compact('user', 'myOffers', 'myOrders', 'calendarEvents', 'todos', 'companyId', 'companyName', 'accentColor'));
     }
 
     public function calendar()
@@ -814,11 +819,16 @@ class DashboardController extends Controller
     public function manufacturers()
     {
         $user = auth()->user();
+
+        $companyId = session('active_company_id', request()->cookie('active_company_id', 1));
+        if (!in_array($companyId, [1, 2])) { $companyId = 1; }
+        $companyName = ($companyId == 1) ? 'Branding Europe GmbH' : 'Europe Pen GmbH';
+        $accentColor = ($companyId == 1) ? '#1DA1F2' : '#0088CC';
         
         $manufacturers = DB::table('hersteller')
             ->orderByRaw("COALESCE(NULLIF(herstellernummer, ''), LPAD(id, 3, '0')) ASC")
             ->get();
 
-        return view('manufacturers', compact('user', 'manufacturers'));
+        return view('manufacturers', compact('user', 'manufacturers', 'companyId', 'companyName', 'accentColor'));
     }
 }

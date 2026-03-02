@@ -9,7 +9,7 @@
 
     <style>
         :root {
-            --primary-accent: #ef4444; /* Rot für Hersteller gemessen am Screenshot */
+            --primary-accent: {{ $accentColor ?? '#1DA1F2' }};
             --glass-bg: rgba(255, 255, 255, 0.12);
             --glass-border: rgba(255, 255, 255, 0.2);
             --text-main: #ffffff;
@@ -183,23 +183,23 @@
             <div class="company-switcher" id="companySwitcher">
                 <button class="switcher-btn" id="switcherBtn">
                     <i class="fas fa-building"></i>
-                    Firmenansicht
+                    {{ $companyName }}
                     <i class="fas fa-chevron-down" style="font-size: 0.7rem;"></i>
                 </button>
                 <div class="switcher-content">
                     <div style="padding: 10px 20px; font-size: 0.75rem; color: #1DA1F2; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.03);">Branding Europe GmbH</div>
-                    <a href="{{ route('company.switch', 1) }}" class="switcher-item">
+                    <a href="{{ route('company.switch', 1) }}" class="switcher-item {{ $companyId == 1 && !request()->routeIs('offers.index') ? 'active' : '' }}">
                         <i class="fas fa-home"></i> Dashboard
                     </a>
-                    <a href="{{ route('company.switch', 1) }}?redirect=offers" class="switcher-item">
+                    <a href="{{ route('company.switch', 1) }}?redirect=offers" class="switcher-item {{ $companyId == 1 && request()->routeIs('offers.index') ? 'active' : '' }}">
                         <i class="fas fa-file-invoice"></i> Angebotsübersicht
                     </a>
                     <div style="height: 1px; background: var(--glass-border); margin: 5px 0;"></div>
                     <div style="padding: 10px 20px; font-size: 0.75rem; color: #0088CC; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.03);">Europe Pen GmbH</div>
-                    <a href="{{ route('company.switch', 2) }}" class="switcher-item">
+                    <a href="{{ route('company.switch', 2) }}" class="switcher-item {{ $companyId == 2 && !request()->routeIs('offers.index') ? 'active' : '' }}">
                         <i class="fas fa-home"></i> Dashboard
                     </a>
-                    <a href="{{ route('company.switch', 2) }}?redirect=offers" class="switcher-item">
+                    <a href="{{ route('company.switch', 2) }}?redirect=offers" class="switcher-item {{ $companyId == 2 && request()->routeIs('offers.index') ? 'active' : '' }}">
                         <i class="fas fa-file-invoice"></i> Angebotsübersicht
                     </a>
                 </div>
@@ -219,7 +219,7 @@
                 <div class="user-dropdown-menu">
                     <div class="user-dropdown-header">
                         <div class="user-name">{{ $user->name_komplett }}</div>
-                        <div class="user-role">Eingeloggt</div>
+                        <div class="user-role">{{ $companyName }}</div>
                     </div>
                     <a href="{{ route('my.dashboard') }}" class="user-dropdown-item">
                         <i class="fas fa-user-cog"></i> Mein Dashboard

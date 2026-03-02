@@ -9,7 +9,7 @@
 
     <style>
         :root {
-            --primary-accent: #1DA1F2;
+            --primary-accent: {{ $accentColor ?? '#1DA1F2' }};
             --glass-bg: rgba(255, 255, 255, 0.12);
             --glass-border: rgba(255, 255, 255, 0.2);
             --text-main: #ffffff;
