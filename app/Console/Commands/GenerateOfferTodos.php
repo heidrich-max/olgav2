@@ -98,8 +98,10 @@ class GenerateOfferTodos extends Command
             if (!$exists) {
                 Todo::create([
                     'user_id' => $userData->id,
+                    'offer_id' => $offer->id,
                     'task' => $taskText,
-                    'is_completed' => false
+                    'is_completed' => false,
+                    'is_system' => true
                 ]);
                 $createdCount++;
             }
