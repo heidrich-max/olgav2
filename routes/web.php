@@ -155,8 +155,12 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/todos/{id}', [\App\Http\Controllers\TodoController::class, 'update'])->name('todos.update');
     Route::delete('/todos/{id}', [\App\Http\Controllers\TodoController::class, 'destroy'])->name('todos.destroy');
 
-    // Hersteller-Übersicht
-    Route::get('/manufacturers', [DashboardController::class, 'manufacturers'])->name('manufacturers.index');
+    // Hersteller-Verwaltung
+    Route::get('/manufacturers', [ManufacturerController::class, 'index'])->name('manufacturers.index');
+    Route::get('/manufacturers/create', [ManufacturerController::class, 'create'])->name('manufacturers.create');
+    Route::post('/manufacturers', [ManufacturerController::class, 'store'])->name('manufacturers.store');
+    Route::get('/manufacturers/{id}/edit', [ManufacturerController::class, 'edit'])->name('manufacturers.edit');
+    Route::put('/manufacturers/{id}', [ManufacturerController::class, 'update'])->name('manufacturers.update');
 
     Route::get('/run-migrations', function() {
         try {

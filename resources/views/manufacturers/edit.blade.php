@@ -3,10 +3,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>OLGA - Hersteller Übersicht</title>
+    <title>OLGA - Hersteller bearbeiten</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
-
+    
     <style>
         :root {
             --primary-accent: {{ $accentColor ?? '#1DA1F2' }};
@@ -25,13 +25,6 @@
             color: var(--text-main);
             min-height: 100vh;
             overflow-x: hidden;
-        }
-
-        #network-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0;
-            pointer-events: none;
         }
 
         /* ---- NAVBAR ---- */
@@ -72,7 +65,7 @@
         .switcher-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
         .switcher-item.active { border-left: 3px solid var(--primary-accent); color: var(--text-main); background: rgba(255,255,255,0.05); }
 
-        /* User Dropdown Styles from my-dashboard */
+        /* User Dropdown */
         .user-dropdown { position: relative; }
         .user-btn {
             background: none; border: none;
@@ -106,77 +99,53 @@
         .user-dropdown-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
         .user-dropdown-item.active { color: var(--primary-accent); background: rgba(29,161,242,0.07); }
         .user-dropdown-item.logout { color: #fca5a5; }
-        .user-dropdown-item.logout:hover { background: rgba(239,68,68,0.1); color: #fff; }
         .user-dropdown-divider { height: 1px; background: var(--glass-border); margin: 4px 0; }
 
-        .todo-badge {
-            background: #ef4444; color: white; font-size: 0.65rem; font-weight: 700;
-            padding: 2px 6px; border-radius: 50px; margin-left: 5px;
-            display: inline-flex; align-items: center; justify-content: center;
-            min-width: 18px; height: 18px; vertical-align: middle;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-
-        /* ---- LAYOUT ---- */
-        .container { position: relative; z-index: 10; padding: 40px; max-width: 1400px; margin: 0 auto; }
-
-        .header-section { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
-        .header-section h1 { font-size: 2.2rem; font-weight: 700; background: linear-gradient(90deg, #fff, var(--primary-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        /* ---- CONTAINER & CARD ---- */
+        .container { position: relative; z-index: 10; padding: 40px; max-width: 900px; margin: 0 auto; }
         
-        .btn-add {
-            background: var(--primary-accent); border: none; color: #fff;
-            padding: 10px 20px; border-radius: 10px; cursor: pointer;
-            font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 10px;
-            text-decoration: none; transition: transform 0.2s;
-        }
-        .btn-add:hover { transform: translateY(-2px); }
+        .header-section { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+        .header-section h1 { font-size: 2.2rem; font-weight: 700; background: linear-gradient(90deg, #fff, var(--primary-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        /* ---- FILTERS ---- */
-        .filters-glass {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            border-radius: 15px; padding: 20px; margin-bottom: 30px;
-            display: flex; gap: 20px; align-items: center;
+        .btn-back {
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            color: #fff; padding: 10px 20px; border-radius: 10px;
+            text-decoration: none; font-size: 0.9rem; font-weight: 600;
+            display: flex; align-items: center; gap: 10px; transition: all 0.3s;
         }
-        .search-input {
-            flex: 1; background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border);
-            border-radius: 8px; padding: 10px 15px; color: #fff; font-size: 0.9rem;
-        }
-        .search-input:focus { border-color: var(--primary-accent); outline: none; }
+        .btn-back:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); }
 
-        /* ---- TABLE ---- */
         .card {
             background: var(--glass-bg);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
-            border-radius: 20px; padding: 25px;
+            border-radius: 20px; padding: 30px;
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
         }
-        .data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-        .data-table th { 
-            text-align: left; color: var(--text-muted); padding: 12px 10px; 
-            font-weight: 600; font-size: 0.75rem; text-transform: uppercase; 
-            letter-spacing: 0.05em; border-bottom: 2px solid rgba(255,255,255,0.12);
-        }
-        .data-table td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.06); color: var(--text-main); }
-        .data-table tr:hover { background: rgba(255,255,255,0.03); }
-        
-        .btn-edit {
-            background: var(--primary-accent); color: #fff; border: none;
-            padding: 4px 12px; border-radius: 6px; font-size: 0.75rem; 
-            cursor: pointer; text-decoration: none; font-weight: 600;
-        }
 
-        .lang-badge {
-            background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border);
-            padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group.full-width { grid-column: span 2; }
+        
+        .form-group label { display: block; margin-bottom: 8px; font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-control {
+            width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+            border-radius: 10px; padding: 12px 15px; color: #fff; font-size: 0.95rem;
+            transition: all 0.3s;
         }
+        .form-control:focus { outline: none; border-color: var(--primary-accent); background: rgba(255,255,255,0.1); }
+
+        .btn-save {
+            background: var(--primary-accent); color: #fff; border: none;
+            padding: 14px; border-radius: 10px; font-size: 1rem; font-weight: 700;
+            cursor: pointer; width: 100%; margin-top: 10px; transition: all 0.3s;
+        }
+        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); opacity: 0.9; }
+
+        .error-msg { color: #fca5a5; font-size: 0.75rem; margin-top: 5px; }
     </style>
 </head>
 <body>
-    <canvas id="network-overlay"></canvas>
-
     <nav class="navbar">
         <div class="nav-left">
             <a href="{{ route('dashboard') }}"><img src="/logo/olga_neu.svg" alt="Frank Group"></a>
@@ -211,9 +180,6 @@
                 <button class="user-btn" id="userBtn">
                     <i class="fas fa-user-circle" style="color: var(--primary-accent); font-size: 1.1rem;"></i>
                     <span>{{ $user->name_komplett }}</span>
-                    @if(isset($openTodoCount) && $openTodoCount > 0)
-                        <span class="todo-badge">{{ $openTodoCount }}</span>
-                    @endif
                     <i class="fas fa-chevron-down" style="font-size: 0.65rem; color: var(--text-muted);"></i>
                 </button>
                 <div class="user-dropdown-menu">
@@ -250,57 +216,71 @@
 
     <div class="container">
         <div class="header-section">
-            <div>
-                <h1>Hersteller Übersicht</h1>
-            </div>
-            <a href="#" class="btn-add">
-                <i class="fas fa-plus"></i> Hersteller hinzufügen
+            <h1>Hersteller bearbeiten</h1>
+            <a href="{{ route('manufacturers.index') }}" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Zurück zur Übersicht
             </a>
         </div>
 
-        <div class="filters-glass">
-            <i class="fas fa-search" style="color: var(--text-muted);"></i>
-            <input type="text" id="manufacturerSearch" class="search-input" placeholder="Nach Hersteller, HN oder Ansprechpartner suchen...">
-        </div>
-
         <div class="card">
-            <table class="data-table" id="manufacturersTable">
-                <thead>
-                    <tr>
-                        <th>HN</th>
-                        <th>Firmenname</th>
-                        <th>Ansprechpartner</th>
-                        <th>Telefon</th>
-                        <th>E-Mail</th>
-                        <th>Internetseite</th>
-                        <th>Sprache</th>
-                        <th>Aktion</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($manufacturers as $m)
-                    <tr>
-                        <td style="font-weight: 700; color: var(--text-muted);">{{ $m->herstellernummer ?? sprintf('%03d', $m->id) }}</td>
-                        <td style="font-weight: 600;">{{ $m->firmenname }}</td>
-                        <td>{{ trim(($m->anrede ?? '') . ' ' . ($m->vorname ?? '') . ' ' . ($m->nachname ?? '')) }}</td>
-                        <td>{{ $m->telefon }}</td>
-                        <td><a href="mailto:{{ $m->email }}" style="color: var(--primary-accent); text-decoration: none;">{{ $m->email }}</a></td>
-                        <td>
-                            @php $web = $m->Internetseite ?? $m->internetseite ?? null; @endphp
-                            @if($web)
-                            <a href="{{ str_starts_with($web, 'http') ? $web : 'https://' . $web }}" target="_blank" style="color: #60a5fa; text-decoration: none;">
-                                <i class="fas fa-external-link-alt"></i> Link
-                            </a>
-                            @endif
-                        </td>
-                        <td><span class="lang-badge">{{ $m->sprache_id ?? '1' }}</span></td>
-                        <td>
-                            <a href="#" class="btn-edit">bearbeiten</a>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+            <form action="{{ route('manufacturers.update', $manufacturer->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="herstellernummer">HN Nummer</label>
+                        <input type="text" name="herstellernummer" id="herstellernummer" class="form-control" value="{{ old('herstellernummer', $manufacturer->herstellernummer) }}">
+                        @error('herstellernummer') <div class="error-msg">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="firmenname">Firmenname</label>
+                        <input type="text" name="firmenname" id="firmenname" class="form-control" value="{{ old('firmenname', $manufacturer->firmenname) }}" required>
+                        @error('firmenname') <div class="error-msg">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="anrede">Anrede</label>
+                        <input type="text" name="anrede" id="anrede" class="form-control" value="{{ old('anrede', $manufacturer->anrede) }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vorname">Vorname</label>
+                        <input type="text" name="vorname" id="vorname" class="form-control" value="{{ old('vorname', $manufacturer->vorname) }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nachname">Nachname</label>
+                        <input type="text" name="nachname" id="nachname" class="form-control" value="{{ old('nachname', $manufacturer->nachname) }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telefon">Telefon</label>
+                        <input type="text" name="telefon" id="telefon" class="form-control" value="{{ old('telefon', $manufacturer->telefon) }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">E-Mail Adresse</label>
+                        <input type="email" name="email" id="email" class="form-control" value="{{ old('email', $manufacturer->email) }}">
+                        @error('email') <div class="error-msg">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="internetseite">Internetseite</label>
+                        <input type="text" name="internetseite" id="internetseite" class="form-control" value="{{ old('internetseite', $manufacturer->internetseite ?? ($manufacturer->Internetseite ?? '')) }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sprache_id">Sprache (ID)</label>
+                        <input type="text" name="sprache_id" id="sprache_id" class="form-control" value="{{ old('sprache_id', $manufacturer->sprache_id ?? '1') }}">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-save">
+                    <i class="fas fa-save"></i> Änderungen speichern
+                </button>
+            </form>
         </div>
     </div>
 
@@ -325,48 +305,6 @@
             userDropdown.classList.remove('active');
             companySwitcher.classList.remove('active');
         });
-
-        // Search Logic
-        document.getElementById('manufacturerSearch').addEventListener('input', function(e) {
-            const term = e.target.value.toLowerCase();
-            const rows = document.querySelectorAll('#manufacturersTable tbody tr');
-            rows.forEach(row => {
-                const text = row.innerText.toLowerCase();
-                row.style.display = text.includes(term) ? '' : 'none';
-            });
-        });
-
-        // Network Animation (Copy from Dashboard)
-        const canvas = document.getElementById('network-overlay');
-        const ctx = canvas.getContext('2d');
-        let width, height, particles = [];
-        function resize() { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; initParticles(); }
-        class Particle {
-            constructor() { this.init(); }
-            init() { this.x = Math.random() * width; this.y = Math.random() * height; this.vx = (Math.random() - 0.5) * 0.3; this.vy = (Math.random() - 0.5) * 0.3; this.radius = 1.2; }
-            update() { this.x += this.vx; this.y += this.vy; if (this.x < 0 || this.x > width) this.vx *= -1; if (this.y < 0 || this.y > height) this.vy *= -1; }
-            draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = 'rgba(255, 255, 255, 0.3)'; ctx.fill(); }
-        }
-        function initParticles() { particles = []; for (let i = 0; i < 80; i++) particles.push(new Particle()); }
-        function animate() {
-            ctx.clearRect(0, 0, width, height);
-            particles.forEach((p, i) => {
-                p.update(); p.draw();
-                for (let j = i + 1; j < particles.length; j++) {
-                    const p2 = particles[j];
-                    const dx = p.x - p2.x; const dy = p.y - p2.y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 150) {
-                        ctx.beginPath();
-                        ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 * (1 - dist / 150)})`;
-                        ctx.moveTo(p.x, p.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
-                    }
-                }
-            });
-            requestAnimationFrame(animate);
-        }
-        window.addEventListener('resize', resize);
-        resize(); animate();
     </script>
 </body>
 </html>
