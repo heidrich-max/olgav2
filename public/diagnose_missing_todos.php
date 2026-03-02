@@ -14,6 +14,30 @@ $app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
 try {
     echo "<h1>Diagnose: Fehlende ToDos für Fabian Frank</h1>";
 
+    // --- NEU: Übersicht aller Status ---
+    echo "<h2>Verfügbare Status in angebot_status:</h2><ul>";
+    $allStatuses = DB::table('angebot_status')->select('id', 'status_lg', 'status_sh')->get();
+    foreach($allStatuses as $s) {
+        echo "<li>ID: {$s->id} | LG: '{$s->status_lg}' | SH: '{$s->status_sh}'</li>";
+    }
+    echo "</ul>";
+
+    // --- NEU: Alle verwendeten letzter_status_name in angebot_tabelle ---
+    echo "<h2>Verwendete 'letzter_status_name' in angebot_tabelle:</h2><ul>";
+    $usedStatusNames = DB::table('angebot_tabelle')->distinct()->pluck('letzter_status_name');
+    foreach($usedStatusNames as $name) {
+        echo "<li>'{$name}'</li>";
+    }
+    echo "</ul>";
+
+    // --- NEU: Alle Benutzernamen ---
+    echo "<h2>Verwendete 'benutzer' in angebot_tabelle:</h2><ul>";
+    $usedUserNames = DB::table('angebot_tabelle')->distinct()->pluck('benutzer');
+    foreach($usedUserNames as $name) {
+        echo "<li>'{$name}'</li>";
+    }
+    echo "</ul>";
+
     $userName = 'Fabian Frank';
     $user = User::where('name_komplett', 'like', "%$userName%")->first();
     
@@ -21,15 +45,18 @@ try {
         die("Benutzer '$userName' nicht gefunden.");
     }
 
-    echo "Prüfe Angebote für <b>{$user->name_komplett}</b> (ID: {$user->id})...<br><br>";
+    echo "<h2>Analyse für <b>{$user->name_komplett}</b> (ID: {$user->id})</h2>";
 
     $targetDate = Carbon::now()->subDays(7)->toDateString();
     echo "Target Date (<=): $targetDate<br><br>";
 
-    // Suche alle Angebote in relevanten Status
+    // Suche alle Angebote für diesen Benutzer (großzügigerer Filter)
     $offers = DB::table('angebot_tabelle')
-        ->where('benutzer', 'like', "%$userName%")
-        ->whereIn('letzter_status_name', ['Status offen', 'Status Erinnerung versendet'])
+        ->where('benutzer', 'like', "%Fabian%") // Noch großzügiger suchen
+        ->where(function($q) {
+            $q->where('letzter_status_name', 'like', '%offen%')
+              ->orWhere('letzter_status_name', 'like', '%Erinnerung%');
+        })
         ->get();
 
     echo "Gefundene Angebote im System: " . $offers->count() . "<br>";
