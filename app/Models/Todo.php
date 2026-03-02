@@ -19,10 +19,21 @@ class Todo extends Model
     /**
      * Entfernt automatisch generierte To-Dos für ein spezifisches Angebot.
      */
-    public static function cleanupForOffer($offerNumber)
+    public static function cleanupForOffer($offerNumber, $offerId = null)
     {
-        if (empty($offerNumber)) return;
+        if (empty($offerNumber) && empty($offerId)) return;
         
-        static::where('task', 'like', "Angebots-Nachverfolgung: {$offerNumber} %")->delete();
+        $query = static::where('is_system', true);
+
+        if ($offerId) {
+            $query->where('offer_id', $offerId);
+        } else {
+            $query->where(function($q) use ($offerNumber) {
+                $q->where('task', 'like', "Angebots-Nachverfolgung: {$offerNumber}%")
+                  ->orWhere('task', 'like', "Wiedervorlage Angebot {$offerNumber}%");
+            });
+        }
+
+        $query->delete();
     }
 }
