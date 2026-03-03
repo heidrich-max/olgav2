@@ -373,6 +373,30 @@
         </div>
     </div>
 
+    <!-- AI Assistant FAB & Window -->
+    <button class="ai-fab" id="aiFab">
+        <i class="fas fa-robot"></i>
+    </button>
+
+    <div class="ai-chat-window" id="aiChatWindow">
+        <div class="ai-chat-header">
+            <h3><i class="fas fa-magic"></i> Hersteller Assistent</h3>
+            <button class="close-ai" id="closeAi">&times;</button>
+        </div>
+        <div class="ai-chat-messages" id="aiMessages">
+            <div class="ai-msg bot">👋 Hallo! Ich bin dein KI-Assistent. Wie kann ich dir heute in der Hersteller-Übersicht helfen?</div>
+        </div>
+        <div class="ai-typing" id="aiTyping" style="padding: 0 15px;">
+            <i class="fas fa-spinner fa-spin"></i> GPT-4 schreibt...
+        </div>
+        <div class="ai-chat-input-area">
+            <input type="text" id="aiInput" placeholder="Frage etwas...">
+            <button class="ai-send-btn" id="aiSendBtn">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
     <script>
         // Company Switcher
         const companySwitcher = document.getElementById('companySwitcher');
@@ -507,27 +531,5 @@
         });
     </script>
 
-    <button class="ai-fab" id="aiFab">
-        <i class="fas fa-robot"></i>
-    </button>
-
-    <div class="ai-chat-window" id="aiChatWindow">
-        <div class="ai-chat-header">
-            <h3><i class="fas fa-magic"></i> Hersteller Assistent</h3>
-            <button class="close-ai" id="closeAi">&times;</button>
-        </div>
-        <div class="ai-chat-messages" id="aiMessages">
-            <div class="ai-msg bot">👋 Hallo! Ich bin dein KI-Assistent. Wie kann ich dir heute in der Hersteller-Übersicht helfen?</div>
-        </div>
-        <div class="ai-typing" id="aiTyping" style="padding: 0 15px;">
-            <i class="fas fa-spinner fa-spin"></i> GPT-4 schreibt...
-        </div>
-        <div class="ai-chat-input-area">
-            <input type="text" id="aiInput" placeholder="Frage etwas...">
-            <button class="ai-send-btn" id="aiSendBtn">
-                <i class="fas fa-paper-plane"></i>
-            </button>
-        </div>
-    </div>
 </body>
 </html>
