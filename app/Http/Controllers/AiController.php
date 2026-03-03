@@ -19,7 +19,7 @@ class AiController extends Controller
             $manufacturer = DB::table('hersteller')->where('id', $manufacturerId)->first();
         }
 
-        $apiKey = env('OPENAI_API_KEY');
+        $apiKey = config('services.openai.key');
         
         if (!$apiKey) {
             return response()->json(['error' => 'OpenAI API Key nicht konfiguriert.'], 500);
