@@ -139,6 +139,72 @@
             border-radius: 15px; padding: 20px; margin-bottom: 30px;
             display: flex; gap: 20px; align-items: center;
         }
+
+        /* AI FAB Styles */
+        .ai-fab {
+            position: fixed; bottom: 30px; right: 30px;
+            width: 60px; height: 60px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-accent), #60a5fa);
+            box-shadow: 0 10px 25px rgba(29, 161, 242, 0.4);
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1.5rem; cursor: pointer; z-index: 1000;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: none;
+        }
+        .ai-fab:hover { transform: scale(1.1) rotate(5deg); box-shadow: 0 15px 30px rgba(29, 161, 242, 0.6); }
+        .ai-fab.active { transform: scale(0); opacity: 0; }
+
+        .ai-chat-window {
+            position: fixed; bottom: 100px; right: 30px;
+            width: 380px; height: 500px;
+            background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border); border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.6);
+            display: none; flex-direction: column; z-index: 999;
+            overflow: hidden; animation: slideUp 0.3s ease-out;
+        }
+        .ai-chat-window.active { display: flex; }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .ai-chat-header {
+            padding: 15px 20px; background: rgba(255,255,255,0.05);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .ai-chat-header h3 { font-size: 0.95rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 10px; }
+        .ai-chat-header h3 i { color: var(--primary-accent); }
+        .close-ai { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; }
+        .close-ai:hover { color: #fff; }
+
+        .ai-chat-messages {
+            flex: 1; padding: 15px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 12px;
+        }
+        .ai-msg { padding: 10px 14px; border-radius: 12px; font-size: 0.85rem; line-height: 1.4; max-width: 85%; }
+        .ai-msg.bot { background: rgba(255,255,255,0.05); align-self: flex-start; color: #e2e8f0; border: 1px solid rgba(255,255,255,0.1); }
+        .ai-msg.user { background: var(--primary-accent); align-self: flex-end; color: #fff; }
+
+        .ai-chat-input-area {
+            padding: 15px; background: rgba(0,0,0,0.2);
+            border-top: 1px solid var(--glass-border);
+            display: flex; gap: 10px;
+        }
+        .ai-chat-input-area input {
+            flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+            border-radius: 8px; padding: 8px 12px; color: #fff; font-size: 0.85rem;
+        }
+        .ai-chat-input-area input:focus { outline: none; border-color: var(--primary-accent); }
+        .ai-send-btn {
+            background: var(--primary-accent); border: none; color: white;
+            width: 36px; height: 36px; border-radius: 8px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .ai-send-btn:hover { opacity: 0.9; }
+        .ai-typing { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 5px; display: none; }
         .search-input {
             flex: 1; background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border);
             border-radius: 8px; padding: 10px 15px; color: #fff; font-size: 0.9rem;
@@ -370,6 +436,98 @@
         }
         window.addEventListener('resize', resize);
         resize(); animate();
+
+        // AI Assistant FAB & Chat Logic
+        const aiFab = document.getElementById('aiFab');
+        const aiChatWindow = document.getElementById('aiChatWindow');
+        const closeAi = document.getElementById('closeAi');
+        const aiInput = document.getElementById('aiInput');
+        const aiSendBtn = document.getElementById('aiSendBtn');
+        const aiMessages = document.getElementById('aiMessages');
+        const aiTyping = document.getElementById('aiTyping');
+
+        aiFab.addEventListener('click', () => {
+            aiChatWindow.classList.add('active');
+            aiFab.classList.add('active');
+            aiInput.focus();
+        });
+
+        closeAi.addEventListener('click', () => {
+            aiChatWindow.classList.remove('active');
+            aiFab.classList.remove('active');
+        });
+
+        function appendMessage(role, text) {
+            const div = document.createElement('div');
+            div.className = `ai-msg ${role}`;
+            div.innerText = text;
+            aiMessages.appendChild(div);
+            aiMessages.scrollTop = aiMessages.scrollHeight;
+        }
+
+        async function askAi() {
+            const prompt = aiInput.value.trim();
+            if (!prompt) return;
+
+            appendMessage('user', prompt);
+            aiInput.value = '';
+            aiInput.disabled = true;
+            aiSendBtn.disabled = true;
+            aiTyping.style.display = 'block';
+
+            try {
+                const response = await fetch('{{ route("manufacturers.ai") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ prompt: prompt })
+                });
+
+                const data = await response.json();
+                if (data.answer) {
+                    appendMessage('bot', data.answer);
+                } else if (data.error) {
+                    appendMessage('bot', 'Fehler: ' + data.error);
+                }
+            } catch (error) {
+                appendMessage('bot', 'Ein technischer Fehler ist aufgetreten.');
+            } finally {
+                aiInput.disabled = false;
+                aiSendBtn.disabled = false;
+                aiTyping.style.display = 'none';
+                aiInput.focus();
+            }
+        }
+
+        aiSendBtn.addEventListener('click', askAi);
+        aiInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') askAi();
+        });
     </script>
+
+    <button class="ai-fab" id="aiFab">
+        <i class="fas fa-robot"></i>
+    </button>
+
+    <div class="ai-chat-window" id="aiChatWindow">
+        <div class="ai-chat-header">
+            <h3><i class="fas fa-magic"></i> Hersteller Assistent</h3>
+            <button class="close-ai" id="closeAi">&times;</button>
+        </div>
+        <div class="ai-chat-messages" id="aiMessages">
+            <div class="ai-msg bot">👋 Hallo! Ich bin dein KI-Assistent. Wie kann ich dir heute in der Hersteller-Übersicht helfen?</div>
+        </div>
+        <div class="ai-typing" id="aiTyping" style="padding: 0 15px;">
+            <i class="fas fa-spinner fa-spin"></i> GPT-4 schreibt...
+        </div>
+        <div class="ai-chat-input-area">
+            <input type="text" id="aiInput" placeholder="Frage etwas...">
+            <button class="ai-send-btn" id="aiSendBtn">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
 </body>
 </html>
