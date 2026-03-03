@@ -561,12 +561,24 @@
         </div>
 
         <div class="card">
+            <!-- View Toggle (Active vs. Archived) -->
+            <div style="display: flex; gap: 5px; margin-bottom: 20px; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 12px; width: fit-content;">
+                <a href="{{ route('orders.index', ['view' => 'active', 'search' => $search, 'salesperson' => $selectedSalesperson]) }}" 
+                   style="padding: 8px 20px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: all 0.3s; {{ $view !== 'archived' ? 'background: var(--accent-color); color: white; box-shadow: 0 4px 12px rgba(29, 161, 242, 0.3);' : 'color: var(--text-muted);' }}">
+                    Aktive Aufträge
+                </a>
+                <a href="{{ route('orders.index', ['view' => 'archived', 'search' => $search, 'salesperson' => $selectedSalesperson]) }}" 
+                   style="padding: 8px 20px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: all 0.3s; {{ $view === 'archived' ? 'background: var(--accent-color); color: white; box-shadow: 0 4px 12px rgba(29, 161, 242, 0.3);' : 'color: var(--text-muted);' }}">
+                    Archiv
+                </a>
+            </div>
+
             <div class="status-nav">
-                <a href="{{ route('orders.index', ['search' => $search, 'salesperson' => $selectedSalesperson]) }}" class="status-pill {{ !$selectedStatus ? 'active' : '' }}">
+                <a href="{{ route('orders.index', ['view' => $view, 'search' => $search, 'salesperson' => $selectedSalesperson]) }}" class="status-pill {{ !$selectedStatus ? 'active' : '' }}">
                     Alle <span class="status-count">{{ $totalOrderCount }}</span>
                 </a>
                 @foreach($statusCounts as $s)
-                <a href="{{ route('orders.index', ['status' => $s->name, 'search' => $search, 'salesperson' => $selectedSalesperson]) }}" class="status-pill {{ $selectedStatus == $s->name ? 'active' : '' }}">
+                <a href="{{ route('orders.index', ['view' => $view, 'status' => $s->name, 'search' => $search, 'salesperson' => $selectedSalesperson]) }}" class="status-pill {{ $selectedStatus == $s->name ? 'active' : '' }}">
                     {{ $s->name }} <span class="status-count">{{ $s->count }}</span>
                 </a>
                 @endforeach
@@ -574,6 +586,7 @@
 
             <form action="{{ route('orders.index') }}" method="GET" class="search-section">
                 <input type="hidden" name="status" value="{{ $selectedStatus }}">
+                <input type="hidden" name="view" value="{{ $view }}">
                 <div class="search-input-group">
                     <i class="fas fa-search"></i>
                     <input type="text" name="search" class="search-input" placeholder="Auftragsnummer oder Kunde..." value="{{ $search }}">
@@ -590,7 +603,7 @@
                 
                 <button type="submit" class="btn-search">Filtern</button>
                 @if($search || $selectedSalesperson)
-                    <a href="{{ route('orders.index', ['status' => $selectedStatus]) }}" class="btn-clear" title="Filter leeren">
+                    <a href="{{ route('orders.index', ['status' => $selectedStatus, 'view' => $view]) }}" class="btn-clear" title="Filter leeren">
                         <i class="fas fa-times"></i>
                     </a>
                 @endif
