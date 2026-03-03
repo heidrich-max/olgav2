@@ -142,6 +142,8 @@ class ImportJtlOffers extends Command
                         'ansprechpartner_nachname' => $obj['cRechnungsadresseNachname'] ?? null,
                         'kunden_nr' => $obj['cRechnungsadresseKundennummer'] ?? null,
                         'gueltig_bis' => null,
+                        'projekt_firmenname_kuerzel' => $firma->name_kuerzel,
+                        'projekt_farbe_hex' => $firma->bg,
                     ];
 
                     try {
@@ -190,9 +192,6 @@ class ImportJtlOffers extends Command
                                 \App\Models\Todo::cleanupForOffer($data['angebotsnummer']);
                             }
                         } else {
-                            $data['projekt_firmenname_kuerzel'] = $firma->name_kuerzel;
-                            $data['projekt_farbe_hex'] = $firma->bg;
-                            
                             if ($isConverted) {
                                 $data['letzter_status'] = 'A';
                                 $data['letzter_status_name'] = 'Status angenommen';
