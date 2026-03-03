@@ -702,7 +702,13 @@
                         @endphp
                         <tr class="order-row">
                             <td style="background: {{ $rowBg }}; border-left: 4px solid {{ $accentColor }}; padding-left: 20px;">
-                                {{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}
+                                <span>{{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}</span>
+                                @if($order->lieferdatum)
+                                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; display: flex; align-items: center; gap: 6px;">
+                                        <i class="fas fa-truck" title="Lieferdatum"></i>
+                                        {{ \Carbon\Carbon::parse($order->lieferdatum)->format('d.m.Y') }}
+                                    </div>
+                                @endif
                             </td>
                             <td style="background: {{ $rowBg }};">
                                 <span style="color: {{ $pColor }}; font-weight: 800; font-size: 0.9rem;">
