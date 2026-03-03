@@ -424,5 +424,6 @@
             if (e.key === 'Enter') aiSendBtn.click();
         });
     </script>
+    @include('partials.ai_assistant')
 </body>
 </html>

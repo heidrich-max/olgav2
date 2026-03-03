@@ -782,5 +782,6 @@
             </form>
         </div>
     </div>
+    @include('partials.ai_assistant')
 </body>
 </html>

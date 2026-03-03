@@ -13,6 +13,8 @@ class AiController extends Controller
     {
         $prompt = $request->input('prompt');
         $manufacturerId = $request->input('manufacturer_id');
+        $url = $request->input('url');
+        $pageTitle = $request->input('page_title');
         
         $manufacturer = null;
         if ($manufacturerId) {
@@ -28,7 +30,27 @@ class AiController extends Controller
         $client = new Client();
         
         $systemPrompt = "Du bist ein hilfreicher KI-Assistent für die Firmen Frank Group (Branding Europe GmbH / Europe Pen GmbH). 
-        Du hilfst dem Nutzer bei der Verwaltung von Herstellern.";
+        Du hilfst dem Nutzer bei der Verwaltung von Herstellern, Angeboten und internen Prozessen.";
+
+        // Kontext basierend auf URL bestimmen
+        $contextInfo = "\nAktueller Kontext des Nutzers:";
+        if ($url) {
+            $contextInfo .= "\n- URL: " . $url;
+            if (strpos($url, '/manufacturers') !== false && strpos($url, '/edit') === false) {
+                $contextInfo .= "\n- Seite: Hersteller-Übersicht";
+            } elseif (strpos($url, '/manufacturers/') !== false && strpos($url, '/edit') !== false) {
+                $contextInfo .= "\n- Seite: Hersteller bearbeiten";
+            } elseif (strpos($url, '/calendar') !== false) {
+                $contextInfo .= "\n- Seite: Terminkalender";
+            } elseif (strpos($url, '/dashboard') !== false) {
+                $contextInfo .= "\n- Seite: Dashboard / Hauptübersicht";
+            } elseif (strpos($url, '/offers') !== false) {
+                $contextInfo .= "\n- Seite: Angebotsverwaltung / Kalkulation";
+            }
+        }
+        if ($pageTitle) {
+            $contextInfo .= "\n- Seitentitel: " . $pageTitle;
+        }
 
         if ($manufacturer) {
             $systemPrompt .= " 
@@ -45,27 +67,28 @@ class AiController extends Controller
             $keywords = explode(' ', str_replace(['?', '!', '.', ','], '', $prompt));
             $searchQuery = DB::table('hersteller');
             
+            $hasSearchTerm = false;
             foreach ($keywords as $word) {
                 if (strlen($word) > 3) {
                     $searchQuery->orWhere('firmenname', 'LIKE', "%{$word}%")
                                 ->orWhere('herstellerinformation', 'LIKE', "%{$word}%");
+                    $hasSearchTerm = true;
                 }
             }
             
-            $results = $searchQuery->limit(10)->get();
-            
-            if ($results->count() > 0) {
-                $systemPrompt .= "\nIch habe in unserer Datenbank folgende relevante Hersteller gefunden:\n";
-                foreach ($results as $res) {
-                    $systemPrompt .= "- {$res->firmenname} (HN: {$res->herstellernummer}): {$res->herstellerinformation}\n";
+            if ($hasSearchTerm) {
+                $results = $searchQuery->limit(10)->get();
+                if ($results->count() > 0) {
+                    $systemPrompt .= "\nIch habe in unserer Datenbank folgende relevante Hersteller gefunden:\n";
+                    foreach ($results as $res) {
+                        $systemPrompt .= "- {$res->firmenname} (HN: {$res->herstellernummer}): {$res->herstellerinformation}\n";
+                    }
                 }
-                $systemPrompt .= "\nNutze diese Informationen, um die Frage des Nutzers zu beantworten.";
-            } else {
-                $systemPrompt .= " Du befindest dich gerade in der allgemeinen Hersteller-Übersicht. Ich konnte auf Anhieb keine spezifischen Details zu deiner Anfrage in der Datenbank finden. Antworte basierend auf deinem allgemeinen Wissen, weise aber darauf hin, dass in den Hersteller-Notizen nichts gefunden wurde.";
             }
         }
         
-        $systemPrompt .= "\nAufgabe: Antworte präzise und professionell. Wenn der Nutzer nach einer E-Mail fragt, erstelle einen Entwurf.";
+        $systemPrompt .= $contextInfo;
+        $systemPrompt .= "\nAufgabe: Antworte präzise und professionell. Nutze den oben genannten Kontext, um dem Nutzer bestmöglich zu helfen.";
 
         try {
             $response = $client->post('https://api.openai.com/v1/chat/completions', [

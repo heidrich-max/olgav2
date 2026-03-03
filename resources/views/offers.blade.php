@@ -720,5 +720,6 @@
         window.addEventListener('resize', resize);
         resize(); animate();
     </script>
+    @include('partials.ai_assistant')
 </body>
 </html>

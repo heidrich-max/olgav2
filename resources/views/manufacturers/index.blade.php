@@ -374,28 +374,7 @@
     </div>
 
     <!-- AI Assistant FAB & Window -->
-    <button class="ai-fab" id="aiFab">
-        <i class="fas fa-robot"></i>
-    </button>
-
-    <div class="ai-chat-window" id="aiChatWindow">
-        <div class="ai-chat-header">
-            <h3><i class="fas fa-magic"></i> Hersteller Assistent</h3>
-            <button class="close-ai" id="closeAi">&times;</button>
-        </div>
-        <div class="ai-chat-messages" id="aiMessages">
-            <div class="ai-msg bot">👋 Hallo! Ich bin dein KI-Assistent. Wie kann ich dir heute in der Hersteller-Übersicht helfen?</div>
-        </div>
-        <div class="ai-typing" id="aiTyping" style="padding: 0 15px;">
-            <i class="fas fa-spinner fa-spin"></i> GPT-4 schreibt...
-        </div>
-        <div class="ai-chat-input-area">
-            <input type="text" id="aiInput" placeholder="Frage etwas...">
-            <button class="ai-send-btn" id="aiSendBtn">
-                <i class="fas fa-paper-plane"></i>
-            </button>
-        </div>
-    </div>
+    @include('partials.ai_assistant')
 
     <script>
         // Company Switcher
@@ -461,74 +440,6 @@
         window.addEventListener('resize', resize);
         resize(); animate();
 
-        // AI Assistant FAB & Chat Logic
-        const aiFab = document.getElementById('aiFab');
-        const aiChatWindow = document.getElementById('aiChatWindow');
-        const closeAi = document.getElementById('closeAi');
-        const aiInput = document.getElementById('aiInput');
-        const aiSendBtn = document.getElementById('aiSendBtn');
-        const aiMessages = document.getElementById('aiMessages');
-        const aiTyping = document.getElementById('aiTyping');
-
-        aiFab.addEventListener('click', () => {
-            aiChatWindow.classList.add('active');
-            aiFab.classList.add('active');
-            aiInput.focus();
-        });
-
-        closeAi.addEventListener('click', () => {
-            aiChatWindow.classList.remove('active');
-            aiFab.classList.remove('active');
-        });
-
-        function appendMessage(role, text) {
-            const div = document.createElement('div');
-            div.className = `ai-msg ${role}`;
-            div.innerText = text;
-            aiMessages.appendChild(div);
-            aiMessages.scrollTop = aiMessages.scrollHeight;
-        }
-
-        async function askAi() {
-            const prompt = aiInput.value.trim();
-            if (!prompt) return;
-
-            appendMessage('user', prompt);
-            aiInput.value = '';
-            aiInput.disabled = true;
-            aiSendBtn.disabled = true;
-            aiTyping.style.display = 'block';
-
-            try {
-                const response = await fetch('{{ route("manufacturers.ai") }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({ prompt: prompt })
-                });
-
-                const data = await response.json();
-                if (data.answer) {
-                    appendMessage('bot', data.answer);
-                } else if (data.error) {
-                    appendMessage('bot', 'Fehler: ' + data.error);
-                }
-            } catch (error) {
-                appendMessage('bot', 'Ein technischer Fehler ist aufgetreten.');
-            } finally {
-                aiInput.disabled = false;
-                aiSendBtn.disabled = false;
-                aiTyping.style.display = 'none';
-                aiInput.focus();
-            }
-        }
-
-        aiSendBtn.addEventListener('click', askAi);
-        aiInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') askAi();
-        });
     </script>
 
 </body>
