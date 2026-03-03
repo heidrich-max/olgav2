@@ -153,33 +153,6 @@
 
         .error-msg { color: #fca5a5; font-size: 0.75rem; margin-top: 5px; }
 
-        /* AI Assistant Styles */
-        .ai-assistant-card {
-            background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(29, 161, 242, 0.3);
-            border-radius: 15px; padding: 20px; margin-top: 30px; backdrop-filter: blur(10px);
-        }
-        .ai-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
-        .ai-header i { color: var(--primary-accent); font-size: 1.2rem; }
-        .ai-header h3 { font-size: 1rem; font-weight: 700; margin: 0; }
-        .ai-chat-box {
-            background: rgba(0,0,0,0.2); border-radius: 10px; padding: 15px;
-            max-height: 300px; overflow-y: auto; margin-bottom: 15px; font-size: 0.9rem; line-height: 1.5;
-            display: flex; flex-direction: column; gap: 10px;
-        }
-        .ai-input-group { display: flex; gap: 10px; }
-        .ai-input { flex: 1; }
-        .ai-btn { 
-            background: linear-gradient(135deg, var(--primary-accent), #60a5fa); 
-            border: none; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer;
-            font-weight: 600; display: flex; align-items: center; gap: 8px; transition: all 0.3s;
-        }
-        .ai-btn:hover { opacity: 0.9; transform: scale(1.02); }
-        .ai-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        
-        .ai-message { padding: 10px; border-radius: 8px; max-width: 85%; }
-        .ai-message.user { background: rgba(29, 161, 242, 0.15); border: 1px solid rgba(29, 161, 242, 0.3); align-self: flex-end; }
-        .ai-message.bot { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); align-self: flex-start; }
-        .ai-loading { display: none; margin-bottom: 10px; font-style: italic; color: var(--text-muted); font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -322,26 +295,6 @@
                     <i class="fas fa-trash-alt"></i> Hersteller löschen
                 </button>
             </form>
-            <div class="ai-assistant-card">
-                <div class="ai-header">
-                    <i class="fas fa-robot"></i>
-                    <h3>KI Hersteller-Assistent (GPT-4)</h3>
-                </div>
-                <div class="ai-chat-box" id="aiChatBox">
-                    <div class="ai-message bot">
-                        Hallo! Ich bin dein KI-Assistent. Wie kann ich dir heute bei diesem Hersteller helfen? Ich kann zum Beispiel E-Mails entwerfen oder die Zusatzinfos analysieren.
-                    </div>
-                </div>
-                <div id="aiLoading" class="ai-loading">
-                    <i class="fas fa-spinner fa-spin"></i> GPT-4 denkt nach...
-                </div>
-                <div class="ai-input-group">
-                    <input type="text" id="aiInput" class="form-control ai-input" placeholder="Frage die KI etwas...">
-                    <button type="button" id="aiSendBtn" class="ai-btn">
-                        <i class="fas fa-paper-plane"></i> Senden
-                    </button>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -367,62 +320,6 @@
             companySwitcher.classList.remove('active');
         });
 
-        // AI Assistant Logic
-        const aiInput = document.getElementById('aiInput');
-        const aiSendBtn = document.getElementById('aiSendBtn');
-        const aiChatBox = document.getElementById('aiChatBox');
-        const aiLoading = document.getElementById('aiLoading');
-
-        function appendMessage(role, text) {
-            const div = document.createElement('div');
-            div.className = `ai-message ${role}`;
-            div.innerText = text;
-            aiChatBox.appendChild(div);
-            aiChatBox.scrollTop = aiChatBox.scrollHeight;
-        }
-
-        aiSendBtn.addEventListener('click', async () => {
-            const prompt = aiInput.value.trim();
-            if (!prompt) return;
-
-            appendMessage('user', prompt);
-            aiInput.value = '';
-            aiInput.disabled = true;
-            aiSendBtn.disabled = true;
-            aiLoading.style.display = 'block';
-
-            try {
-                const response = await fetch('{{ route("manufacturers.ai") }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({
-                        prompt: prompt,
-                        manufacturer_id: '{{ $manufacturer->id }}'
-                    })
-                });
-
-                const data = await response.json();
-                if (data.answer) {
-                    appendMessage('bot', data.answer);
-                } else if (data.error) {
-                    appendMessage('bot', 'Fehler: ' + data.error);
-                }
-            } catch (error) {
-                appendMessage('bot', 'Ein technischer Fehler ist aufgetreten.');
-            } finally {
-                aiInput.disabled = false;
-                aiSendBtn.disabled = false;
-                aiLoading.style.display = 'none';
-                aiInput.focus();
-            }
-        });
-
-        aiInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') aiSendBtn.click();
-        });
     </script>
     @include('partials.ai_assistant')
 </body>
