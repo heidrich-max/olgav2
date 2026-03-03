@@ -613,8 +613,7 @@
                                 </a><br>
                                 <small style="color: var(--text-muted)">{{ $offer->benutzer }}</small>
                             </td>
-                            <td>
-                                <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:{{ $offer->projekt_farbe_hex }}; margin-right:5px;"></span>
+                            <td style="color: {{ $offer->projekt_farbe_hex ?: '#ffffff' }}; font-weight: 600;">
                                 {{ $offer->projekt_firmenname }}
                             </td>
                             <td>{{ $offer->firmenname }}</td>

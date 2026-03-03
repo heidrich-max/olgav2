@@ -234,6 +234,10 @@ class DashboardController extends Controller
             if (isset($offer->letzter_status_farbe_hex) && $offer->letzter_status_farbe_hex && strpos($offer->letzter_status_farbe_hex, '#') !== 0) {
                 $offer->letzter_status_farbe_hex = '#' . $offer->letzter_status_farbe_hex;
             }
+            // Add # to project color if missing
+            if (isset($offer->projekt_farbe_hex) && $offer->projekt_farbe_hex && strpos($offer->projekt_farbe_hex, '#') !== 0) {
+                $offer->projekt_farbe_hex = '#' . $offer->projekt_farbe_hex;
+            }
             return $offer;
         });
 
