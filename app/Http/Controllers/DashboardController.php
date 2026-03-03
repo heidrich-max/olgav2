@@ -309,10 +309,10 @@ class DashboardController extends Controller
         $statusCountsData = $statusCountsQuery->select(
                 'auftrag_status.status_lg as name', 
                 'auftrag_status.status_sh as shorthand',
-                'auftrag_status.status_color as color',
+                'auftrag_status.color as color',
                 DB::raw('count(*) as count')
             )
-            ->groupBy('auftrag_status.status_lg', 'auftrag_status.status_sh', 'auftrag_status.status_color')
+            ->groupBy('auftrag_status.status_lg', 'auftrag_status.status_sh', 'auftrag_status.color')
             ->get();
 
         $orderMap = [
