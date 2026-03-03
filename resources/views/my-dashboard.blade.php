@@ -313,8 +313,11 @@
                                 @foreach($myOffers as $offer)
                                 <tr onclick="window.location='{{ route('offers.show', $offer->id) }}?from=my.dashboard'" style="background: {{ $offer->letzter_status_bg_hex ? $offer->letzter_status_bg_hex . '15' : 'transparent' }}; border-left: 4px solid {{ $offer->letzter_status_bg_hex ?? 'transparent' }}; transition: background 0.2s; cursor: pointer;">
                                     <td style="white-space: nowrap; padding-left: 10px;">{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</td>
-                                    <td>{{ $offer->angebotsnummer ?? '—' }}</td>
-                                    <td>{{ $offer->firmenname ?? $offer->projekt_firmenname ?? '—' }}</td>
+                                    <td>
+                                        <span class="badge" style="color: {{ $offer->letzter_status_farbe_hex ?? '#fff' }}; border-color: {{ $offer->letzter_status_bg_hex ?? 'var(--glass-border)' }}; margin-right: 5px;">{{ $offer->project_kuerzel }}</span>
+                                        <strong>{{ $offer->angebotsnummer }}</strong>
+                                    </td>
+                                    <td>{{ $offer->projektname }}</td>
                                     <td>
                                         <b style="color: {{ $offer->letzter_status_farbe_hex ?? '#fff' }}; font-size: 0.85rem;">
                                             {{ $offer->letzter_status ?? $offer->letzter_status_name ?? '—' }}
@@ -355,7 +358,10 @@
                                 @foreach($myOrders as $order)
                                 <tr style="background: {{ $order->status_bg ? $order->status_bg . '15' : 'transparent' }}; border-left: 4px solid {{ $order->status_bg ?? 'transparent' }}; transition: background 0.2s;">
                                     <td style="white-space: nowrap; padding-left: 10px;">{{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}</td>
-                                    <td>{{ $order->auftragsnummer ?? '—' }}</td>
+                                    <td>
+                                        <span class="badge" style="color: {{ $order->projekt_farbe_hex ?? '#fff' }}; border-color: {{ $order->projekt_farbe_hex ?? 'var(--glass-border)' }}; margin-right: 5px;">{{ $order->project_kuerzel }}</span>
+                                        <strong>{{ $order->auftragsnummer ?? '—' }}</strong>
+                                    </td>
                                     <td style="color: {{ $order->projekt_farbe_hex ?? '#fff' }}; font-weight: 600;">{{ $order->projekt_firmenname ?? '—' }}</td>
                                     <td>{{ $order->firmenname ?? '—' }}</td>
                                     <td>

@@ -47,11 +47,17 @@ class DashboardController extends Controller
         // 1. PROJECT REVENUE (Selected Month)
         $projectRevenues = DB::table('auftrag_tabelle')
             ->join('auftrag_projekt', 'auftrag_tabelle.projekt_id', '=', 'auftrag_projekt.id')
+            ->leftJoin('auftrag_projekt_firma', 'auftrag_projekt.firmenname', '=', 'auftrag_projekt_firma.name')
             ->where('auftrag_tabelle.firmen_id', $companyId)
             ->whereMonth('auftrag_tabelle.erstelldatum', $selectedMonth)
             ->whereYear('auftrag_tabelle.erstelldatum', $selectedYear)
-            ->select('auftrag_projekt.firmenname as display_name', DB::raw('SUM(auftrag_tabelle.auftragssumme) as total'))
-            ->groupBy('auftrag_projekt.firmenname')
+            ->select(
+                'auftrag_projekt.firmenname as display_name', 
+                'auftrag_projekt_firma.name_kuerzel',
+                'auftrag_projekt_firma.bg as project_color',
+                DB::raw('SUM(auftrag_tabelle.auftragssumme) as total')
+            )
+            ->groupBy('auftrag_projekt.firmenname', 'auftrag_projekt_firma.name_kuerzel', 'auftrag_projekt_firma.bg')
             ->orderBy('total', 'desc')
             ->get();
 
@@ -73,6 +79,7 @@ class DashboardController extends Controller
         // Lists
     $orders = DB::table('auftrag_tabelle')
         ->leftJoin('auftrag_status', 'auftrag_tabelle.letzter_status', '=', 'auftrag_status.status_sh')
+        ->leftJoin('auftrag_projekt_firma', 'auftrag_tabelle.projekt_firmenname', '=', 'auftrag_projekt_firma.name')
         ->where('auftrag_tabelle.firmen_id', $companyId)
         ->where('auftrag_tabelle.abgeschlossen_status', '!=', 'Auftrag abgeschlossen')
         ->orderBy('auftrag_tabelle.erstelldatum', 'asc')
@@ -81,7 +88,8 @@ class DashboardController extends Controller
             'auftrag_status.bg as status_bg', 
             'auftrag_status.color as status_color', 
             'auftrag_status.status_sh as status_kuerzel',
-            'auftrag_status.status_lg as status_name_raw'
+            'auftrag_status.status_lg as status_name_raw',
+            'auftrag_projekt_firma.name_kuerzel as project_kuerzel'
         )
         ->limit(10)
         ->get();
@@ -101,12 +109,14 @@ class DashboardController extends Controller
     });
             
         $offers = DB::table('angebot_tabelle')
-            ->where('firmen_id', $companyId)
+            ->leftJoin('auftrag_projekt_firma', 'angebot_tabelle.projekt_firmenname', '=', 'auftrag_projekt_firma.name')
+            ->where('angebot_tabelle.firmen_id', $companyId)
             ->whereNotIn('letzter_status_name', [
                 'Status angenommen',
                 'Status abgeschlossen',
             ])
             ->orderBy('erstelldatum', 'desc')
+            ->select('angebot_tabelle.*', 'auftrag_projekt_firma.name_kuerzel as project_kuerzel')
             ->limit(10)
             ->get();
 
@@ -304,6 +314,7 @@ class DashboardController extends Controller
         // 4. Main Query
         $query = DB::table('auftrag_tabelle')
             ->leftJoin('auftrag_status', 'auftrag_tabelle.letzter_status', '=', 'auftrag_status.status_sh')
+            ->leftJoin('auftrag_projekt_firma', 'auftrag_tabelle.projekt_firmenname', '=', 'auftrag_projekt_firma.name')
             ->where('auftrag_tabelle.firmen_id', $companyId);
 
         if ($search) {
@@ -328,7 +339,8 @@ class DashboardController extends Controller
                 'auftrag_tabelle.*', 
                 'auftrag_status.bg as status_bg', 
                 'auftrag_status.color as status_color', 
-                'auftrag_status.status_lg as status_name'
+                'auftrag_status.status_lg as status_name',
+                'auftrag_projekt_firma.name_kuerzel as project_kuerzel'
             )
             ->paginate(20)
             ->appends([
@@ -392,8 +404,10 @@ class DashboardController extends Controller
 
         // Eigene offene Angebote (alle Firmen, kein abgeschlossener Status)
         $myOffers = DB::table('angebot_tabelle')
+            ->leftJoin('auftrag_projekt_firma', 'angebot_tabelle.projekt_firmenname', '=', 'auftrag_projekt_firma.name')
             ->where('benutzer', $userName)
             ->whereNotIn('letzter_status_name', ['Status angenommen', 'Status abgeschlossen'])
+            ->select('angebot_tabelle.*', 'auftrag_projekt_firma.name_kuerzel as project_kuerzel')
             ->get();
 
         // Ensure colors have # for offers
@@ -410,6 +424,7 @@ class DashboardController extends Controller
         // Eigene nicht-abgeschlossene Aufträge (alle Firmen)
         $myOrders = DB::table('auftrag_tabelle')
             ->leftJoin('auftrag_status', 'auftrag_tabelle.letzter_status', '=', 'auftrag_status.status_sh')
+            ->leftJoin('auftrag_projekt_firma', 'auftrag_tabelle.projekt_firmenname', '=', 'auftrag_projekt_firma.name')
             ->where('auftrag_tabelle.benutzer', $userName)
             ->where('auftrag_tabelle.abgeschlossen_status', '!=', 'Auftrag abgeschlossen')
             ->orderBy('auftrag_tabelle.erstelldatum', 'asc')
@@ -418,7 +433,8 @@ class DashboardController extends Controller
                 'auftrag_status.bg as status_bg',
                 'auftrag_status.color as status_color',
                 'auftrag_status.status_sh as status_kuerzel',
-                'auftrag_status.status_lg as status_name_raw'
+                'auftrag_status.status_lg as status_name_raw',
+                'auftrag_projekt_firma.name_kuerzel as project_kuerzel'
             )
             ->get();
 

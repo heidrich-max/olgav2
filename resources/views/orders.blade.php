@@ -601,8 +601,9 @@
                     <thead>
                         <tr>
                             <th>Datum</th>
-                            <th>Nummer</th>
                             <th>Projekt</th>
+                            <th>Nummer</th>
+                            <th>Projektname</th>
                             <th>Kunde</th>
                             <th style="text-align: right;">Betrag</th>
                             <th>Status</th>
@@ -612,6 +613,11 @@
                         @foreach($orders as $order)
                         <tr style="background: {{ $order->status_bg ? $order->status_bg . '25' : 'rgba(255,255,255,0.02)' }}; border-left: 4px solid {{ $order->status_bg ?? 'transparent' }};">
                             <td style="padding-left: 15px;">{{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}</td>
+                            <td>
+                                <span style="color: {{ $order->projekt_farbe_hex ?: '#ffffff' }}; font-weight: 800; font-size: 1rem;">
+                                    {{ $order->project_kuerzel ?: '—' }}
+                                </span>
+                            </td>
                             <td>
                                 <strong>{{ $order->auftragsnummer }}</strong><br>
                                 <small style="color: var(--text-muted)">{{ $order->benutzer }}</small>

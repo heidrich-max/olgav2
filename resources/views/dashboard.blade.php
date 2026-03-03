@@ -347,6 +347,7 @@
                     <tbody>
                         @forelse($projectRevenues as $proj)
                         <tr>
+                            <td style="width: 40px; font-weight: 800; color: {{ $proj->project_color ?? 'var(--primary-accent)' }};">{{ $proj->name_kuerzel }}</td>
                             <td>{{ $proj->display_name }}</td>
                             <td class="amount">{{ number_format($proj->total, 2, ',', '.') }} €</td>
                         </tr>
@@ -356,7 +357,7 @@
                         </tr>
                         @endforelse
                         <tr class="total-row">
-                            <td>Gesamt {{ $displayDate->translatedFormat('F Y') }}</td>
+                            <td colspan="2">Gesamt {{ $displayDate->translatedFormat('F Y') }}</td>
                             <td class="amount">{{ number_format($monthTotal, 2, ',', '.') }} €</td>
                         </tr>
                     </tbody>
@@ -389,9 +390,12 @@
                         </div>
                         <div class="item-sub">{{ $offer->projektname }}</div>
                     </div>
-                    <b style="color: {{ $offer->letzter_status_farbe_hex }}; font-size: 0.8rem;">
-                        {{ $offer->letzter_status ?? $offer->letzter_status_name }}
-                    </b>
+                    <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+                        <b style="color: {{ $offer->letzter_status_farbe_hex }}; font-size: 0.8rem;">
+                            {{ $offer->letzter_status ?? $offer->letzter_status_name }}
+                        </b>
+                        <span class="badge" style="color: {{ $offer->projekt_farbe_hex ?? '#fff' }}; border-color: {{ $offer->projekt_farbe_hex ?? 'var(--glass-border)' }};">{{ $offer->project_kuerzel }}</span>
+                    </div>
                 </div>
                 @empty
                 <p style="color: var(--text-muted); font-size: 0.9rem;">Aktuell keine offenen Angebote.</p>
@@ -407,12 +411,15 @@
                     <div class="item-text">
                         <div style="font-weight: 600; font-size: 0.95rem;">{{ $order->auftragsnummer }}</div>
                         <div style="font-size: 0.8rem; color: var(--text-muted);">
-                            <span style="color: {{ $order->projekt_farbe_hex ?: '#ffffff' }}; font-weight: 600;">{{ $order->projekt_firmenname }}</span> | {{ $order->firmenname }}
+                             {{ $order->firmenname }}
                         </div>
                     </div>
-                    <b style="color: {{ $order->status_color ?? '#fff' }}; font-size: 0.8rem;">
-                        {{ $order->status_kuerzel ?? $order->status_name_raw ?? $order->letzter_status_name }}
-                    </b>
+                    <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+                        <b style="color: {{ $order->status_color ?? '#fff' }}; font-size: 0.8rem;">
+                            {{ $order->status_kuerzel ?? $order->status_name_raw ?? $order->letzter_status_name }}
+                        </b>
+                        <span class="badge" style="color: {{ $order->projekt_farbe_hex ?? '#fff' }}; border-color: {{ $order->projekt_farbe_hex ?? 'var(--glass-border)' }};">{{ $order->project_kuerzel }}</span>
+                    </div>
                 </div>
                 @empty
                 <p style="color: var(--text-muted); font-size: 0.9rem;">Aktuell keine offenen Bestellungen.</p>
