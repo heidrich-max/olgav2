@@ -404,29 +404,6 @@
             background: rgba(255, 255, 255, 0.25);
         }
 
-        /* Compact Status Badge for Table */
-        .status-badge-compact {
-            display: inline-flex;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--glass-border);
-            padding: 4px 10px;
-            border-radius: 10px;
-            color: #fff;
-            font-size: 0.75rem;
-            font-weight: 800;
-            backdrop-filter: blur(4px);
-            white-space: nowrap;
-        }
-
-        .status-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            margin-right: 6px;
-            flex-shrink: 0;
-        }
-
         .btn-search {
             background: var(--primary-accent);
             border: none;
@@ -709,15 +686,17 @@
                     <tbody>
                         @foreach($orders as $order)
                         @php
-                            $rowBg = $order->projekt_farbe_hex ? $order->projekt_farbe_hex . '12' : 'rgba(255,255,255,0.03)';
-                            $accentColor = $order->projekt_farbe_hex ?? 'transparent';
+                            $sColor = $order->status_bg ?: $order->status_color ?: '#1e293b';
+                            $rowBg = $sColor . '15'; 
+                            $accentColor = $sColor;
+                            $pColor = $order->projekt_farbe_hex ?: '#ffffff';
                         @endphp
                         <tr class="order-row">
                             <td style="background: {{ $rowBg }}; border-left: 4px solid {{ $accentColor }}; padding-left: 20px;">
                                 {{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}
                             </td>
                             <td style="background: {{ $rowBg }};">
-                                <span style="color: #ffffff; font-weight: 800;">
+                                <span style="color: {{ $pColor }}; font-weight: 800; font-size: 0.9rem;">
                                     {{ $order->project_kuerzel ?: '—' }}
                                 </span>
                             </td>
@@ -733,10 +712,9 @@
                                 {{ number_format($order->auftragssumme, 2, ',', '.') }} €
                             </td>
                             <td style="background: {{ $rowBg }};">
-                                <div class="status-badge-compact" style="border-color: {{ $order->status_bg ? $order->status_bg . '66' : 'var(--glass-border)' }};">
-                                    <span class="status-dot" style="background-color: {{ $order->status_bg ?? $order->status_color ?? '#fff' }}; box-shadow: 0 0 5px {{ $order->status_bg ?? $order->status_color }}88;"></span>
+                                <span style="color: #ffffff; font-weight: 800; font-size: 0.9rem; text-transform: uppercase;">
                                     {{ $order->status_sh ?? '—' }}
-                                </div>
+                                </span>
                             </td>
                         </tr>
                         @endforeach
