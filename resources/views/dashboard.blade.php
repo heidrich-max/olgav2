@@ -253,6 +253,9 @@
                     <a href="{{ route('company.switch', 1) }}?redirect=offers" class="switcher-item {{ $companyId == 1 && request()->routeIs('offers.index') ? 'active' : '' }}">
                         <i class="fas fa-file-invoice"></i> Angebotsübersicht
                     </a>
+                    <a href="{{ route('company.switch', 1) }}?redirect=orders" class="switcher-item {{ $companyId == 1 && request()->routeIs('orders.index') ? 'active' : '' }}">
+                        <i class="fas fa-truck-loading"></i> Auftragsübersicht
+                    </a>
 
                     <div style="height: 1px; background: var(--glass-border); margin: 5px 0;"></div>
 
@@ -263,6 +266,9 @@
                     </a>
                     <a href="{{ route('company.switch', 2) }}?redirect=offers" class="switcher-item {{ $companyId == 2 && request()->routeIs('offers.index') ? 'active' : '' }}">
                         <i class="fas fa-file-invoice"></i> Angebotsübersicht
+                    </a>
+                    <a href="{{ route('company.switch', 2) }}?redirect=orders" class="switcher-item {{ $companyId == 2 && request()->routeIs('orders.index') ? 'active' : '' }}">
+                        <i class="fas fa-truck-loading"></i> Auftragsübersicht
                     </a>
                 </div>
             </div>
@@ -409,7 +415,7 @@
                 @empty
                 <p style="color: var(--text-muted); font-size: 0.9rem;">Aktuell keine offenen Bestellungen.</p>
                 @endforelse
-                <a href="#" class="more-link">Alle Aufträge anzeigen</a>
+                <a href="{{ route('orders.index') }}" class="more-link">Alle Aufträge anzeigen</a>
             </div>
         </div>
     </div>

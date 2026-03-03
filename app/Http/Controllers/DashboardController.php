@@ -251,6 +251,113 @@ class DashboardController extends Controller
         ));
     }
 
+    public function orders(Request $request)
+    {
+        $user = Auth::user();
+        
+        $companyId = Session::get('active_company_id');
+        if (!$companyId) {
+            $companyId = $request->cookie('active_company_id', 1);
+        }
+        if (!in_array($companyId, [1, 2])) { $companyId = 1; }
+
+        $search = $request->query('search');
+        $selectedStatus = $request->query('status');
+
+        // 1. Fetch salespersons for orders
+        $salespersons = DB::table('auftrag_tabelle')
+            ->where('firmen_id', $companyId)
+            ->whereNotNull('benutzer')
+            ->where('benutzer', '!=', '')
+            ->distinct()
+            ->pluck('benutzer')
+            ->toArray();
+        sort($salespersons);
+
+        // 2. Determine selected salesperson
+        $selectedSalesperson = $request->query('salesperson');
+
+        // 3. Fetch status counts joined with auftrag_status
+        $statusCountsQuery = DB::table('auftrag_tabelle')
+            ->join('auftrag_status', 'auftrag_tabelle.letzter_status', '=', 'auftrag_status.status_sh')
+            ->where('auftrag_tabelle.firmen_id', $companyId);
+        
+        if ($selectedSalesperson) {
+            $statusCountsQuery->where('auftrag_tabelle.benutzer', $selectedSalesperson);
+        }
+
+        $statusCountsData = $statusCountsQuery->select('auftrag_status.status_lg as name', DB::raw('count(*) as count'))
+            ->groupBy('auftrag_status.status_lg')
+            ->get();
+
+        $statusCounts = $statusCountsData->sortBy('name');
+        
+        $totalCountQuery = DB::table('auftrag_tabelle')->where('firmen_id', $companyId);
+        if ($selectedSalesperson) {
+            $totalCountQuery->where('benutzer', $selectedSalesperson);
+        }
+        $totalOrderCount = $totalCountQuery->count();
+
+        // 4. Main Query
+        $query = DB::table('auftrag_tabelle')
+            ->leftJoin('auftrag_status', 'auftrag_tabelle.letzter_status', '=', 'auftrag_status.status_sh')
+            ->where('auftrag_tabelle.firmen_id', $companyId);
+
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('auftragsnummer', 'like', "%{$search}%")
+                  ->orWhere('firmenname', 'like', "%{$search}%")
+                  ->orWhere('projektname', 'like', "%{$search}%");
+            });
+        }
+
+        if ($selectedStatus) {
+            $query->where('auftrag_status.status_lg', $selectedStatus);
+        }
+
+        if ($selectedSalesperson) {
+            $query->where('auftrag_tabelle.benutzer', $selectedSalesperson);
+        }
+
+        $orders = $query->orderBy('auftrag_tabelle.erstelldatum', 'desc')
+            ->select(
+                'auftrag_tabelle.*', 
+                'auftrag_status.bg as status_bg', 
+                'auftrag_status.color as status_color', 
+                'auftrag_status.status_lg as status_name'
+            )
+            ->paginate(20)
+            ->appends([
+                'search' => $search,
+                'status' => $selectedStatus,
+                'salesperson' => $selectedSalesperson
+            ]);
+
+        // Ensure colors have #
+        $orders->getCollection()->transform(function($order) {
+            if (isset($order->status_bg) && $order->status_bg && strpos($order->status_bg, '#') !== 0) {
+                $order->status_bg = '#' . $order->status_bg;
+            }
+            if (isset($order->status_color) && $order->status_color && strpos($order->status_color, '#') !== 0) {
+                $order->status_color = '#' . $order->status_color;
+            }
+            // Add # to project color if missing (if it exists on orders too)
+            if (isset($order->projekt_farbe_hex) && $order->projekt_farbe_hex && strpos($order->projekt_farbe_hex, '#') !== 0) {
+                $order->projekt_farbe_hex = '#' . $order->projekt_farbe_hex;
+            }
+            return $order;
+        });
+
+        $companyName = ($companyId == 1) ? 'Branding Europe GmbH' : 'Europe Pen GmbH';
+        $accentColor = ($companyId == 1) ? '#1DA1F2' : '#0088CC';
+
+        return view('orders', compact(
+            'user', 'orders', 'companyId', 'companyName', 'accentColor', 
+            'search', 'statusCounts', 'selectedStatus', 'totalOrderCount',
+            'salespersons', 'selectedSalesperson'
+        ));
+    }
+
     public function switchCompany(Request $request, $id)
     {
         if (in_array($id, [1, 2])) {
@@ -260,6 +367,10 @@ class DashboardController extends Controller
 
         if ($request->query('redirect') === 'offers') {
             return redirect()->route('offers.index');
+        }
+
+        if ($request->query('redirect') === 'orders') {
+            return redirect()->route('orders.index');
         }
 
         return redirect()->route('dashboard');

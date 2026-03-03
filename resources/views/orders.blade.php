@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>OLGA - Angebotsübersicht</title>
+    <title>OLGA - Auftragsübersicht</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
     
@@ -114,7 +114,7 @@
             transition: background 0.2s, color 0.2s;
         }
         .user-dropdown-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
-        .user-dropdown-item.active { color: var(--accent-color); background: rgba(29,161,242,0.07); }
+        .user-dropdown-item.active { color: var(--primary-accent); background: rgba(29,161,242,0.07); }
         .user-dropdown-item.logout { color: #fca5a5; }
         .user-dropdown-item.logout:hover { background: rgba(239,68,68,0.1); color: #fff; }
         .user-dropdown-divider { height: 1px; background: var(--glass-border); margin: 6px 0; }
@@ -483,13 +483,13 @@
                 <div class="switcher-content">
                     <!-- Branding Europe GmbH -->
                     <div style="padding: 10px 20px; font-size: 0.75rem; color: var(--accent-color); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.03);">Branding Europe GmbH</div>
-                    <a href="{{ route('company.switch', 1) }}" class="switcher-item {{ $companyId == 1 && !request()->routeIs('offers.index') ? 'active' : '' }}">
+                    <a href="{{ route('company.switch', 1) }}" class="switcher-item {{ $companyId == 1 && !request()->is('offers*') && !request()->is('orders*') ? 'active' : '' }}">
                         <i class="fas fa-home"></i> Dashboard
                     </a>
-                    <a href="{{ route('company.switch', 1) }}?redirect=offers" class="switcher-item {{ $companyId == 1 && request()->routeIs('offers.index') ? 'active' : '' }}">
+                    <a href="{{ route('company.switch', 1) }}?redirect=offers" class="switcher-item {{ $companyId == 1 && request()->is('offers*') ? 'active' : '' }}">
                         <i class="fas fa-file-invoice"></i> Angebotsübersicht
                     </a>
-                    <a href="{{ route('company.switch', 1) }}?redirect=orders" class="switcher-item {{ $companyId == 1 && request()->routeIs('orders.index') ? 'active' : '' }}">
+                    <a href="{{ route('company.switch', 1) }}?redirect=orders" class="switcher-item {{ $companyId == 1 && request()->is('orders*') ? 'active' : '' }}">
                         <i class="fas fa-truck-loading"></i> Auftragsübersicht
                     </a>
 
@@ -497,13 +497,13 @@
 
                     <!-- Europe Pen GmbH -->
                     <div style="padding: 10px 20px; font-size: 0.75rem; color: #0088CC; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.03);">Europe Pen GmbH</div>
-                    <a href="{{ route('company.switch', 2) }}" class="switcher-item {{ $companyId == 2 && !request()->routeIs('offers.index') ? 'active' : '' }}">
+                    <a href="{{ route('company.switch', 2) }}" class="switcher-item {{ $companyId == 2 && !request()->is('offers*') && !request()->is('orders*') ? 'active' : '' }}">
                         <i class="fas fa-home"></i> Dashboard
                     </a>
-                    <a href="{{ route('company.switch', 2) }}?redirect=offers" class="switcher-item {{ $companyId == 2 && request()->routeIs('offers.index') ? 'active' : '' }}">
+                    <a href="{{ route('company.switch', 2) }}?redirect=offers" class="switcher-item {{ $companyId == 2 && request()->is('offers*') ? 'active' : '' }}">
                         <i class="fas fa-file-invoice"></i> Angebotsübersicht
                     </a>
-                    <a href="{{ route('company.switch', 2) }}?redirect=orders" class="switcher-item {{ $companyId == 2 && request()->routeIs('orders.index') ? 'active' : '' }}">
+                    <a href="{{ route('company.switch', 2) }}?redirect=orders" class="switcher-item {{ $companyId == 2 && request()->is('orders*') ? 'active' : '' }}">
                         <i class="fas fa-truck-loading"></i> Auftragsübersicht
                     </a>
                 </div>
@@ -555,28 +555,28 @@
     <div class="container">
         <div class="header-section">
             <div>
-                <h1>Angebotsübersicht</h1>
+                <h1>Auftragsübersicht</h1>
             </div>
             <a href="{{ route('dashboard') }}" class="btn-back"><i class="fas fa-arrow-left"></i> Dashboard</a>
         </div>
 
         <div class="card">
             <div class="status-nav">
-                <a href="{{ route('offers.index', ['search' => $search, 'salesperson' => $selectedSalesperson]) }}" class="status-pill {{ !$selectedStatus ? 'active' : '' }}">
-                    Alle <span class="status-count">{{ $totalOfferCount }}</span>
+                <a href="{{ route('orders.index', ['search' => $search, 'salesperson' => $selectedSalesperson]) }}" class="status-pill {{ !$selectedStatus ? 'active' : '' }}">
+                    Alle <span class="status-count">{{ $totalOrderCount }}</span>
                 </a>
                 @foreach($statusCounts as $s)
-                <a href="{{ route('offers.index', ['status' => $s->name, 'search' => $search, 'salesperson' => $selectedSalesperson]) }}" class="status-pill {{ $selectedStatus == $s->name ? 'active' : '' }}">
+                <a href="{{ route('orders.index', ['status' => $s->name, 'search' => $search, 'salesperson' => $selectedSalesperson]) }}" class="status-pill {{ $selectedStatus == $s->name ? 'active' : '' }}">
                     {{ $s->name }} <span class="status-count">{{ $s->count }}</span>
                 </a>
                 @endforeach
             </div>
 
-            <form action="{{ route('offers.index') }}" method="GET" class="search-section">
+            <form action="{{ route('orders.index') }}" method="GET" class="search-section">
                 <input type="hidden" name="status" value="{{ $selectedStatus }}">
                 <div class="search-input-group">
                     <i class="fas fa-search"></i>
-                    <input type="text" name="search" class="search-input" placeholder="Angebotsnummer oder Kunde..." value="{{ $search }}">
+                    <input type="text" name="search" class="search-input" placeholder="Auftragsnummer oder Kunde..." value="{{ $search }}">
                 </div>
 
                 <select name="salesperson" class="salesperson-select" onchange="this.form.submit()">
@@ -590,7 +590,7 @@
                 
                 <button type="submit" class="btn-search">Filtern</button>
                 @if($search || $selectedSalesperson)
-                    <a href="{{ route('offers.index', ['status' => $selectedStatus]) }}" class="btn-clear" title="Filter leeren">
+                    <a href="{{ route('orders.index', ['status' => $selectedStatus]) }}" class="btn-clear" title="Filter leeren">
                         <i class="fas fa-times"></i>
                     </a>
                 @endif
@@ -609,26 +609,23 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($offers as $offer)
-                        <tr onclick="window.location='{{ route('offers.show', $offer->id) }}?from=offers'" 
-                            style="cursor: pointer; background: {{ $offer->letzter_status_bg_hex ? $offer->letzter_status_bg_hex . '25' : 'rgba(255,255,255,0.02)' }}; border-left: 4px solid {{ $offer->letzter_status_bg_hex ?? 'transparent' }};">
-                            <td style="padding-left: 15px;">{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</td>
+                        @foreach($orders as $order)
+                        <tr style="background: {{ $order->status_bg ? $order->status_bg . '25' : 'rgba(255,255,255,0.02)' }}; border-left: 4px solid {{ $order->status_bg ?? 'transparent' }};">
+                            <td style="padding-left: 15px;">{{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}</td>
                             <td>
-                                <a href="{{ route('offers.show', $offer->id) }}?from=offers" style="text-decoration: none; color: inherit;">
-                                    <strong>{{ $offer->angebotsnummer }}</strong>
-                                </a><br>
-                                <small style="color: var(--text-muted)">{{ $offer->benutzer }}</small>
+                                <strong>{{ $order->auftragsnummer }}</strong><br>
+                                <small style="color: var(--text-muted)">{{ $order->benutzer }}</small>
                             </td>
-                            <td style="color: {{ $offer->projekt_farbe_hex ?: '#ffffff' }}; font-weight: 600;">
-                                {{ $offer->projekt_firmenname }}
+                            <td style="color: {{ $order->projekt_farbe_hex ?: '#ffffff' }}; font-weight: 600;">
+                                {{ $order->projektname }}
                             </td>
-                            <td>{{ $offer->firmenname }}</td>
+                            <td>{{ $order->firmenname }}</td>
                             <td class="amount">
-                                {{ number_format($offer->angebotssumme, 2, ',', '.') }} €
+                                {{ number_format($order->auftragssumme, 2, ',', '.') }} €
                             </td>
                             <td>
-                                <b style="color: {{ $offer->letzter_status_farbe_hex }}; font-size: 0.85rem;">
-                                    {{ $offer->letzter_status_name }}
+                                <b style="color: {{ $order->status_color }}; font-size: 0.85rem;">
+                                    {{ $order->status_name }}
                                 </b>
                             </td>
                         </tr>
@@ -638,7 +635,7 @@
             </div>
             
             <div class="pagination">
-                {{ $offers->links() }}
+                {{ $orders->links() }}
             </div>
         </div>
     </div>
