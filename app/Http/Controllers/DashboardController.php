@@ -213,7 +213,9 @@ class DashboardController extends Controller
         $totalOfferCount = $totalCountQuery->count();
 
         // 4. Main Query
-        $query = DB::table('angebot_tabelle')->where('firmen_id', $companyId);
+        $query = DB::table('angebot_tabelle')
+            ->leftJoin('auftrag_projekt_firma', 'angebot_tabelle.projekt_firmenname', '=', 'auftrag_projekt_firma.name')
+            ->where('angebot_tabelle.firmen_id', $companyId);
 
         if ($search) {
             $query->where(function($q) use ($search) {
@@ -232,6 +234,7 @@ class DashboardController extends Controller
         }
 
         $offers = $query->orderBy('erstelldatum', 'desc')
+            ->select('angebot_tabelle.*', 'auftrag_projekt_firma.name_kuerzel as project_kuerzel')
             ->paginate(20)
             ->appends([
                 'search' => $search,

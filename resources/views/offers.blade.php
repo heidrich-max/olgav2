@@ -178,28 +178,39 @@
 
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0 12px;
             font-size: 0.95rem;
+            margin-top: -12px; /* Offset for the first row spacing */
         }
 
         th {
             text-align: left;
             color: var(--text-muted);
-            padding: 15px 12px;
+            padding: 10px 15px;
             font-weight: 700;
             text-transform: uppercase;
             font-size: 0.75rem;
             letter-spacing: 0.05em;
-            border-bottom: 2px solid var(--glass-border);
+            border: none;
         }
 
         td {
-            padding: 15px 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 18px 15px;
+            border: none;
+            background: rgba(255,255,255,0.03);
+        }
+
+        tr td:first-child {
+            border-radius: 15px 0 0 15px;
+        }
+
+        tr td:last-child {
+            border-radius: 0 15px 15px 0;
         }
 
         tr {
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         tr:hover {
@@ -600,36 +611,51 @@
                 <table>
                     <thead>
                         <tr>
+                            <th><i class="fas fa-layer-group" title="Projekt / Status"></i></th>
                             <th>Datum</th>
                             <th>Nummer</th>
-                            <th>Projekt</th>
+                            <th>Projektname</th>
                             <th>Kunde</th>
                             <th style="text-align: right;">Betrag</th>
-                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($offers as $offer)
-                        <tr onclick="window.location='{{ route('offers.show', $offer->id) }}?from=offers'" 
-                            style="cursor: pointer; background: {{ $offer->letzter_status_bg_hex ? $offer->letzter_status_bg_hex . '25' : 'rgba(255,255,255,0.02)' }}; border-left: 4px solid {{ $offer->letzter_status_bg_hex ?? 'transparent' }};">
-                            <td style="padding-left: 15px;">{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</td>
-                            <td>
+                        @php
+                            $sColor = $offer->letzter_status_bg_hex ?: $offer->letzter_status_farbe_hex ?: '#1e293b';
+                            $rowBg = $sColor . '15'; 
+                            $accentColor = $sColor;
+                            $pColor = $offer->projekt_farbe_hex ?: '#ffffff';
+                        @endphp
+                        <tr onclick="window.location='{{ route('offers.show', $offer->id) }}?from=offers'" style="cursor: pointer;">
+                            <td style="background: {{ $rowBg }}; border-left: 4px solid {{ $accentColor }}; padding-left: 20px;">
+                                <span style="color: {{ $pColor }}; font-weight: 800; font-size: 0.9rem; display: block;">
+                                    {{ $offer->project_kuerzel ?: '—' }}
+                                </span>
+                                <span style="color: #ffffff; font-weight: 800; font-size: 0.75rem; text-transform: uppercase;">
+                                    {{ $offer->letzter_status ?? '—' }}
+                                </span>
+                            </td>
+                            <td style="background: {{ $rowBg }};">
+                                {{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}
+                            </td>
+                            <td style="background: {{ $rowBg }};">
                                 <a href="{{ route('offers.show', $offer->id) }}?from=offers" style="text-decoration: none; color: inherit;">
                                     <strong>{{ $offer->angebotsnummer }}</strong>
                                 </a><br>
                                 <small style="color: var(--text-muted)">{{ $offer->benutzer }}</small>
                             </td>
-                            <td style="color: {{ $offer->projekt_farbe_hex ?: '#ffffff' }}; font-weight: 600;">
+                            <td style="background: {{ $rowBg }}; font-weight: 600;">
                                 {{ $offer->projekt_firmenname }}
+                                @if(isset($offer->hersteller) && $offer->hersteller)
+                                    <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 400; margin-top: 2px;">
+                                        {{ $offer->hersteller }}
+                                    </div>
+                                @endif
                             </td>
-                            <td>{{ $offer->firmenname }}</td>
-                            <td class="amount">
+                            <td style="background: {{ $rowBg }};">{{ $offer->firmenname }}</td>
+                            <td style="background: {{ $rowBg }};" class="amount">
                                 {{ number_format($offer->angebotssumme, 2, ',', '.') }} €
-                            </td>
-                            <td>
-                                <b style="color: {{ $offer->letzter_status_farbe_hex }}; font-size: 0.85rem;">
-                                    {{ $offer->letzter_status_name }}
-                                </b>
                             </td>
                         </tr>
                         @endforeach
