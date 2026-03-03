@@ -306,11 +306,15 @@ class DashboardController extends Controller
             $statusCountsQuery->where('auftrag_tabelle.benutzer', $selectedSalesperson);
         }
 
-        $statusCountsData = $statusCountsQuery->select('auftrag_status.status_lg as name', DB::raw('count(*) as count'))
-            ->groupBy('auftrag_status.status_lg')
+        $statusCountsData = $statusCountsQuery->select(
+                'auftrag_status.status_lg as name', 
+                'auftrag_status.status_sh as shorthand',
+                DB::raw('count(*) as count')
+            )
+            ->groupBy('auftrag_status.status_lg', 'auftrag_status.status_sh')
             ->get();
 
-        $statusCounts = $statusCountsData->sortBy('name');
+        $statusCounts = $statusCountsData->sortBy('shorthand');
         
         $totalCountQuery = DB::table('auftrag_tabelle')->where('firmen_id', $companyId);
         if ($view === 'archived') {

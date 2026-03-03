@@ -345,59 +345,56 @@
             flex-wrap: wrap;
             gap: 10px;
             margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 5px;
         }
 
         .status-pill {
             display: flex;
             align-items: center;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.05);
-            border: none;
-            padding: 8px 16px;
-            border-radius: 50px;
-            color: white;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            padding: 6px 14px;
+            border-radius: 12px;
+            color: #e2e8f0;
             text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .status-pill.clickable:hover { opacity: 0.85; transform: scale(1.02); }
-
-        .todo-badge {
-            background: #ef4444; color: white; font-size: 0.65rem; font-weight: 700;
-            padding: 2px 6px; border-radius: 50px; margin-left: 5px;
-            display: inline-flex; align-items: center; justify-content: center;
-            min-width: 18px; height: 18px; vertical-align: middle;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(5px);
         }
 
         .status-pill:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
             transform: translateY(-2px);
+            color: #fff;
         }
 
         .status-pill.active {
-            background: var(--accent-color);
+            background: var(--primary-accent);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.2);
             box-shadow: 0 4px 15px rgba(29, 161, 242, 0.3);
         }
 
         .status-count {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1px 7px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: #fff;
+            min-width: 22px;
+            text-align: center;
         }
         
         .status-pill.active .status-count {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.25);
         }
 
         .btn-search {
-            background: var(--accent-color);
+            background: var(--primary-accent);
             border: none;
             color: white;
             padding: 12px 25px;
@@ -620,8 +617,8 @@
                     Alle <span class="status-count">{{ $totalOrderCount }}</span>
                 </a>
                 @foreach($statusCounts as $s)
-                <a href="{{ route('orders.index', ['view' => $view, 'status' => $s->name, 'search' => $search, 'salesperson' => $selectedSalesperson]) }}" class="status-pill {{ $selectedStatus == $s->name ? 'active' : '' }}">
-                    {{ $s->name }} <span class="status-count">{{ $s->count }}</span>
+                <a href="{{ route('orders.index', ['view' => $view, 'status' => $s->name, 'search' => $search, 'salesperson' => $selectedSalesperson]) }}" class="status-pill {{ $selectedStatus == $s->name ? 'active' : '' }}" title="{{ $s->name }}">
+                    {{ $s->shorthand }} <span class="status-count">{{ $s->count }}</span>
                 </a>
                 @endforeach
             </div>
