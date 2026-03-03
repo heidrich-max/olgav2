@@ -340,6 +340,7 @@ class DashboardController extends Controller
                 'auftrag_status.bg as status_bg', 
                 'auftrag_status.color as status_color', 
                 'auftrag_status.status_lg as status_name',
+                'auftrag_status.status_sh as status_sh',
                 'auftrag_projekt_firma.name_kuerzel as project_kuerzel'
             )
             ->paginate(20)

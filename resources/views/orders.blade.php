@@ -630,9 +630,12 @@
                                 {{ number_format($order->auftragssumme, 2, ',', '.') }} €
                             </td>
                             <td>
-                                <b style="color: {{ $order->status_color }}; font-size: 0.85rem;">
-                                    {{ $order->status_name }}
-                                </b>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <span style="width: 10px; height: 10px; border-radius: 50%; background-color: {{ $order->status_color }}; display: inline-block; box-shadow: 0 0 5px {{ $order->status_color }}80;"></span>
+                                    <b style="color: #ffffff; font-size: 0.85rem; text-transform: uppercase;">
+                                        {{ $order->status_sh ?? '—' }}
+                                    </b>
+                                </div>
                             </td>
                         </tr>
                         @endforeach
