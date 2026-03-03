@@ -407,7 +407,7 @@
                     <div class="item-text">
                         <div style="font-weight: 600; font-size: 0.95rem;">{{ $order->auftragsnummer }}</div>
                         <div style="font-size: 0.8rem; color: var(--text-muted);">
-                            <span style="color: {{ $order->internal_project_color ?: '#ffffff' }}; font-weight: 600;">{{ $order->internal_project_name }}</span> | {{ $order->firmenname }}
+                            <span style="color: {{ $order->projekt_farbe_hex ?: '#ffffff' }}; font-weight: 600;">{{ $order->projekt_firmenname }}</span> | {{ $order->firmenname }}
                         </div>
                     </div>
                     <b style="color: {{ $order->status_color ?? '#fff' }}; font-size: 0.8rem;">

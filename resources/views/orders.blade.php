@@ -617,8 +617,8 @@
                                 <small style="color: var(--text-muted)">{{ $order->benutzer }}</small>
                             </td>
                             <td style="font-weight: 600;">
-                                <span style="color: {{ $order->internal_project_color ?: '#ffffff' }};">
-                                    {{ $order->internal_project_name ?: '—' }}
+                                <span style="color: {{ $order->projekt_farbe_hex ?: '#ffffff' }};">
+                                    {{ $order->projekt_firmenname ?: '—' }}
                                 </span><br>
                                 <small style="color: var(--text-muted); font-weight: 400;">
                                     {{ $order->projektname }}

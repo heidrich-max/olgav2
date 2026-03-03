@@ -356,7 +356,7 @@
                                 <tr style="background: {{ $order->status_bg ? $order->status_bg . '15' : 'transparent' }}; border-left: 4px solid {{ $order->status_bg ?? 'transparent' }}; transition: background 0.2s;">
                                     <td style="white-space: nowrap; padding-left: 10px;">{{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}</td>
                                     <td>{{ $order->auftragsnummer ?? '—' }}</td>
-                                    <td style="color: {{ $order->internal_project_color ?? '#fff' }}; font-weight: 600;">{{ $order->internal_project_name ?? '—' }}</td>
+                                    <td style="color: {{ $order->projekt_farbe_hex ?? '#fff' }}; font-weight: 600;">{{ $order->projekt_firmenname ?? '—' }}</td>
                                     <td>{{ $order->firmenname ?? '—' }}</td>
                                     <td>
                                         <b style="color: {{ $order->status_color ?? '#fff' }}; font-size: 0.85rem;">

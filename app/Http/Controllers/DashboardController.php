@@ -73,8 +73,6 @@ class DashboardController extends Controller
         // Lists
     $orders = DB::table('auftrag_tabelle')
         ->leftJoin('auftrag_status', 'auftrag_tabelle.letzter_status', '=', 'auftrag_status.status_sh')
-        ->leftJoin('auftrag_projekt', 'auftrag_tabelle.projekt_id', '=', 'auftrag_projekt.id')
-        ->leftJoin('auftrag_projekt_firma', 'auftrag_projekt.firmen_id', '=', 'auftrag_projekt_firma.id')
         ->where('auftrag_tabelle.firmen_id', $companyId)
         ->where('auftrag_tabelle.abgeschlossen_status', '!=', 'Auftrag abgeschlossen')
         ->orderBy('auftrag_tabelle.erstelldatum', 'asc')
@@ -83,9 +81,7 @@ class DashboardController extends Controller
             'auftrag_status.bg as status_bg', 
             'auftrag_status.color as status_color', 
             'auftrag_status.status_sh as status_kuerzel',
-            'auftrag_status.status_lg as status_name_raw',
-            'auftrag_projekt_firma.name as internal_project_name',
-            'auftrag_projekt_firma.bg as internal_project_color'
+            'auftrag_status.status_lg as status_name_raw'
         )
         ->limit(10)
         ->get();
@@ -98,8 +94,8 @@ class DashboardController extends Controller
         if ($order->status_color && strpos($order->status_color, '#') !== 0) {
             $order->status_color = '#' . $order->status_color;
         }
-        if (isset($order->internal_project_color) && $order->internal_project_color && strpos($order->internal_project_color, '#') !== 0) {
-            $order->internal_project_color = '#' . $order->internal_project_color;
+        if (isset($order->projekt_farbe_hex) && $order->projekt_farbe_hex && strpos($order->projekt_farbe_hex, '#') !== 0) {
+            $order->projekt_farbe_hex = '#' . $order->projekt_farbe_hex;
         }
         return $order;
     });
@@ -308,8 +304,6 @@ class DashboardController extends Controller
         // 4. Main Query
         $query = DB::table('auftrag_tabelle')
             ->leftJoin('auftrag_status', 'auftrag_tabelle.letzter_status', '=', 'auftrag_status.status_sh')
-            ->leftJoin('auftrag_projekt', 'auftrag_tabelle.projekt_id', '=', 'auftrag_projekt.id')
-            ->leftJoin('auftrag_projekt_firma', 'auftrag_projekt.firmen_id', '=', 'auftrag_projekt_firma.id')
             ->where('auftrag_tabelle.firmen_id', $companyId);
 
         if ($search) {
@@ -317,7 +311,7 @@ class DashboardController extends Controller
                 $q->where('auftragsnummer', 'like', "%{$search}%")
                   ->orWhere('firmenname', 'like', "%{$search}%")
                   ->orWhere('projektname', 'like', "%{$search}%")
-                  ->orWhere('auftrag_projekt_firma.name', 'like', "%{$search}%");
+                  ->orWhere('projekt_firmenname', 'like', "%{$search}%");
             });
         }
 
@@ -334,9 +328,7 @@ class DashboardController extends Controller
                 'auftrag_tabelle.*', 
                 'auftrag_status.bg as status_bg', 
                 'auftrag_status.color as status_color', 
-                'auftrag_status.status_lg as status_name',
-                'auftrag_projekt_firma.name as internal_project_name',
-                'auftrag_projekt_firma.bg as internal_project_color'
+                'auftrag_status.status_lg as status_name'
             )
             ->paginate(20)
             ->appends([
@@ -354,8 +346,8 @@ class DashboardController extends Controller
                 $order->status_color = '#' . $order->status_color;
             }
             // Add # to project color if missing
-            if (isset($order->internal_project_color) && $order->internal_project_color && strpos($order->internal_project_color, '#') !== 0) {
-                $order->internal_project_color = '#' . $order->internal_project_color;
+            if (isset($order->projekt_farbe_hex) && $order->projekt_farbe_hex && strpos($order->projekt_farbe_hex, '#') !== 0) {
+                $order->projekt_farbe_hex = '#' . $order->projekt_farbe_hex;
             }
             return $order;
         });
