@@ -628,7 +628,10 @@
                     Alle <span class="status-count">{{ $totalOrderCount }}</span>
                 </a>
                 @foreach($statusCounts as $s)
-                <a href="{{ route('orders.index', ['view' => $view, 'status' => $s->name, 'search' => $search, 'salesperson' => $selectedSalesperson]) }}" class="status-pill {{ $selectedStatus == $s->name ? 'active' : '' }}" title="{{ $s->name }}">
+                <a href="{{ route('orders.index', ['view' => $view, 'status' => $s->name, 'search' => $search, 'salesperson' => $selectedSalesperson]) }}" 
+                   class="status-pill {{ $selectedStatus == $s->name ? 'active' : '' }}" 
+                   style="{{ $selectedStatus == $s->name ? 'background-color: ' . ($s->color ?: 'var(--primary-accent)') . '; border-color: rgba(255,255,255,0.2);' : 'border-color: ' . ($s->color ? $s->color . '66' : 'var(--glass-border)') . '; color: ' . ($s->color ?: '#fff') . ';' }}"
+                   title="{{ $s->name }}">
                     {{ $s->shorthand }} <span class="status-count">{{ $s->count }}</span>
                 </a>
                 @endforeach
