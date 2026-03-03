@@ -636,7 +636,7 @@
                 @endphp
                 <a href="{{ route('orders.index', ['view' => $view, 'status' => $s->name, 'search' => $search, 'salesperson' => $selectedSalesperson]) }}" 
                    class="status-pill {{ $selectedStatus == $s->name ? 'active' : '' }}" 
-                   style="{{ $selectedStatus == $s->name ? 'background-color: ' . $pColor . '; border-color: rgba(255,255,255,0.2);' : 'background-color: ' . ($isHex ? $pColor . '15' : 'rgba(255,255,255,0.05)') . '; border-color: ' . ($isHex ? $pColor . '88' : 'var(--glass-border)') . '; color: ' . $pColor . '; text-shadow: 0 0 1px rgba(255,255,255,0.5);' }}"
+                   style="{{ $selectedStatus == $s->name ? 'background-color: ' . $pColor . '; border-color: rgba(255,255,255,0.2);' : 'background-color: ' . ($isHex ? $pColor . '15' : 'rgba(255,255,255,0.05)') . '; border-color: ' . ($isHex ? $pColor . '88' : 'var(--glass-border)') . '; color: ' . $pColor . '; text-shadow: 0 0 3px rgba(255,255,255,0.8);' }}"
                    title="{{ $s->name }}">
                     {{ $s->shorthand }} <span class="status-count">{{ $s->count }}</span>
                 </a>
