@@ -573,6 +573,7 @@
                 </a>
             </div>
 
+            @if($view !== 'archived')
             <div class="status-nav">
                 <a href="{{ route('orders.index', ['view' => $view, 'search' => $search, 'salesperson' => $selectedSalesperson]) }}" class="status-pill {{ !$selectedStatus ? 'active' : '' }}">
                     Alle <span class="status-count">{{ $totalOrderCount }}</span>
@@ -583,6 +584,7 @@
                 </a>
                 @endforeach
             </div>
+            @endif
 
             <form action="{{ route('orders.index') }}" method="GET" class="search-section">
                 <input type="hidden" name="status" value="{{ $selectedStatus }}">
