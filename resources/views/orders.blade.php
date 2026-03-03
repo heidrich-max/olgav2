@@ -616,8 +616,13 @@
                                 <strong>{{ $order->auftragsnummer }}</strong><br>
                                 <small style="color: var(--text-muted)">{{ $order->benutzer }}</small>
                             </td>
-                            <td style="color: {{ $order->projekt_farbe_hex ?: '#ffffff' }}; font-weight: 600;">
-                                {{ $order->projektname }}
+                            <td style="font-weight: 600;">
+                                <span style="color: {{ $order->internal_project_color ?: '#ffffff' }};">
+                                    {{ $order->internal_project_name ?: '—' }}
+                                </span><br>
+                                <small style="color: var(--text-muted); font-weight: 400;">
+                                    {{ $order->projektname }}
+                                </small>
                             </td>
                             <td>{{ $order->firmenname }}</td>
                             <td class="amount">

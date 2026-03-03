@@ -405,8 +405,10 @@
                 @forelse($orders as $order)
                 <div class="list-item" style="background: {{ $order->status_bg ? $order->status_bg . '10' : 'rgba(255,255,255,0.03)' }}; border-left: 3px solid {{ $order->status_bg ?? 'transparent' }}; padding-left: 10px; margin-bottom: 5px; border-radius: 4px;">
                     <div class="item-text">
-                        <div class="item-main">{{ $order->auftragsnummer }}</div>
-                        <div class="item-sub">{{ $order->projektname }}</div>
+                        <div style="font-weight: 600; font-size: 0.95rem;">{{ $order->auftragsnummer }}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">
+                            <span style="color: {{ $order->internal_project_color ?: '#ffffff' }}; font-weight: 600;">{{ $order->internal_project_name }}</span> | {{ $order->firmenname }}
+                        </div>
                     </div>
                     <b style="color: {{ $order->status_color ?? '#fff' }}; font-size: 0.8rem;">
                         {{ $order->status_kuerzel ?? $order->status_name_raw ?? $order->letzter_status_name }}
