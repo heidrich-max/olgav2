@@ -697,7 +697,7 @@
                                     {{ $order->project_kuerzel ?: '—' }}
                                 </span>
                             </td>
-                            <td style="background: {{ $rowBg }};">
+                            <td style="background: {{ $rowBg }}; white-space: nowrap;">
                                 <strong>{{ $order->auftragsnummer }}</strong><br>
                                 <small style="color: var(--text-muted)">{{ $order->benutzer }}</small>
                             </td>
