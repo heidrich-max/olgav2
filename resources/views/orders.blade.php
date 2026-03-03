@@ -404,6 +404,29 @@
             background: rgba(255, 255, 255, 0.25);
         }
 
+        /* Compact Status Badge for Table */
+        .status-badge-compact {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass-border);
+            padding: 4px 10px;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 800;
+            backdrop-filter: blur(4px);
+            white-space: nowrap;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            margin-right: 6px;
+            flex-shrink: 0;
+        }
+
         .btn-search {
             background: var(--primary-accent);
             border: none;
@@ -710,26 +733,9 @@
                                 {{ number_format($order->auftragssumme, 2, ',', '.') }} €
                             </td>
                             <td style="background: {{ $rowBg }};">
-                                <div style="
-                                    width: 38px; 
-                                    height: 38px; 
-                                    border-radius: 50%; 
-                                    background-color: {{ $order->status_bg ?? $order->status_color ?? '#1e293b' }}; 
-                                    display: flex; 
-                                    align-items: center; 
-                                    justify-content: center; 
-                                    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-                                    border: 1px solid rgba(255,255,255,0.1);
-                                ">
-                                    <span style="
-                                        color: {{ $order->status_color && $order->status_bg ? '#ffffff' : ($order->status_color ?: '#ffffff') }}; 
-                                        font-size: 0.7rem; 
-                                        font-weight: 800; 
-                                        text-transform: uppercase;
-                                        letter-spacing: -0.5px;
-                                    ">
-                                        {{ $order->status_sh ?? '—' }}
-                                    </span>
+                                <div class="status-badge-compact" style="border-color: {{ $order->status_bg ? $order->status_bg . '66' : 'var(--glass-border)' }};">
+                                    <span class="status-dot" style="background-color: {{ $order->status_bg ?? $order->status_color ?? '#fff' }}; box-shadow: 0 0 5px {{ $order->status_bg ?? $order->status_color }}88;"></span>
+                                    {{ $order->status_sh ?? '—' }}
                                 </div>
                             </td>
                         </tr>
