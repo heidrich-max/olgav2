@@ -293,7 +293,8 @@ class DashboardController extends Controller
         // 3. Fetch status counts joined with auftrag_status
         $statusCountsQuery = DB::table('auftrag_tabelle')
             ->join('auftrag_status', 'auftrag_tabelle.letzter_status', '=', 'auftrag_status.status_sh')
-            ->where('auftrag_tabelle.firmen_id', $companyId);
+            ->where('auftrag_tabelle.firmen_id', $companyId)
+            ->where('auftrag_tabelle.abgeschlossen_status', '!=', 'Auftrag abgeschlossen');
         
         if ($selectedSalesperson) {
             $statusCountsQuery->where('auftrag_tabelle.benutzer', $selectedSalesperson);
@@ -305,7 +306,9 @@ class DashboardController extends Controller
 
         $statusCounts = $statusCountsData->sortBy('name');
         
-        $totalCountQuery = DB::table('auftrag_tabelle')->where('firmen_id', $companyId);
+        $totalCountQuery = DB::table('auftrag_tabelle')
+            ->where('firmen_id', $companyId)
+            ->where('abgeschlossen_status', '!=', 'Auftrag abgeschlossen');
         if ($selectedSalesperson) {
             $totalCountQuery->where('benutzer', $selectedSalesperson);
         }
@@ -315,7 +318,8 @@ class DashboardController extends Controller
         $query = DB::table('auftrag_tabelle')
             ->leftJoin('auftrag_status', 'auftrag_tabelle.letzter_status', '=', 'auftrag_status.status_sh')
             ->leftJoin('auftrag_projekt_firma', 'auftrag_tabelle.projekt_firmenname', '=', 'auftrag_projekt_firma.name')
-            ->where('auftrag_tabelle.firmen_id', $companyId);
+            ->where('auftrag_tabelle.firmen_id', $companyId)
+            ->where('auftrag_tabelle.abgeschlossen_status', '!=', 'Auftrag abgeschlossen');
 
         if ($search) {
             $query->where(function($q) use ($search) {
