@@ -19,6 +19,12 @@ class ManufacturerController extends Controller
         $accentColor = ($companyId == 1) ? '#1DA1F2' : '#0088CC';
 
         $manufacturers = DB::table('hersteller')
+            ->select('hersteller.*')
+            ->selectSub(function ($query) {
+                $query->from('hersteller_ansprechpartner')
+                    ->whereColumn('hersteller_id', 'hersteller.id')
+                    ->selectRaw('count(*)');
+            }, 'ansprechpartner_count')
             ->orderByRaw("COALESCE(NULLIF(herstellernummer, ''), LPAD(id, 3, '0')) ASC")
             ->get();
 
@@ -64,9 +70,26 @@ class ManufacturerController extends Controller
             'passwort' => $request->passwort ?? '',
         ];
 
-        DB::table('hersteller')->insert($insertData);
+        $id = DB::table('hersteller')->insertGetId($insertData);
 
-        return redirect()->route('manufacturers.index')->with('success', 'Hersteller erfolgreich erstellt.');
+        // Ansprechpartner Speicherung
+        $incomingContacts = $request->input('contacts', []);
+        foreach ($incomingContacts as $c) {
+            if (!empty($c['vorname']) || !empty($c['nachname']) || !empty($c['email'])) {
+                DB::table('hersteller_ansprechpartner')->insert([
+                    'hersteller_id' => $id,
+                    'anrede' => $c['anrede'] ?? '',
+                    'vorname' => $c['vorname'] ?? '',
+                    'nachname' => $c['nachname'] ?? '',
+                    'telefon' => $c['telefon'] ?? '',
+                    'email' => $c['email'] ?? '',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        }
+
+        return redirect()->route('manufacturers.index')->with('success', 'Hersteller und Ansprechpartner erfolgreich erstellt.');
     }
 
     public function edit($id)
@@ -78,12 +101,16 @@ class ManufacturerController extends Controller
             return redirect()->route('manufacturers.index')->with('error', 'Hersteller nicht gefunden.');
         }
 
+        $contacts = DB::table('hersteller_ansprechpartner')
+            ->where('hersteller_id', $id)
+            ->get();
+
         $companyId = Session::get('active_company_id', request()->cookie('active_company_id', 1));
         if (!in_array($companyId, [1, 2])) { $companyId = 1; }
         $companyName = ($companyId == 1) ? 'Branding Europe GmbH' : 'Europe Pen GmbH';
         $accentColor = ($companyId == 1) ? '#1DA1F2' : '#0088CC';
 
-        return view('manufacturers.edit', compact('user', 'manufacturer', 'companyId', 'companyName', 'accentColor'));
+        return view('manufacturers.edit', compact('user', 'manufacturer', 'contacts', 'companyId', 'companyName', 'accentColor'));
     }
 
     public function update(Request $request, $id)
@@ -115,7 +142,42 @@ class ManufacturerController extends Controller
 
         DB::table('hersteller')->where('id', $id)->update($updateData);
 
-        return redirect()->route('manufacturers.index')->with('success', 'Hersteller erfolgreich aktualisiert.');
+        // Ansprechpartner Synchronisierung
+        $incomingContacts = $request->input('contacts', []);
+        $existingIds = DB::table('hersteller_ansprechpartner')
+            ->where('hersteller_id', $id)
+            ->pluck('id')
+            ->toArray();
+
+        $processedIds = [];
+
+        foreach ($incomingContacts as $c) {
+            $contactData = [
+                'hersteller_id' => $id,
+                'anrede' => $c['anrede'] ?? '',
+                'vorname' => $c['vorname'] ?? '',
+                'nachname' => $c['nachname'] ?? '',
+                'telefon' => $c['telefon'] ?? '',
+                'email' => $c['email'] ?? '',
+                'updated_at' => now(),
+            ];
+
+            if (!empty($c['id']) && in_array($c['id'], $existingIds)) {
+                DB::table('hersteller_ansprechpartner')->where('id', $c['id'])->update($contactData);
+                $processedIds[] = (int)$c['id'];
+            } else {
+                $contactData['created_at'] = now();
+                DB::table('hersteller_ansprechpartner')->insert($contactData);
+            }
+        }
+
+        // Nicht mehr vorhandene Kontakte löschen
+        $idsToDelete = array_diff($existingIds, $processedIds);
+        if (!empty($idsToDelete)) {
+            DB::table('hersteller_ansprechpartner')->whereIn('id', $idsToDelete)->delete();
+        }
+
+        return redirect()->route('manufacturers.index')->with('success', 'Hersteller und Ansprechpartner erfolgreich aktualisiert.');
     }
 
     public function destroy($id)

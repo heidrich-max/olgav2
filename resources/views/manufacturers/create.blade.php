@@ -142,6 +142,23 @@
         .btn-save:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); opacity: 0.9; }
 
         .error-msg { color: #fca5a5; font-size: 0.75rem; margin-top: 5px; }
+
+        /* Contacts Table Styles */
+        .contacts-section { margin-top: 30px; }
+        .contacts-header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            margin-bottom: 15px; cursor: pointer; padding: 10px;
+            background: rgba(255,255,255,0.03); border-radius: 10px; border: 1px solid var(--glass-border);
+        }
+        .contacts-header h3 { font-size: 1.1rem; color: var(--primary-accent); margin: 0; }
+        .contacts-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .contacts-table th { text-align: left; font-size: 0.75rem; color: var(--text-muted); padding: 8px; text-transform: uppercase; border-bottom: 1px solid var(--glass-border); }
+        .contacts-table td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .contacts-table input { font-size: 0.85rem; padding: 8px 10px; }
+        .btn-remove-contact { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 6px; padding: 6px 10px; cursor: pointer; transition: all 0.3s; }
+        .btn-remove-contact:hover { background: #ef4444; color: #fff; }
+        .btn-add-contact { background: rgba(29, 161, 242, 0.1); color: var(--primary-accent); border: 1px dashed var(--primary-accent); border-radius: 8px; padding: 10px; width: 100%; cursor: pointer; margin-top: 10px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; }
+        .btn-add-contact:hover { background: rgba(29, 161, 242, 0.2); }
     </style>
 </head>
 <body>
@@ -279,6 +296,34 @@
                         <label for="herstellerinformation">Herstellerinformationen</label>
                         <textarea name="herstellerinformation" id="herstellerinformation" class="form-control" rows="4" placeholder="Zusätzliche Informationen zum Hersteller...">{{ old('herstellerinformation') }}</textarea>
                     </div>
+
+                    <!-- Ansprechpartner Sektion -->
+                    <div class="form-group full-width contacts-section">
+                        <div class="contacts-header" onclick="toggleContacts()">
+                            <h3><i class="fas fa-users"></i> Ansprechpartner</h3>
+                            <i class="fas fa-chevron-down" id="contactsChevron"></i>
+                        </div>
+                        <div id="contactsContent" style="display: block;">
+                            <table class="contacts-table" id="contactsTable">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 80px;">Anrede</th>
+                                        <th>Vorname</th>
+                                        <th>Nachname</th>
+                                        <th>Telefon</th>
+                                        <th>E-Mail</th>
+                                        <th style="width: 40px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="contactsBody">
+                                    <!-- Dynamic rows go here -->
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn-add-contact" onclick="addRow()">
+                                <i class="fas fa-plus-circle"></i> Weiteren Ansprechpartner hinzufügen
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-save">
@@ -309,6 +354,45 @@
             userDropdown.classList.remove('active');
             companySwitcher.classList.remove('active');
         });
+
+        // Contact Management
+        let contactIndex = 0;
+        const contactsBody = document.getElementById('contactsBody');
+
+        function addRow() {
+            const tr = document.createElement('tr');
+            tr.className = 'contact-row';
+            tr.dataset.index = contactIndex;
+            tr.innerHTML = `
+                <td><input type="text" name="contacts[${contactIndex}][anrede]" class="form-control" placeholder="z.B. Herr"></td>
+                <td><input type="text" name="contacts[${contactIndex}][vorname]" class="form-control" placeholder="Vorname"></td>
+                <td><input type="text" name="contacts[${contactIndex}][nachname]" class="form-control" placeholder="Nachname"></td>
+                <td><input type="text" name="contacts[${contactIndex}][telefon]" class="form-control" placeholder="Telefon"></td>
+                <td><input type="email" name="contacts[${contactIndex}][email]" class="form-control" placeholder="E-Mail"></td>
+                <td><button type="button" class="btn-remove-contact" onclick="removeRow(this)"><i class="fas fa-trash"></i></button></td>
+            `;
+            contactsBody.appendChild(tr);
+            contactIndex++;
+        }
+
+        function removeRow(btn) {
+            btn.closest('tr').remove();
+        }
+
+        function toggleContacts() {
+            const content = document.getElementById('contactsContent');
+            const chevron = document.getElementById('contactsChevron');
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                chevron.classList.replace('fa-chevron-right', 'fa-chevron-down');
+            } else {
+                content.style.display = 'none';
+                chevron.classList.replace('fa-chevron-down', 'fa-chevron-right');
+            }
+        }
+
+        // Start with one empty row
+        addRow();
     </script>
 </body>
 </html>

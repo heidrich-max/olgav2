@@ -359,7 +359,12 @@
                     <tr>
                         <td style="font-weight: 700; color: var(--text-muted);">{{ $m->herstellernummer ?? sprintf('%03d', $m->id) }}</td>
                         <td style="font-weight: 600;">{{ $m->firmenname }}</td>
-                        <td>{{ trim(($m->anrede ?? '') . ' ' . ($m->vorname ?? '') . ' ' . ($m->nachname ?? '')) }}</td>
+                        <td>
+                            {{ trim(($m->anrede ?? '') . ' ' . ($m->vorname ?? '') . ' ' . ($m->nachname ?? '')) }}
+                            @if($m->ansprechpartner_count > 0)
+                                <br><small style="color: var(--primary-accent); font-weight: 600;">(+{{ $m->ansprechpartner_count }} Kontakte)</small>
+                            @endif
+                        </td>
                         <td>{{ $m->telefon }}</td>
                         <td><a href="mailto:{{ $m->email }}" style="color: var(--primary-accent); text-decoration: none;">{{ $m->email }}</a></td>
                         <td><span style="font-size: 0.75rem; color: var(--text-muted); display: block; max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $m->herstellerinformation }}">{{ $m->herstellerinformation }}</span></td>
