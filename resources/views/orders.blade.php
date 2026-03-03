@@ -630,11 +630,26 @@
                                 {{ number_format($order->auftragssumme, 2, ',', '.') }} €
                             </td>
                             <td>
-                                <div style="display: flex; align-items: center; gap: 8px;">
-                                    <span style="width: 10px; height: 10px; border-radius: 50%; background-color: {{ $order->status_color }}; display: inline-block; box-shadow: 0 0 5px {{ $order->status_color }}80;"></span>
-                                    <b style="color: #ffffff; font-size: 0.85rem; text-transform: uppercase;">
+                                <div style="
+                                    width: 38px; 
+                                    height: 38px; 
+                                    border-radius: 50%; 
+                                    background-color: {{ $order->status_bg ?? $order->status_color ?? '#1e293b' }}; 
+                                    display: flex; 
+                                    align-items: center; 
+                                    justify-content: center; 
+                                    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                                    border: 1px solid rgba(255,255,255,0.1);
+                                ">
+                                    <span style="
+                                        color: {{ $order->status_color && $order->status_bg ? '#ffffff' : ($order->status_color ?: '#ffffff') }}; 
+                                        font-size: 0.7rem; 
+                                        font-weight: 800; 
+                                        text-transform: uppercase;
+                                        letter-spacing: -0.5px;
+                                    ">
                                         {{ $order->status_sh ?? '—' }}
-                                    </b>
+                                    </span>
                                 </div>
                             </td>
                         </tr>
