@@ -683,13 +683,12 @@
                 <table>
                     <thead>
                         <tr>
+                            <th><i class="fas fa-layer-group" title="Projekt / Status"></i></th>
                             <th>Datum</th>
-                            <th><i class="fas fa-layer-group" title="Projekt"></i></th>
                             <th>Nummer</th>
                             <th>Projektname</th>
                             <th>Kunde</th>
                             <th style="text-align: right;">Betrag</th>
-                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -702,6 +701,14 @@
                         @endphp
                         <tr class="order-row">
                             <td style="background: {{ $rowBg }}; border-left: 4px solid {{ $accentColor }}; padding-left: 20px;">
+                                <span style="color: {{ $pColor }}; font-weight: 800; font-size: 0.9rem; display: block;">
+                                    {{ $order->project_kuerzel ?: '—' }}
+                                </span>
+                                <span style="color: #ffffff; font-weight: 800; font-size: 0.75rem; text-transform: uppercase;">
+                                    {{ $order->status_sh ?? '—' }}
+                                </span>
+                            </td>
+                            <td style="background: {{ $rowBg }};">
                                 <span>{{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}</span>
                                 @if($order->lieferdatum)
                                     <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; display: flex; align-items: center; gap: 6px;">
@@ -709,11 +716,6 @@
                                         {{ \Carbon\Carbon::parse($order->lieferdatum)->format('d.m.Y') }}
                                     </div>
                                 @endif
-                            </td>
-                            <td style="background: {{ $rowBg }};">
-                                <span style="color: {{ $pColor }}; font-weight: 800; font-size: 0.9rem;">
-                                    {{ $order->project_kuerzel ?: '—' }}
-                                </span>
                             </td>
                             <td style="background: {{ $rowBg }}; white-space: nowrap;">
                                 <strong>{{ $order->auftragsnummer }}</strong><br>
@@ -728,11 +730,6 @@
                             <td style="background: {{ $rowBg }};">{{ $order->firmenname }}</td>
                             <td style="background: {{ $rowBg }};" class="amount">
                                 {{ number_format($order->auftragssumme, 2, ',', '.') }} €
-                            </td>
-                            <td style="background: {{ $rowBg }};">
-                                <span style="color: #ffffff; font-weight: 800; font-size: 0.9rem; text-transform: uppercase;">
-                                    {{ $order->status_sh ?? '—' }}
-                                </span>
                             </td>
                         </tr>
                         @endforeach
