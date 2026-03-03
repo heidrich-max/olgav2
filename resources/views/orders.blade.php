@@ -721,6 +721,9 @@
                             </td>
                             <td style="background: {{ $rowBg }}; font-weight: 500;">
                                 {{ $order->projektname ?: '—' }}
+                                <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 400; margin-top: 2px;">
+                                    {{ $order->hersteller ?: '—' }}
+                                </div>
                             </td>
                             <td style="background: {{ $rowBg }};">{{ $order->firmenname }}</td>
                             <td style="background: {{ $rowBg }};" class="amount">
