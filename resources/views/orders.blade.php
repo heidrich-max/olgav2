@@ -628,9 +628,15 @@
                     Alle <span class="status-count">{{ $totalOrderCount }}</span>
                 </a>
                 @foreach($statusCounts as $s)
+                @php
+                    $pColor = $s->bg ?: $s->color ?: 'var(--primary-accent)';
+                    // Ensure # if it's a hex code without it
+                    if (preg_match('/^[a-fA-F0-9]{3}$|^[a-fA-F0-9]{6}$/', $pColor)) $pColor = '#' . $pColor;
+                    $isHex = str_starts_with($pColor, '#');
+                @endphp
                 <a href="{{ route('orders.index', ['view' => $view, 'status' => $s->name, 'search' => $search, 'salesperson' => $selectedSalesperson]) }}" 
                    class="status-pill {{ $selectedStatus == $s->name ? 'active' : '' }}" 
-                   style="{{ $selectedStatus == $s->name ? 'background-color: ' . ($s->color ?: 'var(--primary-accent)') . '; border-color: rgba(255,255,255,0.2);' : 'border-color: ' . ($s->color ? $s->color . '66' : 'var(--glass-border)') . '; color: ' . ($s->color ?: '#fff') . ';' }}"
+                   style="{{ $selectedStatus == $s->name ? 'background-color: ' . $pColor . '; border-color: rgba(255,255,255,0.2);' : 'border-color: ' . ($isHex ? $pColor . '66' : 'var(--glass-border)') . '; color: ' . $pColor . ';' }}"
                    title="{{ $s->name }}">
                     {{ $s->shorthand }} <span class="status-count">{{ $s->count }}</span>
                 </a>

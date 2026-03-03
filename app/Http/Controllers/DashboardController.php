@@ -310,9 +310,10 @@ class DashboardController extends Controller
                 'auftrag_status.status_lg as name', 
                 'auftrag_status.status_sh as shorthand',
                 'auftrag_status.color as color',
+                'auftrag_status.bg as bg',
                 DB::raw('count(*) as count')
             )
-            ->groupBy('auftrag_status.status_lg', 'auftrag_status.status_sh', 'auftrag_status.color')
+            ->groupBy('auftrag_status.status_lg', 'auftrag_status.status_sh', 'auftrag_status.color', 'auftrag_status.bg')
             ->get();
 
         $orderMap = [
