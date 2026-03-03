@@ -265,6 +265,16 @@
                         @error('email') <div class="error-msg">{{ $message }}</div> @enderror
                     </div>
 
+                    <div class="form-group">
+                        <label for="user">Login Benutzer</label>
+                        <input type="text" name="user" id="user" class="form-control" value="{{ old('user') }}" placeholder="Benutzername">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="passwort">Login Passwort</label>
+                        <input type="text" name="passwort" id="passwort" class="form-control" value="{{ old('passwort') }}" placeholder="Passwort">
+                    </div>
+
 
                     <div class="form-group full-width">
                         <label for="herstellerinformation">Herstellerinformationen</label>

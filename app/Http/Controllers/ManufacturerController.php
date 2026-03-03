@@ -45,6 +45,8 @@ class ManufacturerController extends Controller
             'email' => 'nullable|email|max:255',
             'telefon' => 'nullable|string|max:100',
             'internetseite' => 'nullable|string|max:255',
+            'user' => 'nullable|string|max:255',
+            'passwort' => 'nullable|string|max:255',
         ]);
 
         $insertData = [
@@ -58,6 +60,8 @@ class ManufacturerController extends Controller
             'internetseite' => $request->internetseite ?? '',
             'herstellerinformation' => $request->herstellerinformation ?? '',
             'sprache_id' => $request->sprache_id ?? 1,
+            'user' => $request->user ?? '',
+            'passwort' => $request->passwort ?? '',
         ];
 
         DB::table('hersteller')->insert($insertData);
@@ -90,6 +94,8 @@ class ManufacturerController extends Controller
             'email' => 'nullable|email|max:255',
             'telefon' => 'nullable|string|max:100',
             'internetseite' => 'nullable|string|max:255',
+            'user' => 'nullable|string|max:255',
+            'passwort' => 'nullable|string|max:255',
         ]);
 
         $updateData = [
@@ -103,6 +109,8 @@ class ManufacturerController extends Controller
             'internetseite' => $request->internetseite ?? '',
             'herstellerinformation' => $request->herstellerinformation ?? '',
             'sprache_id' => $request->sprache_id ?? 1,
+            'user' => $request->user ?? '',
+            'passwort' => $request->passwort ?? '',
         ];
 
         DB::table('hersteller')->where('id', $id)->update($updateData);
