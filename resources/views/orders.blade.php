@@ -178,28 +178,39 @@
 
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0 12px;
             font-size: 0.95rem;
+            margin-top: -12px; /* Offset for the first row spacing */
         }
 
         th {
             text-align: left;
             color: var(--text-muted);
-            padding: 15px 12px;
+            padding: 10px 15px;
             font-weight: 700;
             text-transform: uppercase;
             font-size: 0.75rem;
             letter-spacing: 0.05em;
-            border-bottom: 2px solid var(--glass-border);
+            border: none;
         }
 
         td {
-            padding: 15px 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 18px 15px;
+            border: none;
+            background: rgba(255,255,255,0.03);
+        }
+
+        tr td:first-child {
+            border-radius: 15px 0 0 15px;
+        }
+
+        tr td:last-child {
+            border-radius: 0 15px 15px 0;
         }
 
         tr {
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         tr:hover {
@@ -664,25 +675,31 @@
                     </thead>
                     <tbody>
                         @foreach($orders as $order)
-                        <tr style="background: {{ $order->projekt_farbe_hex ? $order->projekt_farbe_hex . '15' : 'rgba(255,255,255,0.02)' }}; border-left: 4px solid {{ $order->projekt_farbe_hex ?? 'transparent' }};">
-                            <td style="padding-left: 15px;">{{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}</td>
-                            <td>
+                        @php
+                            $rowBg = $order->projekt_farbe_hex ? $order->projekt_farbe_hex . '12' : 'rgba(255,255,255,0.03)';
+                            $accentColor = $order->projekt_farbe_hex ?? 'transparent';
+                        @endphp
+                        <tr class="order-row">
+                            <td style="background: {{ $rowBg }}; border-left: 4px solid {{ $accentColor }}; padding-left: 20px;">
+                                {{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}
+                            </td>
+                            <td style="background: {{ $rowBg }};">
                                 <span style="color: #ffffff; font-weight: 800;">
                                     {{ $order->project_kuerzel ?: '—' }}
                                 </span>
                             </td>
-                            <td>
+                            <td style="background: {{ $rowBg }};">
                                 <strong>{{ $order->auftragsnummer }}</strong><br>
                                 <small style="color: var(--text-muted)">{{ $order->benutzer }}</small>
                             </td>
-                            <td style="font-weight: 500;">
+                            <td style="background: {{ $rowBg }}; font-weight: 500;">
                                 {{ $order->projektname ?: '—' }}
                             </td>
-                            <td>{{ $order->firmenname }}</td>
-                            <td class="amount">
+                            <td style="background: {{ $rowBg }};">{{ $order->firmenname }}</td>
+                            <td style="background: {{ $rowBg }};" class="amount">
                                 {{ number_format($order->auftragssumme, 2, ',', '.') }} €
                             </td>
-                            <td>
+                            <td style="background: {{ $rowBg }};">
                                 <div style="
                                     width: 38px; 
                                     height: 38px; 
