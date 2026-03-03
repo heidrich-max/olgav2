@@ -314,7 +314,19 @@ class DashboardController extends Controller
             ->groupBy('auftrag_status.status_lg', 'auftrag_status.status_sh')
             ->get();
 
-        $statusCounts = $statusCountsData->sortBy('shorthand');
+        $orderMap = [
+            'NEU' => 1,
+            'KAO' => 2,
+            'FO' => 3,
+            'BO' => 4,
+            'BBH' => 5,
+            'FBH' => 6,
+            'IP' => 7
+        ];
+
+        $statusCounts = $statusCountsData->sortBy(function($item) use ($orderMap) {
+            return $orderMap[strtoupper($item->shorthand)] ?? 99;
+        });
         
         $totalCountQuery = DB::table('auftrag_tabelle')->where('firmen_id', $companyId);
         if ($view === 'archived') {
