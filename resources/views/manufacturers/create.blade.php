@@ -20,8 +20,7 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: url('/img/login_background.webp') no-repeat center center fixed;
-            background-size: cover;
+            background: radial-gradient(circle at top right, #1e293b, #0f172a);
             color: var(--text-main);
             min-height: 100vh;
             overflow-x: hidden;
