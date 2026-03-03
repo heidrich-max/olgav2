@@ -40,7 +40,29 @@ class AiController extends Controller
             Email: {$manufacturer->email}
             Zusatzinfo: {$manufacturer->herstellerinformation}";
         } else {
-            $systemPrompt .= " Du befindest dich gerade in der allgemeinen Hersteller-Übersicht.";
+            // GLOBALE SUCHE: Wir suchen nach Keywords im Prompt des Nutzers
+            // Wir filtern Stop-Wörter und suchen in firmenname und herstellerinformation
+            $keywords = explode(' ', str_replace(['?', '!', '.', ','], '', $prompt));
+            $searchQuery = DB::table('hersteller');
+            
+            foreach ($keywords as $word) {
+                if (strlen($word) > 3) {
+                    $searchQuery->orWhere('firmenname', 'LIKE', "%{$word}%")
+                                ->orWhere('herstellerinformation', 'LIKE', "%{$word}%");
+                }
+            }
+            
+            $results = $searchQuery->limit(10)->get();
+            
+            if ($results->count() > 0) {
+                $systemPrompt .= "\nIch habe in unserer Datenbank folgende relevante Hersteller gefunden:\n";
+                foreach ($results as $res) {
+                    $systemPrompt .= "- {$res->firmenname} (HN: {$res->herstellernummer}): {$res->herstellerinformation}\n";
+                }
+                $systemPrompt .= "\nNutze diese Informationen, um die Frage des Nutzers zu beantworten.";
+            } else {
+                $systemPrompt .= " Du befindest dich gerade in der allgemeinen Hersteller-Übersicht. Ich konnte auf Anhieb keine spezifischen Details zu deiner Anfrage in der Datenbank finden. Antworte basierend auf deinem allgemeinen Wissen, weise aber darauf hin, dass in den Hersteller-Notizen nichts gefunden wurde.";
+            }
         }
         
         $systemPrompt .= "\nAufgabe: Antworte präzise und professionell. Wenn der Nutzer nach einer E-Mail fragt, erstelle einen Entwurf.";
