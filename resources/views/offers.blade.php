@@ -15,7 +15,7 @@
             --glass-border: rgba(255, 255, 255, 0.2);
             --text-main: #ffffff;
             --text-muted: #cbd5e1;
-            --accent-color: {{ $accentColor ?? '#1DA1F2' }};
+            --primary-accent: {{ $accentColor ?? '#1DA1F2' }};
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -55,7 +55,7 @@
             display: flex; align-items: center; gap: 10px;
             transition: all 0.3s;
         }
-        .switcher-btn:hover { background: rgba(255,255,255,0.15); border-color: var(--accent-color); }
+        .switcher-btn:hover { background: rgba(255,255,255,0.15); border-color: var(--primary-accent); }
         .switcher-content {
             display: none;
             position: absolute;
@@ -79,7 +79,7 @@
             font-size: 0.9rem;
         }
         .switcher-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
-        .switcher-item.active { border-left: 3px solid var(--accent-color); color: var(--text-main); background: rgba(255,255,255,0.05); }
+        .switcher-item.active { border-left: 3px solid var(--primary-accent); color: var(--text-main); background: rgba(255,255,255,0.05); }
 
         /* ---- USER DROPDOWN ---- */
         .user-dropdown { position: relative; }
