@@ -624,7 +624,7 @@
 
             @if($view !== 'archived')
             <div class="status-nav">
-                <a href="{{ route('orders.index', ['view' => $view, 'search' => $search, 'salesperson' => $selectedSalesperson]) }}" class="status-pill {{ !$selectedStatus ? 'active' : '' }}">
+                <a href="{{ route('orders.index', ['view' => $view, 'search' => $search, 'salesperson' => $selectedSalesperson, 'project' => $selectedProject]) }}" class="status-pill {{ !$selectedStatus ? 'active' : '' }}">
                     Alle <span class="status-count">{{ $totalOrderCount }}</span>
                 </a>
                 @foreach($statusCounts as $s)
@@ -634,7 +634,7 @@
                     if (preg_match('/^[a-fA-F0-9]{3}$|^[a-fA-F0-9]{6}$/', $pColor)) $pColor = '#' . $pColor;
                     $isHex = str_starts_with($pColor, '#');
                 @endphp
-                <a href="{{ route('orders.index', ['view' => $view, 'status' => $s->name, 'search' => $search, 'salesperson' => $selectedSalesperson]) }}" 
+                <a href="{{ route('orders.index', ['view' => $view, 'status' => $s->name, 'search' => $search, 'salesperson' => $selectedSalesperson, 'project' => $selectedProject]) }}" 
                    class="status-pill {{ $selectedStatus == $s->name ? 'active' : '' }}" 
                    style="{{ $selectedStatus == $s->name ? 'background-color: ' . $pColor . '; border-color: rgba(255,255,255,0.2); color: #fff;' : 'background-color: rgba(255, 255, 255, 0.15); border-color: ' . ($isHex ? $pColor . '88' : 'var(--glass-border)') . '; color: #fff;' }} font-weight: 800;"
                    title="{{ $s->name }}">
@@ -653,6 +653,15 @@
                     <input type="text" name="search" class="search-input" placeholder="Auftragsnummer oder Kunde..." value="{{ $search }}">
                 </div>
 
+                <select name="project" class="salesperson-select" onchange="this.form.submit()">
+                    <option value="">Alle Projekte</option>
+                    @foreach($projects as $p)
+                        <option value="{{ $p->name }}" {{ $selectedProject == $p->name ? 'selected' : '' }}>
+                            {{ $p->name_kuerzel }} ({{ $p->name }})
+                        </option>
+                    @endforeach
+                </select>
+
                 <select name="salesperson" class="salesperson-select" onchange="this.form.submit()">
                     <option value="">Alle Mitarbeiter</option>
                     @foreach($salespersons as $sp)
@@ -663,8 +672,8 @@
                 </select>
                 
                 <button type="submit" class="btn-search">Filtern</button>
-                @if($search || $selectedSalesperson)
-                    <a href="{{ route('orders.index', ['status' => $selectedStatus, 'view' => $view]) }}" class="btn-clear" title="Filter leeren">
+                @if($search || $selectedSalesperson || $selectedProject)
+                    <a href="{{ route('orders.index', ['view' => $view]) }}" class="btn-clear" title="Filter leeren">
                         <i class="fas fa-times"></i>
                     </a>
                 @endif

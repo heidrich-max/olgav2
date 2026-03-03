@@ -277,6 +277,7 @@ class DashboardController extends Controller
         $search = $request->query('search');
         $selectedStatus = $request->query('status');
         $view = $request->query('view', 'active'); // 'active' or 'archived'
+        $selectedProject = $request->query('project');
 
         // 1. Fetch salespersons for orders
         $salespersons = DB::table('auftrag_tabelle')
@@ -287,6 +288,12 @@ class DashboardController extends Controller
             ->pluck('benutzer')
             ->toArray();
         sort($salespersons);
+
+        // Fetch all projects for the dropdown
+        $projects = DB::table('auftrag_projekt_firma')
+            ->select('id', 'name', 'name_kuerzel')
+            ->orderBy('name')
+            ->get();
 
         // 2. Determine selected salesperson
         $selectedSalesperson = $request->query('salesperson');
@@ -304,6 +311,10 @@ class DashboardController extends Controller
         
         if ($selectedSalesperson) {
             $statusCountsQuery->where('auftrag_tabelle.benutzer', $selectedSalesperson);
+        }
+
+        if ($selectedProject) {
+            $statusCountsQuery->where('auftrag_tabelle.projekt_firmenname', $selectedProject);
         }
 
         $statusCountsData = $statusCountsQuery->select(
@@ -340,6 +351,10 @@ class DashboardController extends Controller
         if ($selectedSalesperson) {
             $totalCountQuery->where('benutzer', $selectedSalesperson);
         }
+
+        if ($selectedProject) {
+            $totalCountQuery->where('projekt_firmenname', $selectedProject);
+        }
         $totalOrderCount = $totalCountQuery->count();
 
         // 4. Main Query
@@ -371,6 +386,10 @@ class DashboardController extends Controller
             $query->where('auftrag_tabelle.benutzer', $selectedSalesperson);
         }
 
+        if ($selectedProject) {
+            $query->where('auftrag_tabelle.projekt_firmenname', $selectedProject);
+        }
+
         $orders = $query->orderBy('auftrag_tabelle.erstelldatum', 'desc')
             ->select(
                 'auftrag_tabelle.*', 
@@ -385,6 +404,7 @@ class DashboardController extends Controller
                 'search' => $search,
                 'status' => $selectedStatus,
                 'salesperson' => $selectedSalesperson,
+                'project' => $selectedProject,
                 'view' => $view
             ]);
 
@@ -409,7 +429,7 @@ class DashboardController extends Controller
         return view('orders', compact(
             'user', 'orders', 'companyId', 'companyName', 'accentColor', 
             'search', 'statusCounts', 'selectedStatus', 'totalOrderCount',
-            'salespersons', 'selectedSalesperson', 'view'
+            'salespersons', 'selectedSalesperson', 'view', 'projects', 'selectedProject'
         ));
     }
 
