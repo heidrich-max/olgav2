@@ -466,6 +466,47 @@
             padding: 10px;
             text-align: center;
         }
+
+        /* View Switcher Styling */
+        .view-switcher {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 25px;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 5px;
+            border-radius: 14px;
+            width: fit-content;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        .view-switcher-item {
+            padding: 10px 24px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-muted);
+            border: 1px solid transparent;
+        }
+
+        .view-switcher-item:hover:not(.active) {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .view-switcher-item.active {
+            background: var(--primary-accent);
+            color: white;
+            box-shadow: 0 4px 15px rgba(29, 161, 242, 0.4);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
     </style>
 </head>
 <body>
@@ -562,14 +603,14 @@
 
         <div class="card">
             <!-- View Toggle (Active vs. Archived) -->
-            <div style="display: flex; gap: 5px; margin-bottom: 20px; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 12px; width: fit-content;">
+            <div class="view-switcher">
                 <a href="{{ route('orders.index', ['view' => 'active', 'search' => $search, 'salesperson' => $selectedSalesperson]) }}" 
-                   style="padding: 8px 20px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: all 0.3s; {{ $view !== 'archived' ? 'background: var(--accent-color); color: white; box-shadow: 0 4px 12px rgba(29, 161, 242, 0.3);' : 'color: var(--text-muted);' }}">
-                    Aktive Aufträge
+                   class="view-switcher-item {{ $view !== 'archived' ? 'active' : '' }}">
+                    <i class="fas fa-truck-loading"></i> Aktive Aufträge
                 </a>
                 <a href="{{ route('orders.index', ['view' => 'archived', 'search' => $search, 'salesperson' => $selectedSalesperson]) }}" 
-                   style="padding: 8px 20px; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 600; transition: all 0.3s; {{ $view === 'archived' ? 'background: var(--accent-color); color: white; box-shadow: 0 4px 12px rgba(29, 161, 242, 0.3);' : 'color: var(--text-muted);' }}">
-                    Archiv
+                   class="view-switcher-item {{ $view === 'archived' ? 'active' : '' }}">
+                    <i class="fas fa-archive"></i> Archiv
                 </a>
             </div>
 
