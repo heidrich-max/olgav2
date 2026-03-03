@@ -684,7 +684,7 @@
                     <thead>
                         <tr>
                             <th>Datum</th>
-                            <th>Projekt</th>
+                            <th><i class="fas fa-tag" title="Projekt"></i></th>
                             <th>Nummer</th>
                             <th>Projektname</th>
                             <th>Kunde</th>
