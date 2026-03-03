@@ -606,11 +606,11 @@
             <div class="view-switcher">
                 <a href="{{ route('orders.index', ['view' => 'active', 'search' => $search, 'salesperson' => $selectedSalesperson]) }}" 
                    class="view-switcher-item {{ $view !== 'archived' ? 'active' : '' }}">
-                    <i class="fas fa-truck-loading"></i> Aktive Aufträge
+                    <i class="fas fa-circle-notch"></i> Aktive Aufträge
                 </a>
                 <a href="{{ route('orders.index', ['view' => 'archived', 'search' => $search, 'salesperson' => $selectedSalesperson]) }}" 
                    class="view-switcher-item {{ $view === 'archived' ? 'active' : '' }}">
-                    <i class="fas fa-archive"></i> Archiv
+                    <i class="fas fa-box-archive"></i> Archiv
                 </a>
             </div>
 
