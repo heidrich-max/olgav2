@@ -611,10 +611,10 @@
                     </thead>
                     <tbody>
                         @foreach($orders as $order)
-                        <tr style="background: {{ $order->status_bg ? $order->status_bg . '25' : 'rgba(255,255,255,0.02)' }}; border-left: 4px solid {{ $order->status_bg ?? 'transparent' }};">
+                        <tr style="background: {{ $order->projekt_farbe_hex ? $order->projekt_farbe_hex . '15' : 'rgba(255,255,255,0.02)' }}; border-left: 4px solid {{ $order->projekt_farbe_hex ?? 'transparent' }};">
                             <td style="padding-left: 15px;">{{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}</td>
                             <td>
-                                <span style="color: {{ $order->projekt_farbe_hex ?: '#ffffff' }}; font-weight: 800; font-size: 1rem;">
+                                <span style="color: #ffffff; font-weight: 800;">
                                     {{ $order->project_kuerzel ?: '—' }}
                                 </span>
                             </td>
