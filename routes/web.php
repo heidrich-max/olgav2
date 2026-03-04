@@ -214,3 +214,12 @@ Route::middleware(['auth'])->group(function () {
         ];
     });
 });
+
+Route::get('/emergency-migrate', function() {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        return "Emergency Migration Success: <pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
+    } catch (\Exception $e) {
+        return "Emergency Migration Failed: " . $e->getMessage();
+    }
+});
