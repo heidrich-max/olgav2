@@ -311,8 +311,7 @@
                                 <tr>
                                     <th style="text-align: center;"><i class="fas fa-layer-group" title="Projekt / Status"></i></th>
                                     <th>Datum</th>
-                                    <th>Nummer</th>
-                                    <th>Projektname</th>
+                                    <th>Nummer / Projekt</th>
                                     <th style="text-align: right;">Betrag</th>
                                 </tr>
                             </thead>
@@ -328,16 +327,14 @@
                                         </span>
                                     </td>
                                     <td style="white-space: nowrap; padding-left: 10px;">{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</td>
-                                    <td style="white-space: nowrap;">
+                                    <td style="padding-right: 15px;">
                                         <strong>{{ $offer->angebotsnummer }}</strong>
-                                    </td>
-                                    <td style="font-weight: 500;">
-                                        {{ $offer->projektname ?: '—' }}
-                                        @if(isset($offer->hersteller) && $offer->hersteller)
-                                            <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 400; margin-top: 2px;">
-                                                {{ $offer->hersteller }}
-                                            </div>
-                                        @endif
+                                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; font-weight: 500;">
+                                            {{ $offer->projektname ?: '—' }}
+                                            @if(isset($offer->hersteller) && $offer->hersteller)
+                                                <span style="opacity: 0.7;">| {{ $offer->hersteller }}</span>
+                                            @endif
+                                        </div>
                                     </td>
                                     <td style="text-align: right; font-weight: 600;">
                                         {{ number_format($offer->angebotssumme, 2, ',', '.') }} €
@@ -368,8 +365,7 @@
                                 <tr>
                                     <th style="text-align: center;"><i class="fas fa-layer-group" title="Projekt / Status"></i></th>
                                     <th>Datum</th>
-                                    <th>Nummer</th>
-                                    <th>Projektname</th>
+                                    <th>Nummer / Projekt</th>
                                     <th style="text-align: right;">Betrag</th>
                                 </tr>
                             </thead>
@@ -385,16 +381,11 @@
                                         </span>
                                     </td>
                                     <td style="white-space: nowrap; padding-left: 10px;">{{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}</td>
-                                    <td style="white-space: nowrap;">
+                                    <td style="padding-right: 15px;">
                                         <strong>{{ $order->auftragsnummer ?? '—' }}</strong>
-                                    </td>
-                                    <td style="font-weight: 500;">
-                                        {{ $order->projektname ?: '—' }}
-                                        @if(isset($order->hersteller) && $order->hersteller)
-                                            <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 400; margin-top: 2px;">
-                                                {{ $order->hersteller }}
-                                            </div>
-                                        @endif
+                                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; font-weight: 500;">
+                                            {{ $order->projektname ?: '—' }}
+                                        </div>
                                     </td>
                                     <td style="text-align: right; font-weight: 600;">
                                         {{ number_format($order->auftragssumme, 2, ',', '.') }} €
