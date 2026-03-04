@@ -392,7 +392,7 @@
                                     <td style="white-space: nowrap;">
                                         {{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}
                                         @if($order->lieferdatum)
-                                            <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; display: flex; align-items: center; gap: 4px;">
+                                            <div style="font-size: 0.7rem; color: {{ \Carbon\Carbon::parse($order->lieferdatum)->isPast() ? '#ff4d4d' : 'var(--text-muted)' }}; margin-top: 2px; display: flex; align-items: center; gap: 4px; font-weight: {{ \Carbon\Carbon::parse($order->lieferdatum)->isPast() ? '700' : '400' }};">
                                                 <i class="fas fa-truck" title="Lieferdatum"></i>
                                                 {{ \Carbon\Carbon::parse($order->lieferdatum)->format('d.m.Y') }}
                                             </div>

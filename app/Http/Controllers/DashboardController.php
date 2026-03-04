@@ -76,6 +76,25 @@ class DashboardController extends Controller
         $mappedProjects = $revenueProjectMapping[$companyId] ?? [1];
         $companyStats->vorjahr = OrderRevenue::whereIn('projekt_id', $mappedProjects)->sum('netto_umsatz_vorjahr');
         
+        // Cleanup Overdue Delivery ToDos (Dynamic sync)
+        $today = Carbon::now()->toDateString();
+        $systemOrderTodos = Todo::where('is_system', true)
+            ->whereNotNull('order_id')
+            ->where('is_completed', false)
+            ->get();
+
+        foreach ($systemOrderTodos as $todo) {
+            $order = DB::table('auftrag_tabelle')->where('id', $todo->order_id)->first();
+            
+            // Delete if order is finished OR delivery date is no longer in the past
+            if (!$order || 
+                $order->abgeschlossen_status === 'Auftrag abgeschlossen' || 
+                !$order->lieferdatum || 
+                $order->lieferdatum >= $today) {
+                $todo->delete();
+            }
+        }
+
         // Lists
     $orders = DB::table('auftrag_tabelle')
         ->leftJoin('auftrag_status', 'auftrag_tabelle.letzter_status', '=', 'auftrag_status.status_sh')
