@@ -113,17 +113,16 @@
             background: #ef4444; color: white; font-size: 0.6rem; font-weight: 700;
             padding: 2px 5px; border-radius: 50px; margin-left: -2px;
             display: inline-flex; align-items: center; justify-content: center;
-            min-width: 18px; height: 18px; vertical-align: middle;
+            min-width: 14px; height: 14px; vertical-align: super;
             box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            position: relative; top: -8px;
+            position: relative; top: -3px;
         }
 
         /* ---- LAYOUT ---- */
         .container { position: relative; z-index: 10; padding: 40px; max-width: 1400px; margin: 0 auto; }
-
         .header-section { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
         .header-section h1 { font-size: 2.2rem; font-weight: 700; background: linear-gradient(90deg, #fff, var(--primary-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
+
         /* ---- FILTERS ---- */
         .filters-glass {
             background: rgba(255, 255, 255, 0.05);
@@ -176,6 +175,16 @@
         .credentials-label { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 2px; }
         .credentials-value { font-family: monospace; font-size: 0.85rem; color: #fff; }
 
+        /* Action Buttons */
+        .action-btn {
+            width: 32px; height: 32px; border-radius: 8px;
+            display: inline-flex; align-items: center; justify-content: center;
+            text-decoration: none; transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+        }
+        .edit-btn { color: var(--primary-accent); }
+        .edit-btn:hover { background: var(--primary-accent); color: #fff; transform: translateY(-2px); }
     </style>
 </head>
 <body>
@@ -273,8 +282,9 @@
                     <tr>
                         <th style="width: 25%;">Name</th>
                         <th style="width: 20%;">Website</th>
-                        <th style="width: 25%;">Zugangsdaten</th>
-                        <th>Bemerkung</th>
+                        <th style="width: 250px;"><i class="fas fa-lock" style="margin-right: 8px; color: var(--primary-accent);"></i> Zugangsdaten</th>
+                        <th style="width: 300px;"><i class="fas fa-sticky-note" style="margin-right: 8px; color: var(--primary-accent);"></i> Bemerkung</th>
+                        <th style="width: 80px; text-align: center;"><i class="fas fa-cog"></i></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -319,6 +329,11 @@
                                 @endphp
                                 {!! nl2br(e($remark)) !!}
                             </div>
+                        </td>
+                        <td style="text-align: center;">
+                            <a href="{{ route('portals.edit', $p->id) }}" class="action-btn edit-btn" title="Portal bearbeiten">
+                                <i class="fas fa-edit"></i>
+                            </a>
                         </td>
                     </tr>
                     @endforeach
