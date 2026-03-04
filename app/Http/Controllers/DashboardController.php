@@ -164,6 +164,15 @@ class DashboardController extends Controller
 
         $search = $request->query('search');
         $selectedStatus = $request->query('status');
+        $view = $request->query('view', 'active');
+
+        // Define status groups
+        $activeStatuses = ['Status offen', 'Status Offen', 'Status Erinnerung verschickt', 'Erinnerung verschickt', 'Wiedervorlage'];
+        $archivedStatuses = ['Status angenommen', 'Status abgeschlossen']; 
+        // Note: For archive, we might match everything NOT in active if we want to be safe,
+        // but user specifically mentioned Angenommen and Abgeschlossen.
+        // Actually, user said: "im Archif sollen die Angenommen und abgeschlossenen Angebote sein"
+        // and "Offen, Erinnerung versendet und Wiedervorlage unter Aktive Angebote"
 
         // 1. Fetch salespersons (always needs to be all available for the company)
         $salespersons = DB::table('angebot_tabelle')
@@ -178,10 +187,17 @@ class DashboardController extends Controller
         // 2. Determine selected salesperson
         $selectedSalesperson = $request->query('salesperson');
 
-        // 3. Fetch counts for ONLY the selected salesperson (or all if none selected)
+        // 3. Fetch counts for the selected view
         $statusCountsQuery = DB::table('angebot_tabelle')
-            ->where('firmen_id', $companyId)
-            ->whereNotNull('letzter_status_name')
+            ->where('firmen_id', $companyId);
+        
+        if ($view === 'archived') {
+            $statusCountsQuery->whereNotIn('letzter_status_name', $activeStatuses);
+        } else {
+            $statusCountsQuery->whereIn('letzter_status_name', $activeStatuses);
+        }
+
+        $statusCountsQuery->whereNotNull('letzter_status_name')
             ->where('letzter_status_name', '!=', '');
         
         if ($selectedSalesperson) {
@@ -207,6 +223,12 @@ class DashboardController extends Controller
         });
         
         $totalCountQuery = DB::table('angebot_tabelle')->where('firmen_id', $companyId);
+        if ($view === 'archived') {
+            $totalCountQuery->whereNotIn('letzter_status_name', $activeStatuses);
+        } else {
+            $totalCountQuery->whereIn('letzter_status_name', $activeStatuses);
+        }
+
         if ($selectedSalesperson) {
             $totalCountQuery->where('benutzer', $selectedSalesperson);
         }
@@ -216,6 +238,12 @@ class DashboardController extends Controller
         $query = DB::table('angebot_tabelle')
             ->leftJoin('auftrag_projekt_firma', 'angebot_tabelle.projekt_firmenname', '=', 'auftrag_projekt_firma.name')
             ->where('angebot_tabelle.firmen_id', $companyId);
+            
+        if ($view === 'archived') {
+            $query->whereNotIn('letzter_status_name', $activeStatuses);
+        } else {
+            $query->whereIn('letzter_status_name', $activeStatuses);
+        }
 
         if ($search) {
             $query->where(function($q) use ($search) {
@@ -239,7 +267,8 @@ class DashboardController extends Controller
             ->appends([
                 'search' => $search,
                 'status' => $selectedStatus,
-                'salesperson' => $selectedSalesperson
+                'salesperson' => $selectedSalesperson,
+                'view' => $view
             ]);
 
         // Ensure colors have # for offers (Paginator collection)
@@ -263,7 +292,7 @@ class DashboardController extends Controller
         return view('offers', compact(
             'user', 'offers', 'companyId', 'companyName', 'accentColor', 
             'search', 'statusCounts', 'selectedStatus', 'totalOfferCount',
-            'salespersons', 'selectedSalesperson'
+            'salespersons', 'selectedSalesperson', 'view'
         ));
     }
 

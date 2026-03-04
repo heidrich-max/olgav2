@@ -477,6 +477,47 @@
             padding: 10px;
             text-align: center;
         }
+
+        /* View Switcher Styling */
+        .view-switcher {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 25px;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 5px;
+            border-radius: 14px;
+            width: fit-content;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        .view-switcher-item {
+            padding: 10px 24px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-muted);
+            border: 1px solid transparent;
+        }
+
+        .view-switcher-item:hover:not(.active) {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .view-switcher-item.active {
+            background: var(--primary-accent);
+            color: white;
+            box-shadow: 0 4px 15px rgba(29, 161, 242, 0.4);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
     </style>
 </head>
 <body>
@@ -571,12 +612,24 @@
         </div>
 
         <div class="card">
+            <!-- View Toggle (Active vs. Archived) -->
+            <div class="view-switcher">
+                <a href="{{ route('offers.index', ['view' => 'active', 'search' => $search, 'salesperson' => $selectedSalesperson]) }}" 
+                   class="view-switcher-item {{ $view !== 'archived' ? 'active' : '' }}">
+                    <i class="fas fa-circle-notch"></i> Aktive Angebote
+                </a>
+                <a href="{{ route('offers.index', ['view' => 'archived', 'search' => $search, 'salesperson' => $selectedSalesperson]) }}" 
+                   class="view-switcher-item {{ $view === 'archived' ? 'active' : '' }}">
+                    <i class="fas fa-box-archive"></i> Archiv
+                </a>
+            </div>
+
             <div class="status-nav">
-                <a href="{{ route('offers.index', ['search' => $search, 'salesperson' => $selectedSalesperson]) }}" class="status-pill {{ !$selectedStatus ? 'active' : '' }}">
+                <a href="{{ route('offers.index', ['view' => $view, 'search' => $search, 'salesperson' => $selectedSalesperson]) }}" class="status-pill {{ !$selectedStatus ? 'active' : '' }}">
                     Alle <span class="status-count">{{ $totalOfferCount }}</span>
                 </a>
                 @foreach($statusCounts as $s)
-                <a href="{{ route('offers.index', ['status' => $s->name, 'search' => $search, 'salesperson' => $selectedSalesperson]) }}" class="status-pill {{ $selectedStatus == $s->name ? 'active' : '' }}">
+                <a href="{{ route('offers.index', ['view' => $view, 'status' => $s->name, 'search' => $search, 'salesperson' => $selectedSalesperson]) }}" class="status-pill {{ $selectedStatus == $s->name ? 'active' : '' }}">
                     {{ $s->name }} <span class="status-count">{{ $s->count }}</span>
                 </a>
                 @endforeach
@@ -584,6 +637,7 @@
 
             <form action="{{ route('offers.index') }}" method="GET" class="search-section">
                 <input type="hidden" name="status" value="{{ $selectedStatus }}">
+                <input type="hidden" name="view" value="{{ $view }}">
                 <div class="search-input-group">
                     <i class="fas fa-search"></i>
                     <input type="text" name="search" class="search-input" placeholder="Angebotsnummer oder Kunde..." value="{{ $search }}">
@@ -600,7 +654,7 @@
                 
                 <button type="submit" class="btn-search">Filtern</button>
                 @if($search || $selectedSalesperson)
-                    <a href="{{ route('offers.index', ['status' => $selectedStatus]) }}" class="btn-clear" title="Filter leeren">
+                    <a href="{{ route('offers.index', ['view' => $view, 'status' => $selectedStatus]) }}" class="btn-clear" title="Filter leeren">
                         <i class="fas fa-times"></i>
                     </a>
                 @endif
