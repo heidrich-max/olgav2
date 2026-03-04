@@ -359,27 +359,31 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
+                                    <th><i class="fas fa-layer-group" title="Projekt / Status"></i></th>
                                     <th>Datum</th>
                                     <th>Nummer</th>
-                                    <th>Projekt</th>
                                     <th>Firma</th>
-                                    <th>Status</th>
+                                    <th style="text-align: right;">Betrag</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($myOrders as $order)
                                 <tr style="background: {{ $order->status_bg ? $order->status_bg . '15' : 'transparent' }}; border-left: 4px solid {{ $order->status_bg ?? 'transparent' }}; transition: background 0.2s;">
-                                    <td style="white-space: nowrap; padding-left: 10px;">{{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}</td>
+                                    <td style="padding-left: 15px;">
+                                        <span style="color: {{ $order->projekt_farbe_hex ?? '#fff' }}; font-weight: 800; font-size: 0.85rem; display: block;">
+                                            {{ $order->project_kuerzel ?: '—' }}
+                                        </span>
+                                        <span style="color: #ffffff; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; opacity: 0.8;">
+                                            {{ $order->status_kuerzel ?? '—' }}
+                                        </span>
+                                    </td>
+                                    <td style="white-space: nowrap;">{{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}</td>
                                     <td>
-                                        <span class="badge" style="color: {{ $order->projekt_farbe_hex ?? '#fff' }}; border-color: {{ $order->projekt_farbe_hex ?? 'var(--glass-border)' }}; margin-right: 5px;">{{ $order->project_kuerzel }}</span>
                                         <strong>{{ $order->auftragsnummer ?? '—' }}</strong>
                                     </td>
-                                    <td style="color: {{ $order->projekt_farbe_hex ?? '#fff' }}; font-weight: 600;">{{ $order->projekt_firmenname ?? '—' }}</td>
                                     <td>{{ $order->firmenname ?? '—' }}</td>
-                                    <td>
-                                        <b style="color: {{ $order->status_color ?? '#fff' }}; font-size: 0.85rem;">
-                                            {{ $order->status_kuerzel ?? $order->status_name_raw ?? $order->letzter_status_name ?? '—' }}
-                                        </b>
+                                    <td style="text-align: right; font-weight: 600;">
+                                        {{ number_format($order->betrag, 2, ',', '.') }} €
                                     </td>
                                 </tr>
                                 @endforeach
