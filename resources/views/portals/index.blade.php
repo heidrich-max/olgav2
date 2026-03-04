@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>OLGA - Hersteller Übersicht</title>
+    <title>OLGA - Portal Übersicht</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
 
@@ -72,7 +72,7 @@
         .switcher-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
         .switcher-item.active { border-left: 3px solid var(--primary-accent); color: var(--text-main); background: rgba(255,255,255,0.05); }
 
-        /* User Dropdown Styles from my-dashboard */
+        /* User Dropdown Styles */
         .user-dropdown { position: relative; }
         .user-btn {
             background: none; border: none;
@@ -115,6 +115,7 @@
             display: inline-flex; align-items: center; justify-content: center;
             min-width: 18px; height: 18px; vertical-align: middle;
             box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            position: relative; top: -8px;
         }
 
         /* ---- LAYOUT ---- */
@@ -123,14 +124,6 @@
         .header-section { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
         .header-section h1 { font-size: 2.2rem; font-weight: 700; background: linear-gradient(90deg, #fff, var(--primary-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        .btn-add {
-            background: var(--primary-accent); border: none; color: #fff;
-            padding: 10px 20px; border-radius: 10px; cursor: pointer;
-            font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 10px;
-            text-decoration: none; transition: transform 0.2s;
-        }
-        .btn-add:hover { transform: translateY(-2px); }
-
         /* ---- FILTERS ---- */
         .filters-glass {
             background: rgba(255, 255, 255, 0.05);
@@ -139,72 +132,6 @@
             border-radius: 15px; padding: 20px; margin-bottom: 30px;
             display: flex; gap: 20px; align-items: center;
         }
-
-        /* AI FAB Styles */
-        .ai-fab {
-            position: fixed; bottom: 30px; right: 30px;
-            width: 60px; height: 60px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-accent), #60a5fa);
-            box-shadow: 0 10px 25px rgba(29, 161, 242, 0.4);
-            display: flex; align-items: center; justify-content: center;
-            color: white; font-size: 1.5rem; cursor: pointer; z-index: 1000;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: none;
-        }
-        .ai-fab:hover { transform: scale(1.1) rotate(5deg); box-shadow: 0 15px 30px rgba(29, 161, 242, 0.6); }
-        .ai-fab.active { transform: scale(0); opacity: 0; }
-
-        .ai-chat-window {
-            position: fixed; bottom: 100px; right: 30px;
-            width: 380px; height: 500px;
-            background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border); border-radius: 20px;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.6);
-            display: none; flex-direction: column; z-index: 999;
-            overflow: hidden; animation: slideUp 0.3s ease-out;
-        }
-        .ai-chat-window.active { display: flex; }
-
-        @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .ai-chat-header {
-            padding: 15px 20px; background: rgba(255,255,255,0.05);
-            border-bottom: 1px solid var(--glass-border);
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .ai-chat-header h3 { font-size: 0.95rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 10px; }
-        .ai-chat-header h3 i { color: var(--primary-accent); }
-        .close-ai { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.1rem; }
-        .close-ai:hover { color: #fff; }
-
-        .ai-chat-messages {
-            flex: 1; padding: 15px; overflow-y: auto;
-            display: flex; flex-direction: column; gap: 12px;
-        }
-        .ai-msg { padding: 10px 14px; border-radius: 12px; font-size: 0.85rem; line-height: 1.4; max-width: 85%; }
-        .ai-msg.bot { background: rgba(255,255,255,0.05); align-self: flex-start; color: #e2e8f0; border: 1px solid rgba(255,255,255,0.1); }
-        .ai-msg.user { background: var(--primary-accent); align-self: flex-end; color: #fff; }
-
-        .ai-chat-input-area {
-            padding: 15px; background: rgba(0,0,0,0.2);
-            border-top: 1px solid var(--glass-border);
-            display: flex; gap: 10px;
-        }
-        .ai-chat-input-area input {
-            flex: 1; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
-            border-radius: 8px; padding: 8px 12px; color: #fff; font-size: 0.85rem;
-        }
-        .ai-chat-input-area input:focus { outline: none; border-color: var(--primary-accent); }
-        .ai-send-btn {
-            background: var(--primary-accent); border: none; color: white;
-            width: 36px; height: 36px; border-radius: 8px; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .ai-send-btn:hover { opacity: 0.9; }
-        .ai-typing { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 5px; display: none; }
         .search-input {
             flex: 1; background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border);
             border-radius: 8px; padding: 10px 15px; color: #fff; font-size: 0.9rem;
@@ -225,19 +152,30 @@
             font-weight: 600; font-size: 0.75rem; text-transform: uppercase; 
             letter-spacing: 0.05em; border-bottom: 2px solid rgba(255,255,255,0.12);
         }
-        .data-table td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.06); color: var(--text-main); }
+        .data-table td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.06); color: var(--text-main); vertical-align: middle; }
         .data-table tr:hover { background: rgba(255,255,255,0.03); }
         
-        .btn-edit {
-            background: var(--primary-accent); color: #fff; border: none;
-            padding: 4px 12px; border-radius: 6px; font-size: 0.75rem; 
-            cursor: pointer; text-decoration: none; font-weight: 600;
+        .website-link {
+            color: var(--primary-accent);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: opacity 0.2s;
         }
+        .website-link:hover { opacity: 0.8; }
 
-        .lang-badge {
-            background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border);
-            padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;
+        .credentials-box {
+            background: rgba(0,0,0,0.2);
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.05);
+            font-family: inherit;
         }
+        .credentials-label { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 2px; }
+        .credentials-value { font-family: monospace; font-size: 0.85rem; color: #fff; }
+
     </style>
 </head>
 <body>
@@ -293,10 +231,10 @@
                     <a href="{{ route('calendar') }}" class="user-dropdown-item">
                         <i class="fas fa-calendar-alt"></i> Mein Kalender
                     </a>
-                    <a href="{{ route('manufacturers.index') }}" class="user-dropdown-item active">
+                    <a href="{{ route('manufacturers.index') }}" class="user-dropdown-item">
                         <i class="fas fa-industry"></i> Hersteller
                     </a>
-                    <a href="{{ route('portals.index') }}" class="user-dropdown-item">
+                    <a href="{{ route('portals.index') }}" class="user-dropdown-item active">
                         <i class="fas fa-globe"></i> Portale
                     </a>
                     <a href="{{ route('companies.index') }}" class="user-dropdown-item">
@@ -318,64 +256,70 @@
     </nav>
 
     <div class="container">
-        @if(session('success'))
-            <div style="background: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; color: #fff; padding: 15px; border-radius: 12px; margin-bottom: 20px; font-weight: 600;">
-                <i class="fas fa-check-circle"></i> {{ session('success') }}
-            </div>
-        @endif
-
-        @if(session('error'))
-            <div style="background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #fff; padding: 15px; border-radius: 12px; margin-bottom: 20px; font-weight: 600;">
-                <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
-            </div>
-        @endif
-
         <div class="header-section">
             <div>
-                <h1>Hersteller Übersicht</h1>
+                <h1>Portal Übersicht</h1>
             </div>
-            <a href="{{ route('manufacturers.create') }}" class="btn-add">
-                <i class="fas fa-plus"></i> Hersteller hinzufügen
-            </a>
         </div>
 
         <div class="filters-glass">
             <i class="fas fa-search" style="color: var(--text-muted);"></i>
-            <input type="text" id="manufacturerSearch" class="search-input" placeholder="Nach Hersteller, HN oder Ansprechpartner suchen...">
+            <input type="text" id="portalSearch" class="search-input" placeholder="Nach Portalen oder Bemerkungen suchen...">
         </div>
 
         <div class="card">
-            <table class="data-table" id="manufacturersTable">
+            <table class="data-table" id="portalsTable">
                 <thead>
                     <tr>
-                        <th>HN</th>
-                        <th>Firmenname</th>
-                        <th>Ansprechpartner</th>
-                        <th>Telefon</th>
-                        <th>E-Mail</th>
-                        <th>Info</th>
-                        <th>Aktion</th>
+                        <th style="width: 25%;">Name</th>
+                        <th style="width: 20%;">Website</th>
+                        <th style="width: 25%;">Zugangsdaten</th>
+                        <th>Bemerkung</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($manufacturers as $m)
+                    @foreach($portals as $p)
                     <tr>
-                        <td style="font-weight: 700; color: var(--text-muted);">{{ $m->herstellernummer ?? sprintf('%03d', $m->id) }}</td>
-                        <td style="font-weight: 600;">{{ $m->firmenname }}</td>
+                        <td style="font-weight: 700; font-size: 1rem;">{{ $p->name }}</td>
                         <td>
-                            {{ trim(($m->anrede ?? '') . ' ' . ($m->vorname ?? '') . ' ' . ($m->nachname ?? '')) }}
-                            @if($m->ansprechpartner_count > 0)
-                                <br><small style="color: var(--primary-accent); font-weight: 600;">(+{{ $m->ansprechpartner_count }} Kontakte)</small>
+                            @if($p->website)
+                                <a href="{{ (strpos($p->website, 'http') === 0) ? $p->website : 'https://' . $p->website }}" target="_blank" class="website-link">
+                                    <i class="fas fa-external-link-alt"></i>
+                                    {{ str_replace(['https://', 'http://', 'www.'], '', $p->website) }}
+                                </a>
+                            @else
+                                <span style="color: var(--text-muted);">—</span>
                             @endif
                         </td>
-                        <td>{{ $m->telefon }}</td>
-                        <td><a href="mailto:{{ $m->email }}" style="color: var(--primary-accent); text-decoration: none;">{{ $m->email }}</a></td>
-                        <td><span style="font-size: 0.75rem; color: var(--text-muted); display: block; max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $m->herstellerinformation }}">{{ $m->herstellerinformation }}</span></td>
                         <td>
-                            <a href="{{ route('manufacturers.edit', $m->id) }}" class="btn-edit">bearbeiten</a>
+                            @if($p->benutzername || $p->passwort)
+                                <div class="credentials-box">
+                                    @if($p->benutzername)
+                                        <div class="credentials-label">Benutzer</div>
+                                        <div class="credentials-value">{{ $p->benutzername }}</div>
+                                    @endif
+                                    @if($p->benutzername && $p->passwort) <div style="height: 8px;"></div> @endif
+                                    @if($p->passwort)
+                                        <div class="credentials-label">Passwort</div>
+                                        <div class="credentials-value">{{ $p->passwort }}</div>
+                                    @endif
+                                </div>
+                            @else
+                                <span style="color: var(--text-muted);">Keine Zugangsdaten</span>
+                            @endif
+                        </td>
+                        <td>
+                            <div style="font-size: 0.85rem; color: #e2e8f0; line-height: 1.5; max-height: 100px; overflow-y: auto;">
+                                {!! nl2br(e($p->Bemerkung)) !!}
+                            </div>
                         </td>
                     </tr>
                     @endforeach
+                    @if(count($portals) == 0)
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 40px; color: var(--text-muted);">Keine Portale gefunden.</td>
+                        </tr>
+                    @endif
                 </tbody>
             </table>
         </div>
@@ -407,16 +351,17 @@
         });
 
         // Search Logic
-        document.getElementById('manufacturerSearch').addEventListener('input', function(e) {
+        document.getElementById('portalSearch').addEventListener('input', function(e) {
             const term = e.target.value.toLowerCase();
-            const rows = document.querySelectorAll('#manufacturersTable tbody tr');
+            const rows = document.querySelectorAll('#portalsTable tbody tr');
             rows.forEach(row => {
+                if(row.cells.length === 1) return; // Skip empty message
                 const text = row.innerText.toLowerCase();
                 row.style.display = text.includes(term) ? '' : 'none';
             });
         });
 
-        // Network Animation (Copy from Dashboard)
+        // Network Animation
         const canvas = document.getElementById('network-overlay');
         const ctx = canvas.getContext('2d');
         let width, height, particles = [];

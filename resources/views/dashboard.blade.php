@@ -299,6 +299,9 @@
                     <a href="{{ route('manufacturers.index') }}" class="user-dropdown-item {{ request()->routeIs('manufacturers.*') ? 'active' : '' }}">
                         <i class="fas fa-industry"></i> Hersteller
                     </a>
+                    <a href="{{ route('portals.index') }}" class="user-dropdown-item {{ request()->routeIs('portals.*') ? 'active' : '' }}">
+                        <i class="fas fa-globe"></i> Portale
+                    </a>
                     <a href="{{ route('companies.index') }}" class="user-dropdown-item">
                         <i class="fas fa-building"></i> Firmen verwalten
                     </a>

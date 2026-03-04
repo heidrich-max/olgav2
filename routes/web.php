@@ -10,6 +10,7 @@ use App\Models\CompanyProject;
 use App\Mail\ProjectReminderMail;
 use App\Http\Controllers\EmailSettingsController;
 use App\Http\Controllers\ManufacturerController;
+use App\Http\Controllers\PortalController;
 use App\Http\Controllers\AiController;
 use Illuminate\Support\Facades\Mail;
 
@@ -165,6 +166,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/manufacturers/{id}/edit', [ManufacturerController::class, 'edit'])->name('manufacturers.edit');
     Route::put('/manufacturers/{id}', [ManufacturerController::class, 'update'])->name('manufacturers.update');
     Route::delete('/manufacturers/{id}', [ManufacturerController::class, 'destroy'])->name('manufacturers.destroy');
+    
+    // Portals
+    Route::get('/portals', [PortalController::class, 'index'])->name('portals.index');
+
     Route::post('/manufacturers/ai', [AiController::class, 'ask'])->name('manufacturers.ai');
 
     Route::get('/run-migrations', function() {
