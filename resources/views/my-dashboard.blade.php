@@ -309,6 +309,7 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
+                                    <th>Projekt</th>
                                     <th>Datum</th>
                                     <th>Nummer</th>
                                     <th>Firma</th>
@@ -317,16 +318,23 @@
                             </thead>
                             <tbody>
                                 @foreach($myOffers as $offer)
-                                <tr onclick="window.location='{{ route('offers.show', $offer->id) }}?from=my.dashboard'" style="background: {{ $offer->letzter_status_bg_hex ? $offer->letzter_status_bg_hex . '15' : 'transparent' }}; border-left: 4px solid {{ $offer->letzter_status_bg_hex ?? 'transparent' }}; transition: background 0.2s; cursor: pointer;">
-                                    <td style="white-space: nowrap; padding-left: 10px;">{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</td>
+                                <tr onclick="window.location='{{ route('offers.show', $offer->id) }}?from=my.dashboard'" style="background: {{ $offer->letzter_status_bg_hex ? $offer->letzter_status_bg_hex . '15' : 'transparent' }}; border-left: 4px solid {{ $offer->projekt_farbe_hex ?? 'transparent' }}; transition: background 0.2s; cursor: pointer;">
+                                    <td style="padding-left: 15px;">
+                                        <span style="color: {{ $offer->projekt_farbe_hex ?? '#fff' }}; font-weight: 800; font-size: 0.85rem; display: block;">
+                                            {{ $offer->project_kuerzel ?: '—' }}
+                                        </span>
+                                        <span style="color: #ffffff; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; opacity: 0.8;">
+                                            {{ $offer->letzter_status ?? '—' }}
+                                        </span>
+                                    </td>
+                                    <td style="white-space: nowrap;">{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</td>
                                     <td>
-                                        <span class="badge" style="color: {{ $offer->letzter_status_farbe_hex ?? '#fff' }}; border-color: {{ $offer->letzter_status_bg_hex ?? 'var(--glass-border)' }}; margin-right: 5px;">{{ $offer->project_kuerzel }}</span>
                                         <strong>{{ $offer->angebotsnummer }}</strong>
                                     </td>
                                     <td>{{ $offer->projektname }}</td>
                                     <td>
                                         <b style="color: {{ $offer->letzter_status_farbe_hex ?? '#fff' }}; font-size: 0.85rem;">
-                                            {{ $offer->letzter_status ?? $offer->letzter_status_name ?? '—' }}
+                                            {{ $offer->letzter_status_name ?? '—' }}
                                         </b>
                                     </td>
                                 </tr>
