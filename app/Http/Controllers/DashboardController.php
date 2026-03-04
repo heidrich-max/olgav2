@@ -1048,4 +1048,28 @@ class DashboardController extends Controller
         }
     }
 
+    /**
+     * Synchronize overdue delivery ToDos by deleting those that are no longer relevant.
+     */
+    private function syncOverdueDeliveryTodos()
+    {
+        $today = Carbon::now()->toDateString();
+        $systemOrderTodos = Todo::where('is_system', true)
+            ->whereNotNull('order_id')
+            ->where('is_completed', false)
+            ->get();
+
+        foreach ($systemOrderTodos as $todo) {
+            $order = DB::table('auftrag_tabelle')->where('id', $todo->order_id)->first();
+            
+            // Delete if order is finished OR delivery date is no longer in the past
+            if (!$order || 
+                $order->abgeschlossen_status === 'Auftrag abgeschlossen' || 
+                $order->abgeschlossen_status === 'abgeschlossen' || 
+                !$order->lieferdatum || 
+                $order->lieferdatum >= $today) {
+                $todo->delete();
+            }
+        }
+    }
 }
