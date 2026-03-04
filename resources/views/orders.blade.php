@@ -729,7 +729,9 @@
                                 @endif
                             </td>
                             <td style="background: {{ $rowBg }}; white-space: nowrap;">
-                                <strong>{{ $order->auftragsnummer }}</strong><br>
+                                <a href="{{ route('orders.show', $order->id) }}" style="color: inherit; text-decoration: none;">
+                                    <strong>{{ $order->auftragsnummer }}</strong>
+                                </a><br>
                                 <small style="color: var(--text-muted)">{{ $order->benutzer }}</small>
                             </td>
                             <td style="background: {{ $rowBg }}; font-weight: 500;">

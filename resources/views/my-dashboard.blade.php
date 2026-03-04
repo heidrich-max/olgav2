@@ -497,7 +497,8 @@
                                 data-id="{{ $todo->id }}" 
                                 data-system="{{ $todo->is_system ? '1' : '0' }}"
                                 data-offer-id="{{ $todo->offer_id ?? '' }}"
-                                style="{{ $todo->offer_id ? 'cursor: pointer;' : '' }}"
+                                data-order-id="{{ $todo->order_id ?? '' }}"
+                                style="{{ ($todo->offer_id || $todo->order_id) ? 'cursor: pointer;' : '' }}"
                                 onclick="handleTodoClick(event, this)">
                                 @if(!$todo->is_system)
                                     <input type="checkbox" class="todo-checkbox" {{ $todo->is_completed ? 'checked' : '' }} onchange="toggleTodo({{ $todo->id }}, this.checked)">
@@ -632,8 +633,9 @@
             li.dataset.id = todo.id;
             li.dataset.system = todo.is_system ? '1' : '0';
             li.dataset.offerId = todo.offer_id || '';
+            li.dataset.orderId = todo.order_id || '';
             
-            if (todo.offer_id) {
+            if (todo.offer_id || todo.order_id) {
                 li.style.cursor = 'pointer';
             }
             li.setAttribute('onclick', 'handleTodoClick(event, this)');
@@ -666,8 +668,12 @@
             }
 
             const offerId = element.dataset.offerId;
+            const orderId = element.dataset.orderId;
+
             if (offerId) {
                 window.location.href = `/offers/${offerId}?from=my.dashboard`;
+            } else if (orderId) {
+                window.location.href = `/orders/${orderId}?from=my.dashboard`;
             }
         }
 

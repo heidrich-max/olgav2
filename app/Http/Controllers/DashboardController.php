@@ -762,6 +762,53 @@ class DashboardController extends Controller
         return view('offers.show', compact('user', 'offer', 'items', 'companyId', 'companyName', 'accentColor', 'history', 'reasons'));
     }
 
+    public function showOrder($id)
+    {
+        $user = Auth::user();
+        $companyId = Session::get('active_company_id', 1);
+
+        $order = DB::table('auftrag_tabelle')
+            ->where('id', $id)
+            ->first();
+
+        if (!$order) {
+            abort(404, 'Auftrag nicht gefunden.');
+        }
+
+        // Artikel abrufen
+        $items = DB::table('auftrag_artikel')
+            ->where('auftrag_id_lokal', $order->id)
+            ->orderBy('sort_order', 'asc')
+            ->get();
+
+        $companyName = ($companyId == 1) ? 'Branding Europe GmbH' : 'Europe Pen GmbH';
+        $accentColor = ($companyId == 1) ? '#1DA1F2' : '#0088CC';
+
+        // Status-Farben formatieren
+        if (isset($order->letzter_status_bg_hex) && $order->letzter_status_bg_hex && strpos($order->letzter_status_bg_hex, '#') !== 0) {
+            $order->letzter_status_bg_hex = '#' . $order->letzter_status_bg_hex;
+        }
+        if (isset($order->letzter_status_farbe_hex) && $order->letzter_status_farbe_hex && strpos($order->letzter_status_farbe_hex, '#') !== 0) {
+            $order->letzter_status_farbe_hex = '#' . $order->letzter_status_farbe_hex;
+        }
+
+        // Historie laden (Versuch über eine generische DB Abfrage, falls Tabelle existiert)
+        $history = [];
+        if (Schema::hasTable('auftrag_informationen')) {
+            $history = DB::table('auftrag_informationen')
+                ->where('auftrag_id', $order->id)
+                ->where('projekt_id', $order->projekt_id)
+                ->orderBy('timestamp', 'desc')
+                ->get()
+                ->map(function($h) {
+                    $h->user = DB::table('user')->where('id', $h->user_id)->first();
+                    return $h;
+                });
+        }
+
+        return view('orders.show', compact('user', 'order', 'items', 'companyId', 'companyName', 'accentColor', 'history'));
+    }
+
     /**
      * Speichert eine neue Notiz/Historien-Eintrag zum Angebot.
      */
