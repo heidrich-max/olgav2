@@ -313,6 +313,7 @@
                                     <th>Datum</th>
                                     <th>Nummer</th>
                                     <th>Projektname</th>
+                                    <th>Kunde</th>
                                     <th style="text-align: right;">Betrag</th>
                                 </tr>
                             </thead>
@@ -331,7 +332,15 @@
                                     <td>
                                         <strong>{{ $offer->angebotsnummer }}</strong>
                                     </td>
-                                    <td>{{ $offer->projektname }}</td>
+                                    <td style="font-weight: 500;">
+                                        {{ $offer->projektname ?: '—' }}
+                                        @if(isset($offer->hersteller) && $offer->hersteller)
+                                            <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 400; margin-top: 2px;">
+                                                {{ $offer->hersteller }}
+                                            </div>
+                                        @endif
+                                    </td>
+                                    <td>{{ $offer->firmenname ?? '—' }}</td>
                                     <td style="text-align: right; font-weight: 600;">
                                         {{ number_format($offer->angebotssumme, 2, ',', '.') }} €
                                     </td>
@@ -362,7 +371,8 @@
                                     <th><i class="fas fa-layer-group" title="Projekt / Status"></i></th>
                                     <th>Datum</th>
                                     <th>Nummer</th>
-                                    <th>Firma</th>
+                                    <th>Projektname</th>
+                                    <th>Kunde</th>
                                     <th style="text-align: right;">Betrag</th>
                                 </tr>
                             </thead>
@@ -380,6 +390,14 @@
                                     <td style="white-space: nowrap; padding-left: 10px;">{{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}</td>
                                     <td>
                                         <strong>{{ $order->auftragsnummer ?? '—' }}</strong>
+                                    </td>
+                                    <td style="font-weight: 500;">
+                                        {{ $order->projektname ?: '—' }}
+                                        @if(isset($order->hersteller) && $order->hersteller)
+                                            <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 400; margin-top: 2px;">
+                                                {{ $order->hersteller }}
+                                            </div>
+                                        @endif
                                     </td>
                                     <td>{{ $order->firmenname ?? '—' }}</td>
                                     <td style="text-align: right; font-weight: 600;">
