@@ -249,8 +249,17 @@
                     <a href="{{ route('calendar') }}" class="user-dropdown-item">
                         <i class="fas fa-calendar-alt"></i> Mein Kalender
                     </a>
+                    <a href="{{ route('manufacturers.index') }}" class="user-dropdown-item">
+                        <i class="fas fa-industry"></i> Hersteller
+                    </a>
                     <a href="{{ route('portals.index') }}" class="user-dropdown-item active">
                         <i class="fas fa-globe"></i> Portale
+                    </a>
+                    <a href="{{ route('companies.index') }}" class="user-dropdown-item">
+                        <i class="fas fa-building"></i> Firmen verwalten
+                    </a>
+                    <a href="{{ route('settings.email.index') }}" class="user-dropdown-item">
+                        <i class="fas fa-envelope-open-text"></i> E-Mail Einstellungen
                     </a>
                     <div class="user-dropdown-divider"></div>
                     <a href="#" class="user-dropdown-item logout" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
