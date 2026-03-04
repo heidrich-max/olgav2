@@ -383,7 +383,7 @@
                                     </td>
                                     <td>{{ $order->firmenname ?? '—' }}</td>
                                     <td style="text-align: right; font-weight: 600;">
-                                        {{ number_format($order->betrag, 2, ',', '.') }} €
+                                        {{ number_format($order->auftragssumme, 2, ',', '.') }} €
                                     </td>
                                 </tr>
                                 @endforeach
