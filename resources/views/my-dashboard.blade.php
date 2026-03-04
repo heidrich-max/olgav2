@@ -380,7 +380,15 @@
                                             {{ $order->status_kuerzel ?? '—' }}
                                         </span>
                                     </td>
-                                    <td style="white-space: nowrap; padding-left: 10px;">{{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}</td>
+                                    <td style="white-space: nowrap; padding-left: 10px;">
+                                        {{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}
+                                        @if($order->lieferdatum)
+                                            <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; display: flex; align-items: center; gap: 4px;">
+                                                <i class="fas fa-truck" title="Lieferdatum"></i>
+                                                {{ \Carbon\Carbon::parse($order->lieferdatum)->format('d.m.Y') }}
+                                            </div>
+                                        @endif
+                                    </td>
                                     <td style="padding-right: 15px;">
                                         <strong>{{ $order->auftragsnummer ?? '—' }}</strong>
                                         <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; font-weight: 500;">
