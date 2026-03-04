@@ -12,8 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('angebot_tabelle', function (Blueprint $table) {
-            $table->date('wiedervorlage_datum')->nullable();
-            $table->text('wiedervorlage_text')->nullable();
+            if (!Schema::hasColumn('angebot_tabelle', 'wiedervorlage_datum')) {
+                $table->date('wiedervorlage_datum')->nullable();
+            }
+            if (!Schema::hasColumn('angebot_tabelle', 'wiedervorlage_text')) {
+                $table->text('wiedervorlage_text')->nullable();
+            }
         });
     }
 
