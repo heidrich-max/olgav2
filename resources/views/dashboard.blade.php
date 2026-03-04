@@ -223,11 +223,12 @@
         .more-link:hover { text-decoration: underline; }
 
         .todo-badge {
-            background: #ef4444; color: white; font-size: 0.65rem; font-weight: 700;
-            padding: 2px 6px; border-radius: 50px; margin-left: 5px;
+            background: #ef4444; color: white; font-size: 0.6rem; font-weight: 700;
+            padding: 2px 5px; border-radius: 50px; margin-left: -2px;
             display: inline-flex; align-items: center; justify-content: center;
-            min-width: 18px; height: 18px; vertical-align: middle;
+            min-width: 14px; height: 14px; vertical-align: super;
             box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            position: relative; top: -3px;
         }
 
     </style>

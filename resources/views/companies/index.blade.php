@@ -126,6 +126,15 @@
         .user-dropdown-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
         .user-dropdown-divider { height: 1px; background: var(--glass-border); margin: 6px 0; }
 
+        .todo-badge {
+            background: #ef4444; color: white; font-size: 0.6rem; font-weight: 700;
+            padding: 2px 5px; border-radius: 50px; margin-left: -2px;
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 14px; height: 14px; vertical-align: super;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            position: relative; top: -3px;
+        }
+
         .container { position: relative; z-index: 10; padding: 40px; max-width: 1400px; margin: 0 auto; }
 
         .header-section {

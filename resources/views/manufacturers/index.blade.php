@@ -107,11 +107,11 @@
         .user-dropdown-item.active { color: var(--primary-accent); background: rgba(29,161,242,0.07); }
         .user-dropdown-item.logout { color: #fca5a5; }
         .user-dropdown-item.logout:hover { background: rgba(239,68,68,0.1); color: #fff; }
-        .user-dropdown-divider { height: 1px; background: var(--glass-border); margin: 4px 0; }
+        .user-dropdown-divider { height: 1px; background: var(--glass-border); margin: 6px 0; }
 
         .todo-badge {
-            background: #ef4444; color: white; font-size: 0.65rem; font-weight: 700;
-            padding: 2px 6px; border-radius: 50px; margin-left: 5px;
+            background: #ef4444; color: white; font-size: 0.6rem; font-weight: 700;
+            padding: 2px 5px; border-radius: 50px; margin-left: -2px;
             display: inline-flex; align-items: center; justify-content: center;
             min-width: 18px; height: 18px; vertical-align: middle;
             box-shadow: 0 2px 4px rgba(0,0,0,0.3);
