@@ -11,10 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Falls die Tabelle bereits existiert (z.B. durch einen fehlerhaften vorherigen Versuch), 
+        // löschen wir sie, um sie mit den korrekten Datentypen (integer statt bigint) neu anzulegen.
+        Schema::dropIfExists('auftrag_artikel');
+
         Schema::create('auftrag_artikel', function (Blueprint $table) {
             $table->id();
             $table->integer('auftrag_id_lokal');
-            $table->unsignedBigInteger('jtl_auftrag_id');
+            $table->integer('jtl_auftrag_id');
             $table->integer('sort_order')->default(0);
             $table->string('art_nr')->nullable();
             $table->text('bezeichnung')->nullable();
@@ -26,7 +30,6 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('auftrag_id_lokal')->references('id')->on('auftrag_tabelle')->onDelete('cascade');
-            $table->index('jtl_auftrag_id');
         });
     }
 
