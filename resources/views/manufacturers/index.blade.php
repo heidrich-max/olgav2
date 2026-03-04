@@ -228,11 +228,16 @@
         .data-table td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.06); color: var(--text-main); }
         .data-table tr:hover { background: rgba(255,255,255,0.03); }
         
-        .btn-edit {
-            background: var(--primary-accent); color: #fff; border: none;
-            padding: 4px 12px; border-radius: 6px; font-size: 0.75rem; 
-            cursor: pointer; text-decoration: none; font-weight: 600;
+        /* Action Buttons */
+        .action-btn {
+            width: 32px; height: 32px; border-radius: 8px;
+            display: inline-flex; align-items: center; justify-content: center;
+            text-decoration: none; transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
         }
+        .edit-btn { color: var(--primary-accent); }
+        .edit-btn:hover { background: var(--primary-accent); color: #fff; transform: translateY(-2px); }
 
         .lang-badge {
             background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border);
@@ -354,7 +359,7 @@
                         <th>Telefon</th>
                         <th>E-Mail</th>
                         <th>Info</th>
-                        <th>Aktion</th>
+                        <th style="width: 60px; text-align: center;"><i class="fas fa-cog"></i></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -371,8 +376,10 @@
                         <td>{{ $m->telefon }}</td>
                         <td><a href="mailto:{{ $m->email }}" style="color: var(--primary-accent); text-decoration: none;">{{ $m->email }}</a></td>
                         <td><span style="font-size: 0.75rem; color: var(--text-muted); display: block; max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $m->herstellerinformation }}">{{ $m->herstellerinformation }}</span></td>
-                        <td>
-                            <a href="{{ route('manufacturers.edit', $m->id) }}" class="btn-edit">bearbeiten</a>
+                        <td style="text-align: center;">
+                            <a href="{{ route('manufacturers.edit', $m->id) }}" class="action-btn edit-btn" title="Hersteller bearbeiten">
+                                <i class="fas fa-edit"></i>
+                            </a>
                         </td>
                     </tr>
                     @endforeach
