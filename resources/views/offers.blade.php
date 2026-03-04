@@ -645,7 +645,7 @@
                                 <small style="color: var(--text-muted)">{{ $offer->benutzer }}</small>
                             </td>
                             <td style="background: {{ $rowBg }}; font-weight: 600;">
-                                {{ $offer->projekt_firmenname }}
+                                {{ $offer->projektname ?: '—' }}
                                 @if(isset($offer->hersteller) && $offer->hersteller)
                                     <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 400; margin-top: 2px;">
                                         {{ $offer->hersteller }}
