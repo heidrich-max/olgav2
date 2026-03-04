@@ -313,7 +313,6 @@
                                     <th>Datum</th>
                                     <th>Nummer</th>
                                     <th>Projektname</th>
-                                    <th>Kunde</th>
                                     <th style="text-align: right;">Betrag</th>
                                 </tr>
                             </thead>
@@ -340,7 +339,6 @@
                                             </div>
                                         @endif
                                     </td>
-                                    <td>{{ $offer->firmenname ?? '—' }}</td>
                                     <td style="text-align: right; font-weight: 600;">
                                         {{ number_format($offer->angebotssumme, 2, ',', '.') }} €
                                     </td>
@@ -372,7 +370,6 @@
                                     <th>Datum</th>
                                     <th>Nummer</th>
                                     <th>Projektname</th>
-                                    <th>Kunde</th>
                                     <th style="text-align: right;">Betrag</th>
                                 </tr>
                             </thead>
@@ -399,7 +396,6 @@
                                             </div>
                                         @endif
                                     </td>
-                                    <td>{{ $order->firmenname ?? '—' }}</td>
                                     <td style="text-align: right; font-weight: 600;">
                                         {{ number_format($order->auftragssumme, 2, ',', '.') }} €
                                     </td>
