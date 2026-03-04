@@ -169,6 +169,8 @@ Route::middleware(['auth'])->group(function () {
     
     // Portals
     Route::get('/portals', [PortalController::class, 'index'])->name('portals.index');
+    Route::get('/portals/create', [PortalController::class, 'create'])->name('portals.create');
+    Route::post('/portals', [PortalController::class, 'store'])->name('portals.store');
     Route::get('/portals/{id}/edit', [PortalController::class, 'edit'])->name('portals.edit');
     Route::put('/portals/{id}', [PortalController::class, 'update'])->name('portals.update');
     Route::delete('/portals/{id}', [PortalController::class, 'destroy'])->name('portals.destroy');

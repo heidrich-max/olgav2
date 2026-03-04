@@ -123,6 +123,15 @@
         .header-section { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
         .header-section h1 { font-size: 2.2rem; font-weight: 700; background: linear-gradient(90deg, #fff, var(--primary-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
+        .btn-add {
+            background: var(--primary-accent); border: 1px solid var(--primary-accent);
+            color: #fff; padding: 10px 20px; border-radius: 10px;
+            text-decoration: none; font-size: 0.9rem; font-weight: 700;
+            display: flex; align-items: center; gap: 10px; transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(29, 161, 242, 0.3);
+        }
+        .btn-add:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(29, 161, 242, 0.4); opacity: 0.9; }
+
         /* ---- FILTERS ---- */
         .filters-glass {
             background: rgba(255, 255, 255, 0.05);
@@ -240,17 +249,8 @@
                     <a href="{{ route('calendar') }}" class="user-dropdown-item">
                         <i class="fas fa-calendar-alt"></i> Mein Kalender
                     </a>
-                    <a href="{{ route('manufacturers.index') }}" class="user-dropdown-item">
-                        <i class="fas fa-industry"></i> Hersteller
-                    </a>
                     <a href="{{ route('portals.index') }}" class="user-dropdown-item active">
                         <i class="fas fa-globe"></i> Portale
-                    </a>
-                    <a href="{{ route('companies.index') }}" class="user-dropdown-item">
-                        <i class="fas fa-building"></i> Firmen verwalten
-                    </a>
-                    <a href="{{ route('settings.email.index') }}" class="user-dropdown-item">
-                        <i class="fas fa-envelope-open-text"></i> E-Mail Einstellungen
                     </a>
                     <div class="user-dropdown-divider"></div>
                     <a href="#" class="user-dropdown-item logout" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -269,7 +269,16 @@
             <div>
                 <h1>Portal Übersicht</h1>
             </div>
+            <a href="{{ route('portals.create') }}" class="btn-add">
+                <i class="fas fa-plus-circle"></i> Portal anlegen
+            </a>
         </div>
+
+        @if(session('success'))
+            <div style="background: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; color: #fff; padding: 15px; border-radius: 12px; margin-bottom: 25px; font-weight: 600;">
+                <i class="fas fa-check-circle"></i> {{ session('success') }}
+            </div>
+        @endif
 
         <div class="filters-glass">
             <i class="fas fa-search" style="color: var(--text-muted);"></i>
@@ -282,9 +291,9 @@
                     <tr>
                         <th style="width: 25%;">Name</th>
                         <th style="width: 20%;">Website</th>
-                        <th style="width: 250px;"><i class="fas fa-lock" style="margin-right: 8px; color: var(--primary-accent);"></i> Zugangsdaten</th>
-                        <th style="width: 300px;"><i class="fas fa-sticky-note" style="margin-right: 8px; color: var(--primary-accent);"></i> Bemerkung</th>
-                        <th style="width: 80px; text-align: center;"><i class="fas fa-cog"></i></th>
+                        <th style="width: 25%;">Zugangsdaten</th>
+                        <th>Bemerkung</th>
+                        <th style="width: 60px; text-align: center;"><i class="fas fa-cog"></i></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -339,7 +348,7 @@
                     @endforeach
                     @if(count($portals) == 0)
                         <tr>
-                            <td colspan="4" style="text-align: center; padding: 40px; color: var(--text-muted);">Keine Portale gefunden.</td>
+                            <td colspan="5" style="text-align: center; padding: 40px; color: var(--text-muted);">Keine Portale gefunden.</td>
                         </tr>
                     @endif
                 </tbody>
@@ -414,7 +423,6 @@
         }
         window.addEventListener('resize', resize);
         resize(); animate();
-
     </script>
 
 </body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>OLGA - Portal bearbeiten</title>
+    <title>OLGA - Portal anlegen</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
     
@@ -56,13 +56,6 @@
             border: 1px solid var(--glass-border);
         }
         .company-switcher.active .switcher-content { display: block; }
-        .switcher-item {
-            padding: 12px 20px; color: var(--text-muted); text-decoration: none;
-            display: flex; align-items: center; gap: 10px;
-            transition: background 0.3s, color 0.3s;
-        }
-        .switcher-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
-        .switcher-item.active { border-left: 3px solid var(--primary-accent); color: var(--text-main); background: rgba(255,255,255,0.05); }
 
         /* User Dropdown */
         .user-dropdown { position: relative; }
@@ -96,12 +89,10 @@
             transition: background 0.2s, color 0.2s;
         }
         .user-dropdown-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
-        .user-dropdown-item.active { color: var(--primary-accent); background: rgba(29,161,242,0.07); }
-        .user-dropdown-item.logout { color: #fca5a5; }
         .user-dropdown-divider { height: 1px; background: var(--glass-border); margin: 4px 0; }
 
         /* ---- CONTAINER & CARD ---- */
-        .container { position: relative; z-index: 10; padding: 40px; max-width: 900px; margin: 0 auto; }
+        .container { position: relative; z-index: 10; padding: 40px; max-width: 800px; margin: 0 auto; }
         
         .header-section { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
         .header-section h1 { font-size: 2.2rem; font-weight: 700; background: linear-gradient(90deg, #fff, var(--primary-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -141,15 +132,6 @@
         }
         .btn-save:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); opacity: 0.9; }
 
-        .btn-delete {
-            background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4);
-            padding: 14px; border-radius: 10px; font-size: 1rem; font-weight: 700;
-            cursor: pointer; width: 100%; margin-top: 20px; transition: all 0.3s;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            text-decoration: none;
-        }
-        .btn-delete:hover { background: #ef4444; color: #fff; transform: translateY(-2px); }
-
         .error-msg { color: #fca5a5; font-size: 0.75rem; margin-top: 5px; }
 
     </style>
@@ -158,19 +140,6 @@
     <nav class="navbar">
         <div class="nav-left">
             <a href="{{ route('dashboard') }}"><img src="/logo/olga_neu.svg" alt="Frank Group"></a>
-            <div class="company-switcher" id="companySwitcher">
-                <button class="switcher-btn" id="switcherBtn">
-                    <i class="fas fa-building"></i>
-                    {{ $companyName }}
-                    <i class="fas fa-chevron-down" style="font-size: 0.7rem;"></i>
-                </button>
-                <div class="switcher-content">
-                    <div style="padding: 10px 20px; font-size: 0.75rem; color: #1DA1F2; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.03);">Branding Europe GmbH</div>
-                    <a href="{{ route('company.switch', 1) }}" class="switcher-item {{ $companyId == 1 && !request()->routeIs('offers.index') ? 'active' : '' }}">
-                        <i class="fas fa-home"></i> Dashboard
-                    </a>
-                </div>
-            </div>
         </div>
 
         <div style="display: flex; align-items: center; gap: 10px;">
@@ -197,71 +166,52 @@
                     </a>
                 </div>
             </div>
-            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                @csrf
-            </form>
         </div>
     </nav>
 
     <div class="container">
         <div class="header-section">
-            <h1>Portal bearbeiten</h1>
+            <h1>Portal anlegen</h1>
             <a href="{{ route('portals.index') }}" class="btn-back">
                 <i class="fas fa-arrow-left"></i> Zurück zur Übersicht
             </a>
         </div>
 
         <div class="card">
-            @if(session('success'))
-                <div style="background: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; color: #fff; padding: 15px; border-radius: 12px; margin-bottom: 20px; font-weight: 600;">
-                    <i class="fas fa-check-circle"></i> {{ session('success') }}
-                </div>
-            @endif
-
-            <form action="{{ route('portals.update', $portal->id) }}" method="POST">
+            <form action="{{ route('portals.store') }}" method="POST">
                 @csrf
-                @method('PUT')
 
                 <div class="form-grid">
                     <div class="form-group full-width">
                         <label for="name">Portal Name</label>
-                        <input type="text" name="name" id="name" class="form-control" value="{{ old('name', $portal->name) }}" required>
+                        <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}" required>
                         @error('name') <div class="error-msg">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="form-group full-width">
                         <label for="website">Website URL</label>
-                        <input type="text" name="website" id="website" class="form-control" value="{{ old('website', $portal->website) }}">
+                        <input type="text" name="website" id="website" class="form-control" value="{{ old('website') }}">
                         @error('website') <div class="error-msg">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="form-group">
                         <label for="benutzername">Benutzername</label>
-                        <input type="text" name="benutzername" id="benutzername" class="form-control" value="{{ old('benutzername', $portal->benutzername) }}">
+                        <input type="text" name="benutzername" id="benutzername" class="form-control" value="{{ old('benutzername') }}">
                     </div>
 
                     <div class="form-group">
                         <label for="passwort">Passwort</label>
-                        <input type="text" name="passwort" id="passwort" class="form-control" value="{{ old('passwort', $portal->passwort) }}">
+                        <input type="text" name="passwort" id="passwort" class="form-control" value="{{ old('passwort') }}">
                     </div>
 
                     <div class="form-group full-width">
                         <label for="Bemerkung">Bemerkung</label>
-                        @php $remarkVal = $portal->Bemerkung ?? $portal->bemerkung ?? ''; @endphp
-                        <textarea name="Bemerkung" id="Bemerkung" class="form-control" rows="5" placeholder="Informationen oder Notizen...">{{ old('Bemerkung', $remarkVal) }}</textarea>
+                        <textarea name="Bemerkung" id="Bemerkung" class="form-control" rows="5" placeholder="Informationen oder Notizen...">{{ old('Bemerkung') }}</textarea>
                     </div>
                 </div>
 
                 <button type="submit" class="btn-save">
-                    <i class="fas fa-save"></i> Änderungen speichern
-                </button>
-            </form>
-
-            <form action="{{ route('portals.destroy', $portal->id) }}" method="POST" onsubmit="return confirm('Möchten Sie dieses Portal wirklich unwiderruflich löschen?');" style="margin-top: 10px;">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn-delete">
-                    <i class="fas fa-trash-alt"></i> Portal löschen
+                    <i class="fas fa-save"></i> Portal anlegen
                 </button>
             </form>
         </div>
@@ -270,25 +220,15 @@
     @include('partials.ai_assistant')
 
     <script>
-        // Company Switcher
-        const companySwitcher = document.getElementById('companySwitcher');
-        document.getElementById('switcherBtn').addEventListener('click', e => {
-            e.stopPropagation();
-            companySwitcher.classList.toggle('active');
-            userDropdown.classList.remove('active');
-        });
-
         // User Dropdown
         const userDropdown = document.getElementById('userDropdown');
         document.getElementById('userBtn').addEventListener('click', e => {
             e.stopPropagation();
             userDropdown.classList.toggle('active');
-            companySwitcher.classList.remove('active');
         });
 
         document.addEventListener('click', () => {
             userDropdown.classList.remove('active');
-            companySwitcher.classList.remove('active');
         });
     </script>
 </body>
