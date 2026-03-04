@@ -76,24 +76,7 @@ class DashboardController extends Controller
         $mappedProjects = $revenueProjectMapping[$companyId] ?? [1];
         $companyStats->vorjahr = OrderRevenue::whereIn('projekt_id', $mappedProjects)->sum('netto_umsatz_vorjahr');
         
-        // Cleanup Overdue Delivery ToDos (Dynamic sync)
-        $today = Carbon::now()->toDateString();
-        $systemOrderTodos = Todo::where('is_system', true)
-            ->whereNotNull('order_id')
-            ->where('is_completed', false)
-            ->get();
-
-        foreach ($systemOrderTodos as $todo) {
-            $order = DB::table('auftrag_tabelle')->where('id', $todo->order_id)->first();
-            
-            // Delete if order is finished OR delivery date is no longer in the past
-            if (!$order || 
-                $order->abgeschlossen_status === 'Auftrag abgeschlossen' || 
-                !$order->lieferdatum || 
-                $order->lieferdatum >= $today) {
-                $todo->delete();
-            }
-        }
+        $this->syncOverdueDeliveryTodos();
 
         // Lists
     $orders = DB::table('auftrag_tabelle')
@@ -179,7 +162,9 @@ class DashboardController extends Controller
         if (!$companyId) {
             $companyId = $request->cookie('active_company_id', 1);
         }
-        if (!in_array($companyId, [1, 2])) { $companyId = 1; }
+        $this->syncOverdueDeliveryTodos();
+
+        $companyId = Session::get('active_company_id');
 
         $search = $request->query('search');
         $selectedStatus = $request->query('status');
@@ -317,6 +302,7 @@ class DashboardController extends Controller
 
     public function orders(Request $request)
     {
+        $this->syncOverdueDeliveryTodos();
         $user = Auth::user();
         
         $companyId = Session::get('active_company_id');
@@ -504,6 +490,7 @@ class DashboardController extends Controller
 
     public function myDashboard()
     {
+        $this->syncOverdueDeliveryTodos();
         $user = Auth::user();
         $userName = $user->name_komplett;
 
