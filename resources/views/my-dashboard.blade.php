@@ -313,12 +313,11 @@
                                     <th>Datum</th>
                                     <th>Nummer</th>
                                     <th>Firma</th>
-                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($myOffers as $offer)
-                                <tr onclick="window.location='{{ route('offers.show', $offer->id) }}?from=my.dashboard'" style="background: {{ $offer->letzter_status_bg_hex ? $offer->letzter_status_bg_hex . '15' : 'transparent' }}; border-left: 4px solid {{ $offer->projekt_farbe_hex ?? 'transparent' }}; transition: background 0.2s; cursor: pointer;">
+                                <tr onclick="window.location='{{ route('offers.show', $offer->id) }}?from=my.dashboard'" style="background: {{ $offer->letzter_status_bg_hex ? $offer->letzter_status_bg_hex . '15' : 'transparent' }}; border-left: 4px solid {{ $offer->letzter_status_bg_hex ?? 'transparent' }}; transition: background 0.2s; cursor: pointer;">
                                     <td style="padding-left: 15px;">
                                         <span style="color: {{ $offer->projekt_farbe_hex ?? '#fff' }}; font-weight: 800; font-size: 0.85rem; display: block;">
                                             {{ $offer->project_kuerzel ?: '—' }}
@@ -332,11 +331,6 @@
                                         <strong>{{ $offer->angebotsnummer }}</strong>
                                     </td>
                                     <td>{{ $offer->projektname }}</td>
-                                    <td>
-                                        <b style="color: {{ $offer->letzter_status_farbe_hex ?? '#fff' }}; font-size: 0.85rem;">
-                                            {{ $offer->letzter_status_name ?? '—' }}
-                                        </b>
-                                    </td>
                                 </tr>
                                 @endforeach
                             </tbody>
