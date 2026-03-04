@@ -327,7 +327,7 @@
                                             {{ $offer->letzter_status ?? '—' }}
                                         </span>
                                     </td>
-                                    <td style="white-space: nowrap; padding-left: 10px;">{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.') }}</td>
+                                    <td style="white-space: nowrap; padding-left: 10px;">{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</td>
                                     <td style="white-space: nowrap;">
                                         <strong>{{ $offer->angebotsnummer }}</strong>
                                     </td>
@@ -384,7 +384,7 @@
                                             {{ $order->status_kuerzel ?? '—' }}
                                         </span>
                                     </td>
-                                    <td style="white-space: nowrap; padding-left: 10px;">{{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.') }}</td>
+                                    <td style="white-space: nowrap; padding-left: 10px;">{{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}</td>
                                     <td style="white-space: nowrap;">
                                         <strong>{{ $order->auftragsnummer ?? '—' }}</strong>
                                     </td>
