@@ -328,7 +328,7 @@
                                         </span>
                                     </td>
                                     <td style="white-space: nowrap; padding-left: 10px;">{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</td>
-                                    <td>
+                                    <td style="white-space: nowrap;">
                                         <strong>{{ $offer->angebotsnummer }}</strong>
                                     </td>
                                     <td style="font-weight: 500;">
@@ -385,7 +385,7 @@
                                         </span>
                                     </td>
                                     <td style="white-space: nowrap; padding-left: 10px;">{{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}</td>
-                                    <td>
+                                    <td style="white-space: nowrap;">
                                         <strong>{{ $order->auftragsnummer ?? '—' }}</strong>
                                     </td>
                                     <td style="font-weight: 500;">
