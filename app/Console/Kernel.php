@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('app:generate-offer-todos')->dailyAt('08:00');
         $schedule->command('wiedervorlage:process')->dailyAt('07:30');
         $schedule->command('app:process-overdue-deliveries')->dailyAt('08:00');
+        $schedule->command('app:process-bo-status-orders')->dailyAt('08:00');
     }
 
     /**

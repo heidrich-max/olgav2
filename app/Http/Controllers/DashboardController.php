@@ -76,7 +76,7 @@ class DashboardController extends Controller
         $mappedProjects = $revenueProjectMapping[$companyId] ?? [1];
         $companyStats->vorjahr = OrderRevenue::whereIn('projekt_id', $mappedProjects)->sum('netto_umsatz_vorjahr');
         
-        $this->syncOverdueDeliveryTodos();
+        $this->syncSystemOrderTodos();
 
         // Lists
     $orders = DB::table('auftrag_tabelle')
@@ -162,7 +162,7 @@ class DashboardController extends Controller
         if (!$companyId) {
             $companyId = $request->cookie('active_company_id', 1);
         }
-        $this->syncOverdueDeliveryTodos();
+        $this->syncSystemOrderTodos();
 
         $companyId = Session::get('active_company_id');
 
@@ -302,7 +302,7 @@ class DashboardController extends Controller
 
     public function orders(Request $request)
     {
-        $this->syncOverdueDeliveryTodos();
+        $this->syncSystemOrderTodos();
         $user = Auth::user();
         
         $companyId = Session::get('active_company_id');
@@ -490,7 +490,7 @@ class DashboardController extends Controller
 
     public function myDashboard()
     {
-        $this->syncOverdueDeliveryTodos();
+        $this->syncSystemOrderTodos();
         $user = Auth::user();
         $userName = $user->name_komplett;
 
@@ -1049,9 +1049,9 @@ class DashboardController extends Controller
     }
 
     /**
-     * Synchronize overdue delivery ToDos by deleting those that are no longer relevant.
+     * Synchronize automated system ToDos by deleting those that are no longer relevant.
      */
-    private function syncOverdueDeliveryTodos()
+    private function syncSystemOrderTodos()
     {
         $today = Carbon::now()->toDateString();
         $systemOrderTodos = Todo::where('is_system', true)
@@ -1062,13 +1062,23 @@ class DashboardController extends Controller
         foreach ($systemOrderTodos as $todo) {
             $order = DB::table('auftrag_tabelle')->where('id', $todo->order_id)->first();
             
-            // Delete if order is finished OR delivery date is no longer in the past
-            if (!$order || 
-                $order->abgeschlossen_status === 'Auftrag abgeschlossen' || 
-                $order->abgeschlossen_status === 'abgeschlossen' || 
-                !$order->lieferdatum || 
-                $order->lieferdatum >= $today) {
+            if (!$order || $order->abgeschlossen_status === 'Auftrag abgeschlossen' || $order->abgeschlossen_status === 'abgeschlossen') {
                 $todo->delete();
+                continue;
+            }
+
+            // Cleanup "Lieferdatum überschritten"
+            if (str_starts_with($todo->task, 'Lieferdatum überschritten:')) {
+                if (!$order->lieferdatum || $order->lieferdatum >= $today) {
+                    $todo->delete();
+                }
+            }
+
+            // Cleanup "Bestellung offen"
+            if (str_starts_with($todo->task, 'Bestellung offen:')) {
+                if ($order->letzter_status !== 'BO') {
+                    $todo->delete();
+                }
             }
         }
     }

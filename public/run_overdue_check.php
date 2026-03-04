@@ -17,9 +17,12 @@ echo "Starting overdue delivery check (app:process-overdue-deliveries)...\n\n";
 try {
     // Run the artisan command
     $exitCode = Artisan::call('app:process-overdue-deliveries');
-    
-    // Get the output
-    echo Artisan::output();
+        echo "Overdue delivery check completed.<br>";
+        
+        Artisan::call('app:process-bo-status-orders');
+        echo "BO status check completed.<br>";
+        
+        echo "<br><b>Result:</b><br><pre>" . Artisan::output() . "</pre>";
     
     echo "\n\nCommand finished with exit code: " . $exitCode . "\n";
 } catch (\Exception $e) {
