@@ -384,7 +384,7 @@
                             </thead>
                             <tbody>
                                 @foreach($myOrders as $order)
-                                <tr style="background: {{ $order->status_bg ? $order->status_bg . '15' : 'transparent' }}; border-left: 4px solid {{ $order->status_bg ?? 'transparent' }}; transition: background 0.2s;">
+                                <tr onclick="window.location='{{ route('orders.show', $order->id) }}?from=my.dashboard'" style="background: {{ $order->status_bg ? $order->status_bg . '15' : 'transparent' }}; border-left: 4px solid {{ $order->status_bg ?? 'transparent' }}; transition: background 0.2s; cursor: pointer;">
                                     <td style="text-align: center; min-width: 65px;">
                                         <span style="color: {{ $order->projekt_farbe_hex ?? '#fff' }}; font-weight: 800; font-size: 0.85rem; display: block;">
                                             {{ $order->project_kuerzel ?: '—' }}
