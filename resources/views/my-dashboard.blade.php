@@ -309,10 +309,11 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Projekt</th>
+                                    <th><i class="fas fa-layer-group" title="Projekt / Status"></i></th>
                                     <th>Datum</th>
                                     <th>Nummer</th>
                                     <th>Firma</th>
+                                    <th style="text-align: right;">Betrag</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -331,6 +332,9 @@
                                         <strong>{{ $offer->angebotsnummer }}</strong>
                                     </td>
                                     <td>{{ $offer->projektname }}</td>
+                                    <td style="text-align: right; font-weight: 600;">
+                                        {{ number_format($offer->angebotssumme, 2, ',', '.') }} €
+                                    </td>
                                 </tr>
                                 @endforeach
                             </tbody>
