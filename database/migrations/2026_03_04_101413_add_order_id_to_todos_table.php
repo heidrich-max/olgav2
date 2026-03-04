@@ -13,7 +13,7 @@ return new class extends Migration
     {
         if (!Schema::hasColumn('todos', 'order_id')) {
             Schema::table('todos', function (Blueprint $table) {
-                $table->unsignedBigInteger('order_id')->nullable()->after('offer_id');
+                $table->integer('order_id')->nullable()->after('offer_id');
                 $table->foreign('order_id')->references('id')->on('auftrag_tabelle')->onDelete('cascade');
             });
         }

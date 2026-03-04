@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('auftrag_artikel', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('auftrag_id_lokal');
+            $table->integer('auftrag_id_lokal');
             $table->unsignedBigInteger('jtl_auftrag_id');
             $table->integer('sort_order')->default(0);
             $table->string('art_nr')->nullable();
