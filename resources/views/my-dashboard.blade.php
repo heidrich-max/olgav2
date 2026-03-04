@@ -146,8 +146,8 @@
 
         /* ---- TABLE ---- */
         .data-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-        .data-table th { text-align: left; color: var(--text-muted); padding: 8px 0; font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid rgba(255,255,255,0.12); }
-        .data-table td { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.06); color: var(--text-main); vertical-align: middle; }
+        .data-table th { text-align: left; color: var(--text-muted); padding: 10px 15px; font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid rgba(255,255,255,0.12); }
+        .data-table td { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.06); color: var(--text-main); vertical-align: middle; }
         .data-table tr:last-child td { border-bottom: none; }
         .data-table a { color: var(--primary-accent); text-decoration: none; }
         .data-table a:hover { text-decoration: underline; }
@@ -317,7 +317,7 @@
                     <div style="max-height: 420px; overflow-y: auto;">
                         <table class="data-table">
                             <thead>
-                                <tr>
+                                <tr style="border-left: 4px solid transparent;">
                                     <th style="text-align: center;"><i class="fas fa-layer-group" title="Projekt / Status"></i></th>
                                     <th>Datum</th>
                                     <th>Nummer / Projekt</th>
@@ -327,7 +327,7 @@
                             <tbody>
                                 @foreach($myOffers as $offer)
                                 <tr onclick="window.location='{{ route('offers.show', $offer->id) }}?from=my.dashboard'" style="background: {{ $offer->letzter_status_bg_hex ? $offer->letzter_status_bg_hex . '15' : 'transparent' }}; border-left: 4px solid {{ $offer->letzter_status_bg_hex ?? 'transparent' }}; transition: background 0.2s; cursor: pointer;">
-                                    <td style="text-align: center; min-width: 65px; padding: 10px 5px;">
+                                    <td style="text-align: center; min-width: 65px;">
                                         <span style="color: {{ $offer->projekt_farbe_hex ?? '#fff' }}; font-weight: 800; font-size: 0.85rem; display: block;">
                                             {{ $offer->project_kuerzel ?: '—' }}
                                         </span>
@@ -335,8 +335,8 @@
                                             {{ $offer->letzter_status ?? '—' }}
                                         </span>
                                     </td>
-                                    <td style="white-space: nowrap; padding-left: 10px;">{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</td>
-                                    <td style="padding-right: 15px;">
+                                    <td style="white-space: nowrap;">{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</td>
+                                    <td>
                                         <strong>{{ $offer->angebotsnummer }}</strong>
                                         <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; font-weight: 500;">
                                             {{ $offer->projektname ?: '—' }}
@@ -371,7 +371,7 @@
                     <div style="max-height: 420px; overflow-y: auto;">
                         <table class="data-table">
                             <thead>
-                                <tr>
+                                <tr style="border-left: 4px solid transparent;">
                                     <th style="text-align: center;"><i class="fas fa-layer-group" title="Projekt / Status"></i></th>
                                     <th>Datum</th>
                                     <th>Nummer / Projekt</th>
@@ -381,7 +381,7 @@
                             <tbody>
                                 @foreach($myOrders as $order)
                                 <tr style="background: {{ $order->status_bg ? $order->status_bg . '15' : 'transparent' }}; border-left: 4px solid {{ $order->status_bg ?? 'transparent' }}; transition: background 0.2s;">
-                                    <td style="text-align: center; min-width: 65px; padding: 10px 5px;">
+                                    <td style="text-align: center; min-width: 65px;">
                                         <span style="color: {{ $order->projekt_farbe_hex ?? '#fff' }}; font-weight: 800; font-size: 0.85rem; display: block;">
                                             {{ $order->project_kuerzel ?: '—' }}
                                         </span>
@@ -389,7 +389,7 @@
                                             {{ $order->status_kuerzel ?? '—' }}
                                         </span>
                                     </td>
-                                    <td style="white-space: nowrap; padding-left: 10px;">
+                                    <td style="white-space: nowrap;">
                                         {{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}
                                         @if($order->lieferdatum)
                                             <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; display: flex; align-items: center; gap: 4px;">
@@ -398,7 +398,7 @@
                                             </div>
                                         @endif
                                     </td>
-                                    <td style="padding-right: 15px;">
+                                    <td>
                                         <strong>{{ $order->auftragsnummer ?? '—' }}</strong>
                                         <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; font-weight: 500;">
                                             {{ $order->projektname ?: '—' }}
