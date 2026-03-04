@@ -265,6 +265,9 @@
                     <a href="{{ route('company.switch', 1) }}?redirect=offers" class="switcher-item {{ $companyId == 1 && request()->routeIs('offers.index') ? 'active' : '' }}">
                         <i class="fas fa-file-invoice"></i> Angebotsübersicht
                     </a>
+                    <a href="{{ route('company.switch', 1) }}?redirect=orders" class="switcher-item {{ $companyId == 1 && request()->routeIs('orders.index') ? 'active' : '' }}">
+                        <i class="fas fa-truck-loading"></i> Auftragsübersicht
+                    </a>
                     <div style="height: 1px; background: var(--glass-border); margin: 5px 0;"></div>
                     <div style="padding: 10px 20px; font-size: 0.75rem; color: #0088CC; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.03);">Europe Pen GmbH</div>
                     <a href="{{ route('company.switch', 2) }}" class="switcher-item {{ $companyId == 2 && !request()->routeIs('offers.index') ? 'active' : '' }}">
@@ -272,6 +275,9 @@
                     </a>
                     <a href="{{ route('company.switch', 2) }}?redirect=offers" class="switcher-item {{ $companyId == 2 && request()->routeIs('offers.index') ? 'active' : '' }}">
                         <i class="fas fa-file-invoice"></i> Angebotsübersicht
+                    </a>
+                    <a href="{{ route('company.switch', 2) }}?redirect=orders" class="switcher-item {{ $companyId == 2 && request()->routeIs('orders.index') ? 'active' : '' }}">
+                        <i class="fas fa-truck-loading"></i> Auftragsübersicht
                     </a>
                 </div>
             </div>
