@@ -220,6 +220,7 @@
 
         tr {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
         }
 
         tr:hover {
@@ -710,7 +711,7 @@
                             $accentColor = $sColor;
                             $pColor = $order->projekt_farbe_hex ?: '#ffffff';
                         @endphp
-                        <tr class="order-row">
+                        <tr class="order-row" onclick="window.location='{{ route('orders.show', $order->id) }}'">
                             <td style="background: {{ $rowBg }}; border-left: 4px solid {{ $accentColor }}; padding-left: 20px;">
                                 <span style="color: {{ $pColor }}; font-weight: 800; font-size: 0.9rem; display: block;">
                                     {{ $order->project_kuerzel ?: '—' }}
