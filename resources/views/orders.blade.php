@@ -606,7 +606,6 @@
             <div>
                 <h1>Auftragsübersicht</h1>
             </div>
-            <a href="{{ route('dashboard') }}" class="btn-back"><i class="fas fa-arrow-left"></i> Dashboard</a>
         </div>
 
         <div class="card">
