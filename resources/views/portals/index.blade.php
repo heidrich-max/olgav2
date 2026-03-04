@@ -310,7 +310,14 @@
                         </td>
                         <td>
                             <div style="font-size: 0.85rem; color: #e2e8f0; line-height: 1.5; max-height: 100px; overflow-y: auto;">
-                                {!! nl2br(e($p->Bemerkung)) !!}
+                                @php
+                                    $remark = $p->Bemerkung ?? $p->bemerkung ?? $p->Bemerkungen ?? $p->bemerkungen ?? null;
+                                    if ($remark === null && !empty((array)$p)) {
+                                        $keys = array_keys((array)$p);
+                                        $remark = "Spalte nicht gefunden. Verfügbar: " . implode(', ', $keys);
+                                    }
+                                @endphp
+                                {!! nl2br(e($remark)) !!}
                             </div>
                         </td>
                     </tr>
