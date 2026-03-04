@@ -214,23 +214,3 @@ Route::middleware(['auth'])->group(function () {
         ];
     });
 });
-
-Route::get('/emergency-migrate', function() {
-    try {
-        $migrationPath = database_path('migrations/2026_03_04_155545_create_auftrag_artikel_table.php');
-        $content = file_exists($migrationPath) ? substr(file_get_contents($migrationPath), 0, 500) . "..." : "Datei nicht gefunden!";
-        
-        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-        
-        return "
-            <h2>Emergency Migration System</h2>
-            <p><strong>Migrations-Check:</strong></p>
-            <pre style='background: #eee; padding: 10px; border-radius: 5px;'>" . e($content) . "</pre>
-            <hr>
-            <p><strong>Ergebnis:</strong></p>
-            <pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>
-        ";
-    } catch (\Exception $e) {
-        return "Emergency Migration Failed: " . $e->getMessage();
-    }
-});
