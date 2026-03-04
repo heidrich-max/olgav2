@@ -266,7 +266,7 @@
                 <div class="user-dropdown-menu">
                     <div class="user-dropdown-header">
                         <div class="user-name">{{ $user->name_komplett }}</div>
-                        <div class="user-role">Eingeloggt</div>
+                        <div class="user-role">{{ $companyName }}</div>
                     </div>
                     <a href="{{ route('my.dashboard') }}" class="user-dropdown-item active">
                         <i class="fas fa-user-cog"></i> Mein Dashboard

@@ -266,22 +266,28 @@
                 <div class="switcher-content">
                     <!-- Branding Europe GmbH -->
                     <div style="padding: 10px 20px; font-size: 0.75rem; color: var(--primary-accent); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.03);">Branding Europe GmbH</div>
-                    <a href="{{ route('company.switch', 1) }}" class="switcher-item {{ $companyId == 1 && !request()->routeIs('offers.index') ? 'active' : '' }}">
+                    <a href="{{ route('company.switch', 1) }}" class="switcher-item {{ $companyId == 1 && !request()->routeIs('offers.index') && !request()->routeIs('orders.index') ? 'active' : '' }}">
                         <i class="fas fa-home"></i> Dashboard
                     </a>
                     <a href="{{ route('company.switch', 1) }}?redirect=offers" class="switcher-item {{ $companyId == 1 && request()->routeIs('offers.index') ? 'active' : '' }}">
                         <i class="fas fa-file-invoice"></i> Angebotsübersicht
+                    </a>
+                    <a href="{{ route('company.switch', 1) }}?redirect=orders" class="switcher-item {{ $companyId == 1 && request()->routeIs('orders.index') ? 'active' : '' }}">
+                        <i class="fas fa-truck-loading"></i> Auftragsübersicht
                     </a>
 
                     <div style="height: 1px; background: var(--glass-border); margin: 5px 0;"></div>
 
                     <!-- Europe Pen GmbH -->
                     <div style="padding: 10px 20px; font-size: 0.75rem; color: #0088CC; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; background: rgba(255,255,255,0.03);">Europe Pen GmbH</div>
-                    <a href="{{ route('company.switch', 2) }}" class="switcher-item {{ $companyId == 2 && !request()->routeIs('offers.index') ? 'active' : '' }}">
+                    <a href="{{ route('company.switch', 2) }}" class="switcher-item {{ $companyId == 2 && !request()->routeIs('offers.index') && !request()->routeIs('orders.index') ? 'active' : '' }}">
                         <i class="fas fa-home"></i> Dashboard
                     </a>
                     <a href="{{ route('company.switch', 2) }}?redirect=offers" class="switcher-item {{ $companyId == 2 && request()->routeIs('offers.index') ? 'active' : '' }}">
                         <i class="fas fa-file-invoice"></i> Angebotsübersicht
+                    </a>
+                    <a href="{{ route('company.switch', 2) }}?redirect=orders" class="switcher-item {{ $companyId == 2 && request()->routeIs('orders.index') ? 'active' : '' }}">
+                        <i class="fas fa-truck-loading"></i> Auftragsübersicht
                     </a>
                 </div>
             </div>
@@ -297,12 +303,13 @@
             </button>
             <div class="user-dropdown-menu">
                 <div class="user-dropdown-header">
-                    <div style="font-weight: 600; color: #fff;">{{ $user->name_komplett }}</div>
-                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">{{ $companyName }}</div>
+                    <div class="user-name">{{ $user->name_komplett }}</div>
+                    <div class="user-role">{{ $companyName }}</div>
                 </div>
                 <a href="{{ route('my.dashboard') }}" class="user-dropdown-item"> <i class="fas fa-user-cog"></i> Mein Dashboard </a>
                 <a href="{{ route('calendar') }}" class="user-dropdown-item"> <i class="fas fa-calendar-alt"></i> Mein Kalender </a>
-                <a href="{{ route('manufacturers.index') }}" class="user-dropdown-item {{ request()->routeIs('manufacturers.*') ? 'active' : '' }}"> <i class="fas fa-industry"></i> Hersteller </a>
+                <a href="{{ route('manufacturers.index') }}" class="user-dropdown-item"> <i class="fas fa-industry"></i> Hersteller </a>
+                <a href="{{ route('portals.index') }}" class="user-dropdown-item"> <i class="fas fa-globe"></i> Portale </a>
                 <a href="{{ route('companies.index') }}" class="user-dropdown-item active"> <i class="fas fa-building"></i> Firmen verwalten </a>
                 <a href="{{ route('settings.email.index') }}" class="user-dropdown-item"> <i class="fas fa-envelope-open-text"></i> E-Mail Einstellungen </a>
                 <div class="user-dropdown-divider"></div>
@@ -550,7 +557,5 @@
             }
         }
     </script>
-</body>
-</html>
 </body>
 </html>
