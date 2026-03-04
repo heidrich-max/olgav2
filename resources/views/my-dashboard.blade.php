@@ -158,6 +158,15 @@
             white-space: nowrap;
         }
         .empty-msg { color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 30px 0; }
+
+        /* ---- CUSTOM SCROLLBAR ---- */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; transition: background 0.3s; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
+        
+        /* Firefox */
+        * { scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.05); }
         .empty-msg i { font-size: 2rem; margin-bottom: 10px; display: block; opacity: 0.4; }
 
         /* ---- CALENDAR ---- */
