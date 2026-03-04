@@ -309,7 +309,7 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th><i class="fas fa-layer-group" title="Projekt / Status"></i></th>
+                                    <th style="text-align: center;"><i class="fas fa-layer-group" title="Projekt / Status"></i></th>
                                     <th>Datum</th>
                                     <th>Nummer</th>
                                     <th>Projektname</th>
@@ -319,7 +319,7 @@
                             <tbody>
                                 @foreach($myOffers as $offer)
                                 <tr onclick="window.location='{{ route('offers.show', $offer->id) }}?from=my.dashboard'" style="background: {{ $offer->letzter_status_bg_hex ? $offer->letzter_status_bg_hex . '15' : 'transparent' }}; border-left: 4px solid {{ $offer->letzter_status_bg_hex ?? 'transparent' }}; transition: background 0.2s; cursor: pointer;">
-                                    <td style="padding-left: 15px; min-width: 65px;">
+                                    <td style="text-align: center; min-width: 65px; padding: 10px 5px;">
                                         <span style="color: {{ $offer->projekt_farbe_hex ?? '#fff' }}; font-weight: 800; font-size: 0.85rem; display: block;">
                                             {{ $offer->project_kuerzel ?: '—' }}
                                         </span>
@@ -366,7 +366,7 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th><i class="fas fa-layer-group" title="Projekt / Status"></i></th>
+                                    <th style="text-align: center;"><i class="fas fa-layer-group" title="Projekt / Status"></i></th>
                                     <th>Datum</th>
                                     <th>Nummer</th>
                                     <th>Projektname</th>
@@ -376,7 +376,7 @@
                             <tbody>
                                 @foreach($myOrders as $order)
                                 <tr style="background: {{ $order->status_bg ? $order->status_bg . '15' : 'transparent' }}; border-left: 4px solid {{ $order->status_bg ?? 'transparent' }}; transition: background 0.2s;">
-                                    <td style="padding-left: 15px; min-width: 65px;">
+                                    <td style="text-align: center; min-width: 65px; padding: 10px 5px;">
                                         <span style="color: {{ $order->projekt_farbe_hex ?? '#fff' }}; font-weight: 800; font-size: 0.85rem; display: block;">
                                             {{ $order->project_kuerzel ?: '—' }}
                                         </span>
