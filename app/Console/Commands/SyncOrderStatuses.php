@@ -8,91 +8,73 @@ use Illuminate\Support\Facades\Log;
 
 class SyncOrderStatuses extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'orders:sync-statuses';
+    protected $description = 'Synchronize offer statuses from history to angebot_tabelle (active offers only)';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Synchronize current order statuses from history to main table (optimized for active orders)';
-
-    /**
-     * Execute the console command.
-     */
     public function handle()
     {
         $this->info("Starting optimized status synchronization...");
         $startTime = microtime(true);
 
-        // 1. Get all active orders (not closed)
-        // This is the core optimization requested by the user
-        $activeOrders = DB::table('auftrag_tabelle')
+        // Fetch active offers (not yet closed) from the OFFER table
+        $activeOffers = DB::table('angebot_tabelle')
             ->where('letzter_status', '!=', 'A')
-            ->get(['id', 'auftrag_id', 'projekt_id']);
+            ->get(['id', 'angebot_id', 'projekt_id']);
 
-        $count = $activeOrders->count();
-        $this->info("Found {$count} active orders to sync.");
+        $count = $activeOffers->count();
+        $this->info("Found {$count} active offers to sync.");
 
         if ($count === 0) {
-            $this->info("No active orders found. Finished.");
+            $this->info("Nothing to sync. Finished.");
             return;
         }
 
         $processed = 0;
-        $updated = 0;
+        $updated   = 0;
+        $skipped   = 0;
 
-        // Group by project if needed, but the legacy script does a max(status) group by
-        // We'll process each active order individually to ensure we get the absolute latest status
-        foreach ($activeOrders as $order) {
+        foreach ($activeOffers as $offer) {
             $processed++;
-            
-            // Find the latest status entry for this specific order
-            $latestStatus = DB::table('auftrag_status_a')
-                ->join('auftrag_status', 'auftrag_status_a.status', '=', 'auftrag_status.id')
-                ->where('auftrag_status_a.auftrag_id', $order->auftrag_id)
-                ->where('auftrag_status_a.projekt_id', $order->projekt_id)
+
+            // Find the latest status history entry for this offer
+            $latestStatus = DB::table('angebot_status_a')
+                ->join('angebot_status', 'angebot_status_a.status', '=', 'angebot_status.id')
+                ->where('angebot_status_a.angebot_id', $offer->angebot_id)
+                ->where('angebot_status_a.projekt_id', $offer->projekt_id)
                 ->select(
-                    'auftrag_status.id as status_id',
-                    'auftrag_status.status_sh',
-                    'auftrag_status.status_lg',
-                    'auftrag_status.bg',
-                    'auftrag_status.color'
+                    'angebot_status.status_sh',
+                    'angebot_status.status_lg',
+                    'angebot_status.bg',
+                    'angebot_status.color'
                 )
-                ->orderBy('auftrag_status_a.id', 'desc') // Using ID as chronological sequence as in the legacy logic
+                ->orderBy('angebot_status_a.id', 'desc')
                 ->first();
 
-            if ($latestStatus) {
-                $abgeschlossenStatus = ($latestStatus->status_sh === 'A') 
-                    ? 'Auftrag abgeschlossen' 
-                    : 'Auftrag nicht abgeschlossen';
-
-                DB::table('auftrag_tabelle')
-                    ->where('id', $order->id)
-                    ->update([
-                        'letzter_status' => $latestStatus->status_sh,
-                        'letzter_status_name' => "Status " . $latestStatus->status_lg,
-                        'letzter_status_bg_hex' => $latestStatus->bg,
-                        'letzter_status_farbe_hex' => $latestStatus->color,
-                        'abgeschlossen_status' => $abgeschlossenStatus,
-                        'timestamp' => date("Y-m-d H:i:s")
-                    ]);
-                
-                $updated++;
+            // If no history exists, the status in angebot_tabelle is already authoritative
+            if (!$latestStatus) {
+                $skipped++;
+                continue;
             }
 
-            if ($processed % 100 === 0) {
-                $this->line("Processed {$processed}/{$count} orders...");
-            }
+            $abgeschlossenStatus = ($latestStatus->status_sh === 'A')
+                ? 'Angebot abgeschlossen'
+                : 'Angebot nicht abgeschlossen';
+
+            DB::table('angebot_tabelle')
+                ->where('id', $offer->id)
+                ->update([
+                    'letzter_status'          => $latestStatus->status_sh,
+                    'letzter_status_name'     => 'Status ' . $latestStatus->status_lg,
+                    'letzter_status_bg_hex'   => $latestStatus->bg,
+                    'letzter_status_farbe_hex' => $latestStatus->color,
+                    'abgeschlossen_status'    => $abgeschlossenStatus,
+                ]);
+
+            $updated++;
         }
 
         $duration = round(microtime(true) - $startTime, 2);
-        $this->info("Done! Processed: {$processed} | Updated: {$updated} | Duration: {$duration}s");
-        Log::info("Order status sync completed: {$updated} orders updated in {$duration}s.");
+        $this->info("Done! Processed: {$processed} | Updated: {$updated} | Skipped (no history): {$skipped} | Duration: {$duration}s");
+        Log::info("Offer status sync: {$updated} updated, {$skipped} skipped in {$duration}s.");
     }
 }
