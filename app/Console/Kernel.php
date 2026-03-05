@@ -12,10 +12,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('app:import-jtl-offers')->everyFiveMinutes();
-        $schedule->command('app:import-jtl-order-articles')->everyFiveMinutes();
-        $schedule->command('app:import-jtl-orders')->everyFiveMinutes();
-        $schedule->command('orders:sync-statuses')->everyMinute();
+        $schedule->command('app:import-jtl-offers')->everyFiveMinutes()->withoutOverlapping();
+        $schedule->command('app:import-jtl-order-articles')->everyFiveMinutes()->withoutOverlapping();
+        $schedule->command('app:import-jtl-orders')->everyFiveMinutes()->withoutOverlapping();
+        $schedule->command('orders:sync-statuses')->everyMinute()->withoutOverlapping();
         $schedule->command('app:generate-offer-todos')->dailyAt('06:00');
         $schedule->command('wiedervorlage:process')->dailyAt('06:00');
         $schedule->command('app:process-overdue-deliveries')->dailyAt('06:00');
