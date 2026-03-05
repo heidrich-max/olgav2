@@ -11,8 +11,8 @@ if (!$wawi) {
 }
 
 try {
-    $dsn = "sqlsrv:Server={$wawi->host};Database={$wawi->dataname}";
-    $pdo = new PDO($dsn, $wawi->user, $wawi->pass);
+    $dsn = "sqlsrv:Server={$wawi->host};Database={$wawi->dataname};TrustServerCertificate=yes";
+    $pdo = new PDO($dsn, $wawi->username, $wawi->password);
     
     // Get columns for Verkauf.lvAuftragsverwaltung
     $stmt = $pdo->query("SELECT TOP 1 * FROM Verkauf.lvAuftragsverwaltung");
