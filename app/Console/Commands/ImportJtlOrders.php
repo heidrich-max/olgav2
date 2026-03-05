@@ -139,6 +139,7 @@ class ImportJtlOrders extends Command
                         'ansprechpartner_mobil' => $obj['cRechnungsadresseMobilTelefon'] ?? null,
                         'projekt_firmenname_kuerzel' => $firma->name_kuerzel,
                         'projekt_farbe_hex' => $firma->bg,
+                        'bestellnummer' => '', // Fix for "Field doesn't have a default value"
                     ];
 
                     try {
