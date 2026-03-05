@@ -33,9 +33,16 @@ class ImportJtlOrders extends Command
         $startTime = microtime(true);
 
         // 1. Lookup-Daten laden (Pre-Caching wie bei Offers)
-        $firmenMap = DB::table('auftrag_projekt_firma')->get()->mapWithKeys(function ($item) {
-            return [strtolower($item->name) => $item];
-        })->toArray();
+        // Wir laden alle Projekte und gruppieren sie nach Name (kleingeschrieben)
+        $projects = DB::table('auftrag_projekt')->get();
+        $firmenMap = [];
+        foreach ($projects as $p) {
+            $nameLower = strtolower($p->firmenname);
+            if (!isset($firmenMap[$nameLower])) {
+                $firmenMap[$nameLower] = [];
+            }
+            $firmenMap[$nameLower][] = $p;
+        }
         
         $aliasMap = DB::table('auftrag_projekt_firma_namen')
             ->join('auftrag_projekt_firma', 'auftrag_projekt_firma.id', '=', 'auftrag_projekt_firma_namen.name_id')
@@ -48,10 +55,22 @@ class ImportJtlOrders extends Command
 
         $userMap = DB::table('user')->get()->keyBy('name_komplett')->toArray();
 
+        // Bestehende Aufträge laden (wir brauchen projekt_id und auftrag_id für den Key)
         $existingOrders = DB::table('auftrag_tabelle')
-            ->select(DB::raw("CONCAT(projekt_id, '_', auftrag_id) as key_id"), 'letzter_status')
-            ->pluck('letzter_status', 'key_id')
+            ->select(DB::raw("CONCAT(projekt_id, '_', auftrag_id) as key_id"), 'letzter_status', 'id')
+            ->get()
+            ->keyBy('key_id')
             ->toArray();
+
+        // Hilfe-Map: kAuftrag -> Liste von projekt_ids (um Duplikate über Projekte hinweg zu finden)
+        $orderProjMap = [];
+        foreach ($existingOrders as $key => $eo) {
+            $parts = explode('_', $key);
+            $pId = $parts[0];
+            $aId = $parts[1];
+            if (!isset($orderProjMap[$aId])) $orderProjMap[$aId] = [];
+            $orderProjMap[$aId][] = (int)$pId;
+        }
 
         // 2. WAWI Mandanten abrufen
         $wawiConnections = DB::table('auftrag_projekt_wawi')->get();
@@ -108,7 +127,27 @@ class ImportJtlOrders extends Command
                         continue;
                     }
 
-                    $firma = $firmenMap[$projekt_firmenname_lower];
+                    // Richtige Projekt-ID finden
+                    $matches = $firmenMap[$projekt_firmenname_lower];
+                    $firma = $matches[0]; // Fallback auf den ersten Treffer
+                    
+                    // Wenn es mehrere Projekte mit gleichem Namen gibt, prüfen wir:
+                    // 1. Hat die aktuelle Wawi-Verbindung eine bevorzugte Projekt-ID?
+                    // 2. Existiert der Auftrag bereits unter einer dieser Projekt-IDs?
+                    if (count($matches) > 1) {
+                        foreach ($matches as $m) {
+                            if ($m->id == $wawi->auftrag_projekt_id) {
+                                $firma = $m;
+                                break;
+                            }
+                            // Wenn der Auftrag bereits unter dieser Projekt-ID existiert, bleiben wir dabei
+                            if (isset($orderProjMap[$auftrag_id]) && in_array($m->id, $orderProjMap[$auftrag_id])) {
+                                $firma = $m;
+                                break;
+                            }
+                        }
+                    }
+
                     $projekt_id = $firma->id;
                     $lookupKey = "{$projekt_id}_{$auftrag_id}";
 
@@ -155,8 +194,9 @@ class ImportJtlOrders extends Command
 
                     try {
                         if (array_key_exists($lookupKey, $existingOrders)) {
+                            $existingOrder = (object)$existingOrders[$lookupKey];
                             // Wenn der Auftrag bereits abgeschlossen ist, sparen wir uns das Update
-                            if ($existingOrders[$lookupKey] === 'A') {
+                            if ($existingOrder->letzter_status === 'A') {
                                 $totalSkipped++;
                                 continue;
                             }
