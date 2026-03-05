@@ -79,7 +79,11 @@ class ImportJtlOrders extends Command
                            cRechnungsadresseVorname, cRechnungsadresseNachname,
                            cRechnungsadresseStrasse, cRechnungsadressePlz, cRechnungsadresseOrt, 
                            cRechnungsadresseLand, cRechnungsadresseMail, cRechnungsadresseTelefon, 
-                           cRechnungsadresseMobilTelefon, cKundeNr
+                           cRechnungsadresseMobilTelefon, cKundeNr,
+                           cLieferadresseFirma, cLieferadresseAnrede, cLieferadresseTitel,
+                           cLieferadresseVorname, cLieferadresseNachname,
+                           cLieferadresseStrasse, cLieferadressePlz, cLieferadresseOrt,
+                           cLieferadresseLand
                     FROM Verkauf.lvAuftragsverwaltung
                     WHERE nStorniert = 0 AND dErstellt >= DATEADD(month, -12, GETDATE())
                     ORDER BY dErstellt DESC
@@ -136,6 +140,15 @@ class ImportJtlOrders extends Command
                         'kunde_mail' => $obj['cRechnungsadresseMail'] ?? '',
                         'kunde_telefon' => $obj['cRechnungsadresseTelefon'] ?? '',
                         'ansprechpartner_mobil' => $obj['cRechnungsadresseMobilTelefon'] ?? '',
+                        'lieferadresse_firma' => $obj['cLieferadresseFirma'] ?? '',
+                        'lieferadresse_anrede' => $obj['cLieferadresseAnrede'] ?? '',
+                        'lieferadresse_titel' => $obj['cLieferadresseTitel'] ?? '',
+                        'lieferadresse_vorname' => $obj['cLieferadresseVorname'] ?? '',
+                        'lieferadresse_nachname' => $obj['cLieferadresseNachname'] ?? '',
+                        'lieferadresse_strasse' => $obj['cLieferadresseStrasse'] ?? '',
+                        'lieferadresse_plz' => $obj['cLieferadressePlz'] ?? '',
+                        'lieferadresse_ort' => $obj['cLieferadresseOrt'] ?? '',
+                        'lieferadresse_land' => $obj['cLieferadresseLand'] ?? '',
                         'projekt_firmenname_kuerzel' => $firma->name_kuerzel ?? '',
                         'projekt_farbe_hex' => $firma->bg ?? '',
                     ];
