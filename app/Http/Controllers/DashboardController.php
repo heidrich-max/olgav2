@@ -759,7 +759,23 @@ class DashboardController extends Controller
         // Ablehngründe laden
         $reasons = AngebotAblehnen::orderBy('id', 'asc')->get();
 
-        return view('offers.show', compact('user', 'offer', 'items', 'companyId', 'companyName', 'accentColor', 'history', 'reasons'));
+        // Abschluss-Info laden (wer, wann, warum)
+        $closingInfo = null;
+        if ($offer->letzter_status === 'A' || $offer->abgeschlossen_status === 'Angebot abgeschlossen') {
+            $closingInfo = DB::table('angebot_abgeschlossen')
+                ->leftJoin('users', 'angebot_abgeschlossen.user_id', '=', 'users.id')
+                ->leftJoin('angebot_ablehnen', 'angebot_abgeschlossen.grund_id', '=', 'angebot_ablehnen.id')
+                ->where('angebot_abgeschlossen.angebot_id', $offer->id)
+                ->select(
+                    'angebot_abgeschlossen.*',
+                    'users.name_komplett as user_name',
+                    'angebot_ablehnen.grund as grund_text'
+                )
+                ->orderBy('angebot_abgeschlossen.id', 'desc')
+                ->first();
+        }
+
+        return view('offers.show', compact('user', 'offer', 'items', 'companyId', 'companyName', 'accentColor', 'history', 'reasons', 'closingInfo'));
     }
 
     public function showOrder($id)

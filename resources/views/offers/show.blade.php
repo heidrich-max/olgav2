@@ -617,6 +617,42 @@
                     </div>
                 </div>
 
+                @if($offer->letzter_status === 'A' || $offer->abgeschlossen_status === 'Angebot abgeschlossen')
+                <div class="card glass-card info-card" style="border-left: 3px solid #f69620;">
+                    <div class="card-header">
+                        <h2><i class="fas fa-check-circle" style="color:#f69620;"></i> Abschlussinformation</h2>
+                    </div>
+                    <div class="info-list">
+                        @if($closingInfo)
+                        <div class="info-item">
+                            <span class="label">Abgeschlossen von:</span>
+                            <span>{{ $closingInfo->user_name ?? '—' }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Zeitpunkt:</span>
+                            <span>
+                                @if($closingInfo->timestamp ?? null)
+                                    {{ \Carbon\Carbon::parse($closingInfo->timestamp)->format('d.m.Y H:i') }} Uhr
+                                @else
+                                    —
+                                @endif
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Grund:</span>
+                            <span>{{ $closingInfo->grund_text ?? 'Kein spezifischer Grund angegeben' }}</span>
+                        </div>
+                        @else
+                        <div class="info-item">
+                            <span style="color: var(--text-muted); font-size: 0.85rem;">
+                                <i class="fas fa-info-circle"></i> Kein Eintrag gefunden — wurde ggf. per Import oder Massenupdate geschlossen.
+                            </span>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+                @endif
+
                 <!-- Items Table -->
                 <div class="card glass-card items-card" style="grid-column: span 2;">
                     <div class="card-header">
