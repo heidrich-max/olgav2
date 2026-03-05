@@ -421,6 +421,17 @@
                     </a>
                 </div>
             </div>
+
+            <!-- Global Search -->
+            <form action="{{ route('global.search') }}" method="GET" style="display: flex; align-items: center; margin-left: 20px;">
+                <div style="position: relative; display: flex; align-items: center;">
+                    <i class="fas fa-search" style="position: absolute; left: 12px; color: var(--text-muted); font-size: 0.85rem;"></i>
+                    <input type="text" name="query" placeholder="Nummer suchen..." 
+                        style="background: var(--glass-bg); border: 1px solid var(--glass-border); color: #fff; padding: 7px 15px 7px 35px; border-radius: 20px; font-size: 0.85rem; width: 180px; transition: all 0.3s; outline: none;"
+                        onfocus="this.style.width='250px'; this.style.borderColor='var(--primary-accent)'; this.style.background='rgba(255,255,255,0.18)'"
+                        onblur="this.style.width='180px'; this.style.borderColor='var(--glass-border)'; this.style.background='var(--glass-bg)'">
+                </div>
+            </form>
         </div>
 
         <div style="display: flex; align-items: center; gap: 10px;">
