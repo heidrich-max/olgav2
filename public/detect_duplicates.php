@@ -47,12 +47,22 @@ if ($duplicatesNr->isEmpty()) {
     }
     echo "</table>";
     
-    foreach ($duplicatesNr->take(3) as $d) {
+    foreach ($duplicatesNr->take(10) as $d) {
         echo "<h3>Key: {$d->auftragsnummer}</h3>";
         $rows = DB::table('auftrag_tabelle')->where('auftragsnummer', $d->auftragsnummer)->get();
-        echo "<pre>";
-        print_r($rows);
-        echo "</pre>";
+        echo "<table border='1'><tr><th>ID</th><th>A.-ID</th><th>P.-ID</th><th>Firma-Scope</th><th>Kunde</th><th>Erstellt</th><th>Timestamp</th></tr>";
+        foreach ($rows as $r) {
+            echo "<tr>
+                <td>{$r->id}</td>
+                <td>{$r->auftrag_id}</td>
+                <td>{$r->projekt_id}</td>
+                <td>{$r->projekt_firmenname}</td>
+                <td>{$r->firmenname}</td>
+                <td>{$r->erstelldatum}</td>
+                <td>{$r->timestamp}</td>
+            </tr>";
+        }
+        echo "</table>";
     }
 }
 
