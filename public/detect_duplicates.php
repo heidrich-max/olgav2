@@ -11,7 +11,22 @@ $duplicates = DB::table('auftrag_tabelle')
     ->having('count', '>', 1)
     ->get();
 
+$duplicatesNr = DB::table('auftrag_tabelle')
+    ->select('auftragsnummer', DB::raw('COUNT(*) as count'))
+    ->where('auftragsnummer', '!=', '')
+    ->groupBy('auftragsnummer')
+    ->having('count', '>', 1)
+    ->get();
+
+$duplicatesGlobalId = DB::table('auftrag_tabelle')
+    ->select('auftrag_id', DB::raw('COUNT(*) as count'))
+    ->groupBy('auftrag_id')
+    ->having('count', '>', 1)
+    ->get();
+
 echo "<h1>Duplicate Orders Detected</h1>";
+
+echo "<h2>1. Duplicates by (projekt_id, auftrag_id)</h2>";
 if ($duplicates->isEmpty()) {
     echo "<p>No duplicates found based on (projekt_id, auftrag_id).</p>";
 } else {
@@ -20,14 +35,36 @@ if ($duplicates->isEmpty()) {
         echo "<tr><td>{$d->projekt_id}</td><td>{$d->auftrag_id}</td><td>{$d->count}</td></tr>";
     }
     echo "</table>";
+}
+
+echo "<h2>2. Duplicates by Auftragsnummer</h2>";
+if ($duplicatesNr->isEmpty()) {
+    echo "<p>No duplicates found based on auftragsnummer.</p>";
+} else {
+    echo "<table border='1'><tr><th>Auftragsnummer</th><th>Count</th></tr>";
+    foreach ($duplicatesNr as $d) {
+        echo "<tr><td>{$d->auftragsnummer}</td><td>{$d->count}</td></tr>";
+    }
+    echo "</table>";
     
-    echo "<h2>Example Duplicate Data</h2>";
-    foreach ($duplicates->take(3) as $d) {
-        $rows = DB::table('auftrag_tabelle')
-            ->where('projekt_id', $d->projekt_id)
-            ->where('auftrag_id', $d->auftrag_id)
-            ->get();
-        echo "<h3>Key: {$d->projekt_id}_{$d->auftrag_id}</h3><pre>";
+    foreach ($duplicatesNr->take(3) as $d) {
+        echo "<h3>Key: {$d->auftragsnummer}</h3>";
+        $rows = DB::table('auftrag_tabelle')->where('auftragsnummer', $d->auftragsnummer)->get();
+        echo "<pre>";
+        print_r($rows);
+        echo "</pre>";
+    }
+}
+
+echo "<h2>3. Duplicates by Global Auftrag ID (kAuftrag)</h2>";
+if ($duplicatesGlobalId->isEmpty()) {
+    echo "<p>No duplicates found based on global auftrag_id.</p>";
+} else {
+    echo "<p>Total Global IDs with duplicates: " . $duplicatesGlobalId->count() . "</p>";
+    foreach ($duplicatesGlobalId->take(5) as $d) {
+        echo "<h3>kAuftrag: {$d->auftrag_id}</h3>";
+        $rows = DB::table('auftrag_tabelle')->where('auftrag_id', $d->auftrag_id)->get();
+        echo "<pre>";
         print_r($rows);
         echo "</pre>";
     }
