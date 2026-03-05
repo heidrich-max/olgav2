@@ -382,10 +382,14 @@
                         <div class="address-box">
                             <h3>Lieferadresse</h3>
                             <p>
-                                <strong>{{ $order->firmenname }}</strong><br>
-                                {{ $order->kunde_strasse ?? 'Keine Straße hinterlegt' }}<br>
-                                {{ $order->kunde_plz ?? '' }} {{ $order->kunde_ort ?? '' }}<br>
-                                {{ $order->kunde_land ?? 'Deutschland' }}
+                                @if(!empty($order->lieferadresse_strasse))
+                                    <strong>{{ $order->lieferadresse_firma ?: ($order->lieferadresse_vorname . ' ' . $order->lieferadresse_nachname) }}</strong><br>
+                                    {{ $order->lieferadresse_strasse }}<br>
+                                    {{ $order->lieferadresse_plz }} {{ $order->lieferadresse_ort }}<br>
+                                    {{ $order->lieferadresse_land ?: 'Deutschland' }}
+                                @else
+                                    <span style="color: var(--text-muted); font-style: italic;">Identisch mit Rechnungsadresse</span>
+                                @endif
                             </p>
                         </div>
                     </div>
