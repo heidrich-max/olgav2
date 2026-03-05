@@ -1098,6 +1098,39 @@ class DashboardController extends Controller
     /**
      * Synchronize automated system ToDos by deleting those that are no longer relevant.
      */
+    /**
+     * Weiterleitung zur Detailansicht basierend auf einer Angebots- oder Auftragsnummer.
+     */
+    public function globalSearch(Request $request)
+    {
+        $query = trim($request->query('query'));
+
+        if (empty($query)) {
+            return redirect()->back()->with('error', 'Bitte geben Sie eine Nummer ein.');
+        }
+
+        // 1. Suche in Angeboten
+        $offer = DB::table('angebot_tabelle')
+            ->where('angebotsnummer', $query)
+            ->first();
+
+        if ($offer) {
+            return redirect()->route('offers.show', $offer->id);
+        }
+
+        // 2. Suche in Aufträgen
+        $order = DB::table('auftrag_tabelle')
+            ->where('auftragsnummer', $query)
+            ->first();
+
+        if ($order) {
+            return redirect()->route('orders.show', $order->id);
+        }
+
+        // Fallback: Wenn nichts gefunden wurde
+        return redirect()->back()->with('error', "Nummer '{$query}' wurde weder als Auftrag noch als Angebot gefunden.");
+    }
+
     private function syncSystemOrderTodos()
     {
         $today = Carbon::now()->toDateString();
