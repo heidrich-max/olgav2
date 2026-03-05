@@ -159,6 +159,12 @@ class ImportJtlOrders extends Command
                             // Felder ohne Default-Wert, die beim Update NICHT geleert/überschrieben werden dürfen
                             $data['bestellnummer'] = '';
                             $data['hersteller'] = '';
+                            $data['plz'] = '';
+                            $data['kundengruppe'] = '';
+                            $data['kundenkategorie'] = '';
+                            $data['istbezahlt'] = '';
+                            $data['storniert'] = '';
+                            $data['timestamp'] = date("Y-m-d H:i:s");
                             
                             DB::table('auftrag_tabelle')->insert($data);
                             $existingOrders[$lookupKey] = true;
