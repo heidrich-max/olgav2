@@ -49,9 +49,8 @@ class ImportJtlOrders extends Command
         $userMap = DB::table('user')->get()->keyBy('name_komplett')->toArray();
 
         $existingOrders = DB::table('auftrag_tabelle')
-            ->select(DB::raw("CONCAT(projekt_id, '_', auftrag_id) as key_id"))
-            ->pluck('key_id')
-            ->flip()
+            ->select(DB::raw("CONCAT(projekt_id, '_', auftrag_id) as key_id"), 'letzter_status')
+            ->pluck('letzter_status', 'key_id')
             ->toArray();
 
         // 2. WAWI Mandanten abrufen
@@ -142,7 +141,13 @@ class ImportJtlOrders extends Command
                     ];
 
                     try {
-                        if (isset($existingOrders[$lookupKey])) {
+                        if (array_key_exists($lookupKey, $existingOrders)) {
+                            // Wenn der Auftrag bereits abgeschlossen ist, sparen wir uns das Update
+                            if ($existingOrders[$lookupKey] === 'A') {
+                                $totalSkipped++;
+                                continue;
+                            }
+
                             DB::table('auftrag_tabelle')
                                 ->where('auftrag_id', $auftrag_id)
                                 ->where('projekt_id', $projekt_id)
@@ -167,7 +172,7 @@ class ImportJtlOrders extends Command
                             $data['timestamp'] = date("Y-m-d H:i:s");
                             
                             DB::table('auftrag_tabelle')->insert($data);
-                            $existingOrders[$lookupKey] = true;
+                            $existingOrders[$lookupKey] = 'NEU';
                             $totalInserted++;
                         }
                     } catch (Exception $rowEx) {
