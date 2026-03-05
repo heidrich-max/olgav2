@@ -49,9 +49,8 @@ class ImportJtlOffers extends Command
         $userMap = DB::table('user')->get()->keyBy('name_komplett')->toArray();
 
         $existingAngebote = DB::table('angebot_tabelle')
-            ->select(DB::raw("CONCAT(projekt_id, '_', angebot_id) as key_id"))
-            ->pluck('key_id')
-            ->flip()
+            ->select(DB::raw("CONCAT(projekt_id, '_', angebot_id) as key_id"), 'letzter_status')
+            ->pluck('letzter_status', 'key_id')
             ->toArray();
 
         $existingStatus = DB::table('angebot_status_a')
@@ -175,7 +174,15 @@ class ImportJtlOffers extends Command
                         }
 
                         // Update oder Insert
-                        if (isset($existingAngebote[$lookupKey])) {
+                        if (array_key_exists($lookupKey, $existingAngebote)) {
+                            $currentStatus = $existingAngebote[$lookupKey];
+
+                            // Bereits angenommene oder abgeschlossene Angebote nicht mehr überschreiben
+                            if (in_array($currentStatus, ['A', 'AB']) && !$isConverted) {
+                                $totalSkipped++;
+                                continue;
+                            }
+
                             if ($isConverted) {
                                 $data['letzter_status'] = 'A';
                                 $data['letzter_status_name'] = 'Status angenommen';
@@ -208,7 +215,7 @@ class ImportJtlOffers extends Command
                             }
                             
                             DB::table('angebot_tabelle')->insert($data);
-                            $existingAngebote[$lookupKey] = true;
+                            $existingAngebote[$lookupKey] = $data['letzter_status'];
                             $totalInserted++;
                         }
 
