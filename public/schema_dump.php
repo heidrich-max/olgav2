@@ -19,9 +19,23 @@ foreach ($columns as $column) {
 }
 echo "</ul>";
 
-$sample = DB::table($table)->first();
+$sample = DB::table($table)
+    ->where('erstelldatum', '>=', now()->subMonths(12))
+    ->where(function($query) {
+        $query->where('lieferadresse_strasse', '!=', '')
+              ->orWhere('lieferadresse_ort', '!=', '');
+    })
+    ->orderBy('id', 'desc')
+    ->first();
+
 if ($sample) {
-    echo "<h2>Sample Row</h2><pre>";
+    echo "<h2>Newest Row with Shipping Data (last 12 months)</h2><pre>";
     print_r($sample);
+    echo "</pre>";
+} else {
+    echo "<h2>No recent row with shipping data found.</h2>";
+    $latest = DB::table($table)->orderBy('id', 'desc')->first();
+    echo "<h3>Latest row (any data):</h3><pre>";
+    print_r($latest);
     echo "</pre>";
 }
