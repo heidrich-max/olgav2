@@ -32,6 +32,17 @@ if ($crossProjectDups->isEmpty()) {
     echo "<p style='color:green; font-weight:bold;'>✅ No cross-project duplicates found. Every JTL-ID is unique to one Olgav2 project.</p>";
 } else {
     echo "<p style='color:orange; font-weight:bold;'>⚠️ Found " . $crossProjectDups->count() . " JTL-IDs that exist in multiple projects.</p>";
+    foreach ($crossProjectDups->take(5) as $cd) {
+        echo "<h3>JTL-ID: {$cd->auftrag_id}</h3>";
+        $rows = DB::table('auftrag_tabelle')
+            ->where('auftrag_id', $cd->auftrag_id)
+            ->get();
+        echo "<table border='1'><tr><th>ID</th><th>Project</th><th>Scope</th><th>Customer</th><th>Created</th></tr>";
+        foreach ($rows as $r) {
+            echo "<tr><td>{$r->id}</td><td>{$r->projekt_id}</td><td>{$r->projekt_firmenname}</td><td>{$r->firmenname}</td><td>{$r->erstelldatum}</td></tr>";
+        }
+        echo "</table>";
+    }
 }
 
 echo "<h2>3. Redundant Project Definitions</h2>";
