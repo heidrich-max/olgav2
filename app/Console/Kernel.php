@@ -14,10 +14,10 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('app:import-jtl-offers')->everyTenMinutes();
         $schedule->command('app:import-jtl-order-articles')->everyTenMinutes();
-        $schedule->command('app:generate-offer-todos')->dailyAt('08:00');
-        $schedule->command('wiedervorlage:process')->dailyAt('07:30');
-        $schedule->command('app:process-overdue-deliveries')->dailyAt('08:00');
-        $schedule->command('app:process-bo-status-orders')->dailyAt('08:00');
+        $schedule->command('app:generate-offer-todos')->dailyAt('06:00');
+        $schedule->command('wiedervorlage:process')->dailyAt('06:00');
+        $schedule->command('app:process-overdue-deliveries')->dailyAt('06:00');
+        $schedule->command('app:process-bo-status-orders')->dailyAt('06:00');
     }
 
     /**
