@@ -139,7 +139,6 @@ class ImportJtlOrders extends Command
                         'ansprechpartner_mobil' => $obj['cRechnungsadresseMobilTelefon'] ?? null,
                         'projekt_firmenname_kuerzel' => $firma->name_kuerzel,
                         'projekt_farbe_hex' => $firma->bg,
-                        'bestellnummer' => '', // Fix for "Field doesn't have a default value"
                     ];
 
                     try {
@@ -156,6 +155,10 @@ class ImportJtlOrders extends Command
                             $data['letzter_status_bg_hex'] = '3b82f6'; // Blau für Neu
                             $data['letzter_status_farbe_hex'] = 'fff';
                             $data['abgeschlossen_status'] = 'Angebot nicht abgeschlossen'; // Standard für aktive
+                            
+                            // Felder ohne Default-Wert, die beim Update NICHT geleert/überschrieben werden dürfen
+                            $data['bestellnummer'] = '';
+                            $data['hersteller'] = '';
                             
                             DB::table('auftrag_tabelle')->insert($data);
                             $existingOrders[$lookupKey] = true;
