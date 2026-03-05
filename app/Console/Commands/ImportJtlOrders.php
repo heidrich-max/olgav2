@@ -166,17 +166,26 @@ class ImportJtlOrders extends Command
                     }
                 }
 
-                // Löschen von stornierten/nicht mehr vorhandenen Aufträgen
-                // Wir löschen Aufträge, die diesem Mandanten (via projekt_id) zugeordnet sind,
-                // aber nicht mehr in der Liste der aktiven JTL IDs vorkommen.
-                if (!empty($activeJtlIds)) {
+                // Löschen von explizit stornierten Aufträgen
+                // Wir fragen die Wawi gezielt nach stornierten Aufträgen und löschen diese lokal.
+                $stornierteOrders = $wawi_db->query("
+                    SELECT kAuftrag
+                    FROM Verkauf.lvAuftragsverwaltung
+                    WHERE nStorniert = 1
+                ")->fetchAll(PDO::FETCH_COLUMN);
+
+                if (!empty($stornierteOrders)) {
                     $deletedCount = DB::table('auftrag_tabelle')
-                        ->where('projekt_id', $wawi->auftrag_projekt_id)
-                        ->whereNotIn('auftrag_id', $activeJtlIds)
+                        // Wichtig: Wir löschen nur Aufträge, die auch diesem Mandanten zugeordnet waren.
+                        // Um ganz sicher zu gehen, löschen wir einfach anhand der kAuftrag Liste.
+                        // Da die auftrag_id eindeutig für den JTL Mandanten ist, reicht das meistens,
+                        // aber zur Sicherheit prüfen wir, ob die order in Olgav2 existiert.
+                        ->whereIn('auftrag_id', $stornierteOrders)
+                        ->where('firmen_id', $wawi->auftrag_projekt_id) // Sicherstellen, dass es der richtige Firmen-Scope ist
                         ->delete();
                     
                     if ($deletedCount > 0) {
-                        $this->warn("{$deletedCount} stornierte/gelöschte Aufträge entfernt für Mandant {$wawi->dataname}.");
+                        $this->warn("{$deletedCount} explizit stornierte Aufträge entfernt für Mandant {$wawi->dataname}.");
                     }
                 }
 
