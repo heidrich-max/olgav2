@@ -15,6 +15,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('app:import-jtl-offers')->everyFiveMinutes()->withoutOverlapping();
         $schedule->command('app:import-jtl-order-articles')->everyFiveMinutes()->withoutOverlapping();
         $schedule->command('app:import-jtl-orders')->everyFiveMinutes()->withoutOverlapping();
+        $schedule->command('orders:sync-statuses')->everyFiveMinutes()->withoutOverlapping();
         $schedule->command('app:generate-offer-todos')->dailyAt('06:00');
         $schedule->command('wiedervorlage:process')->dailyAt('06:00');
         $schedule->command('app:process-overdue-deliveries')->dailyAt('06:00');
