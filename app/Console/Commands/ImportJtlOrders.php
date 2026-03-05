@@ -169,14 +169,9 @@ class ImportJtlOrders extends Command
                 // Löschen von stornierten/nicht mehr vorhandenen Aufträgen
                 // Wir löschen Aufträge, die diesem Mandanten (via projekt_id) zugeordnet sind,
                 // aber nicht mehr in der Liste der aktiven JTL IDs vorkommen.
-                $mandantProjektIds = DB::table('auftrag_projekt_firma')
-                    ->where('firma_id', $wawi->auftrag_projekt_id) // Mapping checken
-                    ->pluck('id')
-                    ->toArray();
-
                 if (!empty($activeJtlIds)) {
                     $deletedCount = DB::table('auftrag_tabelle')
-                        ->where('firmen_id', $wawi->auftrag_projekt_id)
+                        ->where('projekt_id', $wawi->auftrag_projekt_id)
                         ->whereNotIn('auftrag_id', $activeJtlIds)
                         ->delete();
                     
