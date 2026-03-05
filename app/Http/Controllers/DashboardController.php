@@ -854,6 +854,13 @@ class DashboardController extends Controller
      */
     public function closeOffer(Request $request, $id)
     {
+        $request->validate([
+            'grund_id' => 'required|exists:angebot_ablehnen,id'
+        ], [
+            'grund_id.required' => 'Bitte wählen Sie einen Grund für den Abschluss aus.',
+            'grund_id.exists' => 'Der gewählte Grund ist ungültig.'
+        ]);
+
         $grundId = $request->input('grund_id');
 
         $offer = DB::table('angebot_tabelle')->where('id', $id)->first();

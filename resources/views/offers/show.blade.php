@@ -764,9 +764,9 @@
             <form action="{{ route('offers.close', $offer->id) }}" method="POST">
                 @csrf
                 <div class="form-group">
-                    <label for="grund_id">Abschlussgrund wählen (optional):</label>
-                    <select name="grund_id" id="grund_id" class="custom-select">
-                        <option value="">-- Kein spezifischer Grund --</option>
+                    <label for="grund_id">Abschlussgrund wählen:</label>
+                    <select name="grund_id" id="grund_id" class="custom-select" required>
+                        <option value="">-- Bitte einen Grund wählen --</option>
                         @foreach($reasons as $reason)
                         <option value="{{ $reason->id }}">{{ $reason->grund }}</option>
                         @endforeach
