@@ -47,10 +47,12 @@ if ($offer) {
     echo "Letzter Status: " . ($offer->letzter_status_name ?? 'NULL') . "<br>";
     echo "Benutzer: " . ($offer->benutzer ?? 'NULL') . "<br>";
     
-    $targetDate7 = Carbon::now()->subDays(7)->toDateString();
-    $targetDate6 = Carbon::now()->subDays(6)->toDateString();
-    echo "Alter >= 7 Tage (<= $targetDate7)? " . ($offer->erstelldatum <= $targetDate7 ? "JA" : "NEIN") . "<br>";
-    echo "Alter >= 6 Tage (<= $targetDate6)? " . ($offer->erstelldatum <= $targetDate6 ? "JA" : "NEIN") . "<br>";
+    $targetDate7 = Carbon::now()->subDays(7)->startOfDay();
+    $targetDate6 = Carbon::now()->subDays(6)->startOfDay();
+    $offerDate = Carbon::parse($offer->erstelldatum)->startOfDay();
+    
+    echo "Alter >= 7 Tage (<= " . $targetDate7->toDateString() . ")? " . ($offerDate->lte($targetDate7) ? "JA" : "NEIN") . "<br>";
+    echo "Alter >= 6 Tage (<= " . $targetDate6->toDateString() . ")? " . ($offerDate->lte($targetDate6) ? "JA" : "NEIN") . "<br>";
     echo "Status ist 'Status offen'? " . ($offer->letzter_status_name === 'Status offen' ? "JA" : "NEIN") . "<br>";
 } else {
     echo "Angebot nicht gefunden!<br>";
