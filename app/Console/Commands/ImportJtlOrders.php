@@ -82,7 +82,7 @@ class ImportJtlOrders extends Command
                            cRechnungsadresseLand, cRechnungsadresseMail, cRechnungsadresseTelefon, 
                            cRechnungsadresseMobilTelefon, cKundeNr
                     FROM Verkauf.lvAuftragsverwaltung
-                    WHERE nStorniert = 0
+                    WHERE nStorniert = 0 AND dErstellt >= DATEADD(month, -12, GETDATE())
                     ORDER BY dErstellt DESC
                 ")->fetchAll();
 
@@ -171,7 +171,7 @@ class ImportJtlOrders extends Command
                 $stornierteOrders = $wawi_db->query("
                     SELECT kAuftrag
                     FROM Verkauf.lvAuftragsverwaltung
-                    WHERE nStorniert = 1
+                    WHERE nStorniert = 1 AND dErstellt >= DATEADD(month, -12, GETDATE())
                 ")->fetchAll(PDO::FETCH_COLUMN);
 
                 if (!empty($stornierteOrders)) {

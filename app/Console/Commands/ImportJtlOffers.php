@@ -91,6 +91,7 @@ class ImportJtlOffers extends Command
                            t2.kAuftrag as ConvertedOrderId
                     FROM Kunde.lvAngebote t1
                     LEFT JOIN Verkauf.lvAuftragsverwaltung t2 ON t2.cExterneAuftragsnummer = t1.cAngebotsnummer
+                    WHERE t1.dErstellt >= DATEADD(month, -12, GETDATE())
                     ORDER BY t1.dErstellt DESC
                 ")->fetchAll();
 
