@@ -79,3 +79,11 @@ if ($duplicatesGlobalId->isEmpty()) {
         echo "</pre>";
     }
 }
+
+echo "<h2>4. JTL Wawi Connections (auftrag_projekt_wawi)</h2>";
+$wawi = DB::table('auftrag_projekt_wawi')->get();
+echo "<table border='1'><tr><th>ID</th><th>Host</th><th>DB</th><th>Proj-ID (Scope)</th></tr>";
+foreach ($wawi as $w) {
+    echo "<tr><td>{$w->id}</td><td>{$w->host}</td><td>{$w->dataname}</td><td>" . ($w->auftrag_projekt_id ?? 'NULL') . "</td></tr>";
+}
+echo "</table>";
