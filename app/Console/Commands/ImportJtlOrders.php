@@ -86,8 +86,11 @@ class ImportJtlOrders extends Command
                     ORDER BY dErstellt DESC
                 ")->fetchAll();
 
+                $activeJtlIds = [];
+
                 foreach ($orders as $obj) {
                     $auftrag_id = $obj['kAuftrag'];
+                    $activeJtlIds[] = $auftrag_id;
                     $projekt_firmenname = trim($obj['cFirmenname'] ?? '');
                     $projekt_firmenname_lower = strtolower($projekt_firmenname);
 
@@ -160,6 +163,25 @@ class ImportJtlOrders extends Command
                     } catch (Exception $rowEx) {
                         $this->error("Fehler bei Auftrag #{$auftrag_id}: " . $rowEx->getMessage());
                         $totalErrors++;
+                    }
+                }
+
+                // Löschen von stornierten/nicht mehr vorhandenen Aufträgen
+                // Wir löschen Aufträge, die diesem Mandanten (via projekt_id) zugeordnet sind,
+                // aber nicht mehr in der Liste der aktiven JTL IDs vorkommen.
+                $mandantProjektIds = DB::table('auftrag_projekt_firma')
+                    ->where('firma_id', $wawi->auftrag_projekt_id) // Mapping checken
+                    ->pluck('id')
+                    ->toArray();
+
+                if (!empty($activeJtlIds)) {
+                    $deletedCount = DB::table('auftrag_tabelle')
+                        ->where('firmen_id', $wawi->auftrag_projekt_id)
+                        ->whereNotIn('auftrag_id', $activeJtlIds)
+                        ->delete();
+                    
+                    if ($deletedCount > 0) {
+                        $this->warn("{$deletedCount} stornierte/gelöschte Aufträge entfernt für Mandant {$wawi->dataname}.");
                     }
                 }
 
