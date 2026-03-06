@@ -597,23 +597,16 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="info-item">
-                            <span class="label">Projekt/Typ:</span>
-                            <span>{{ $offer->projekt_firmenname }}</span>
+                        <div class="info-item" style="align-items: flex-start; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
+                            <span class="label" style="margin-top: 2px;">Angebot:</span>
+                            <div style="text-align: right;">
+                                <div style="font-weight: bold;">{{ $offer->angebotsnummer }}</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">{{ $offer->projekt_firmenname }}{{ !empty($offer->projektname) ? ' / ' . $offer->projektname : '' }}</div>
+                            </div>
                         </div>
-                        @if(!empty($offer->projektname))
-                        <div class="info-item">
-                            <span class="label">Status:</span>
-                            <span>{{ $offer->projektname }}</span>
-                        </div>
-                        @endif
-                        <div class="info-item">
+                        <div class="info-item" style="margin-top: 5px;">
                             <span class="label">Angebotsdatum:</span>
                             <span>{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</span>
-                        </div>
-                        <div class="info-item" style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
-                            <span class="label">Angebot:</span>
-                            <span>{{ $offer->angebotsnummer }}</span>
                         </div>
                         <div class="info-item">
                             <span class="label">Bearbeiter:</span>
