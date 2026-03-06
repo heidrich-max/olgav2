@@ -584,6 +584,13 @@
                         <h2><i class="fas fa-info-circle"></i> Angebotsdetails</h2>
                     </div>
                     <div class="info-list">
+                        <div class="info-item" style="align-items: flex-start;">
+                            <span class="label" style="margin-top: 2px;">Kunde:</span>
+                            <div style="text-align: right;">
+                                <div style="font-weight: bold;">{{ $offer->firmenname }}</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">{{ $offer->kunden_nr ?? '—' }}</div>
+                            </div>
+                        </div>
                         <div class="info-item">
                             <span class="label">Projekt/Typ:</span>
                             <span>{{ $offer->projekt_firmenname }}</span>
@@ -598,17 +605,9 @@
                             <span class="label">Angebotsdatum:</span>
                             <span>{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</span>
                         </div>
-                        <div class="info-item">
+                        <div class="info-item" style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
                             <span class="label">Angebot:</span>
                             <span>{{ $offer->angebotsnummer }}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="label">Kunden:</span>
-                            <span>{{ $offer->kunden_nr ?? '—' }}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="label">Firma:</span>
-                            <span>{{ $offer->firmenname }}</span>
                         </div>
                         <div class="info-item">
                             <span class="label">Bearbeiter:</span>

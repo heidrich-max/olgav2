@@ -411,6 +411,13 @@
                         <h2><i class="fas fa-info-circle"></i> Auftragsdetails</h2>
                     </div>
                     <div class="info-list">
+                        <div class="info-item" style="align-items: flex-start;">
+                            <span class="label" style="margin-top: 2px;">Kunde:</span>
+                            <div style="text-align: right;">
+                                <div style="font-weight: bold;">{{ $order->firmenname }}</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">{{ $order->kundennummer ?? '—' }}</div>
+                            </div>
+                        </div>
                         <div class="info-item">
                             <span class="label">Projekt:</span>
                             <span>{{ $order->projektname ?? '—' }}</span>
@@ -427,13 +434,9 @@
                             </span>
                         </div>
                         @endif
-                        <div class="info-item">
+                        <div class="info-item" style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
                             <span class="label">Auftrag:</span>
                             <span>{{ $order->auftragsnummer }}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="label">Kunden:</span>
-                            <span>{{ $order->kundennummer ?? '—' }}</span>
                         </div>
                         <div class="info-item">
                             <span class="label">Bearbeiter:</span>
