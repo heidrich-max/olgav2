@@ -706,7 +706,7 @@
                                 <tbody>
                                     @foreach($proofs as $p)
                                     <tr>
-                                        <td>{{ \Carbon\Carbon::parse($p->timestamp)->format('d.m.Y H:i') }}</td>
+                                        <td>{{ isset($p->timestamp) ? \Carbon\Carbon::parse($p->timestamp)->format('d.m.Y H:i') : 'N/A' }}</td>
                                         <td>{{ $p->projektname }}</td>
                                         <td>
                                             <a href="#" class="btn-glass-default" style="padding: 4px 10px; font-size: 0.75rem;">
