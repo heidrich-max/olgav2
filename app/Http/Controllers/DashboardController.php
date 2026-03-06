@@ -812,6 +812,7 @@ class DashboardController extends Controller
         $manufacturers = DB::table('hersteller')->orderBy('firmenname')->get();
         $currentManufacturerRel = DB::table('auftrag_hersteller')
             ->where('auftrag_id', $order->id)
+            ->where('projekt_id', $order->projekt_id)
             ->orderBy('timestamp', 'desc')
             ->first();
         
@@ -824,6 +825,7 @@ class DashboardController extends Controller
             ->leftJoin('hersteller', 'auftrag_hersteller.hersteller_id', '=', 'hersteller.id')
             ->leftJoin('user', 'auftrag_hersteller.user_id', '=', 'user.id')
             ->where('auftrag_hersteller.auftrag_id', $order->id)
+            ->where('auftrag_hersteller.projekt_id', $order->projekt_id)
             ->orderBy('auftrag_hersteller.timestamp', 'desc')
             ->select('auftrag_hersteller.*', 'hersteller.firmenname as hersteller_name', 'user.name_komplett as user_name')
             ->get();
@@ -831,21 +833,25 @@ class DashboardController extends Controller
         // 1. Korrekturabzug
         $proofs = DB::table('auftrag_korrekturabzug')
             ->where('auftrag_id', $order->id)
+            ->where('projekt_id', $order->projekt_id)
             ->get();
 
         // 2. Versand / Sendungsnummern
         $shipments = DB::table('auftrag_sendungsnummer')
             ->where('auftrag_id', $order->id)
+            ->where('projekt_id', $order->projekt_id)
             ->get();
 
         // 3. Buchhaltung / Rechnung
         $invoices = DB::table('auftrag_rechnung')
             ->where('auftrag_id', $order->id)
+            ->where('projekt_id', $order->projekt_id)
             ->get();
 
         // 4. Lieferscheine
         $deliveryNotes = DB::table('auftrag_lieferschein')
             ->where('auftrag_id', $order->id)
+            ->where('projekt_id', $order->projekt_id)
             ->get();
 
         // Historie laden (Versuch über eine generische DB Abfrage, falls Tabelle existiert)
