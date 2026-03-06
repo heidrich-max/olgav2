@@ -31,33 +31,24 @@ try {
             echo "  Connected to WAWI.\n";
 
             // 2. Fetch data from WAWI (NO DATE FILTER as requested)
-            $query = "
-                SELECT kAuftrag, cKundenGruppeName, cKundenKategorieName
-                FROM Verkauf.lvAuftragsverwaltung
-            ";
-            
-            $orders = $wawi_db->query($query)->fetchAll();
-            echo "  Fetched " . count($orders) . " orders from WAWI.\n";
-
-            // 3. Update Olgav2 DB
-            $updated = 0;
-            foreach ($orders as $o) {
-                $affected = DB::table('auftrag_tabelle')
-                    ->where('auftrag_id', $o['kAuftrag'])
-                    // Wir filtern NICHT nach Projekt_id, da auftrag_id im JTL Mandanten eindeutig ist
-                    ->update([
-                        'kundengruppe' => $o['cKundenGruppeName'] ?? '',
-                        'kundenkategorie' => $o['cKundenKategorieName'] ?? ''
-                    ]);
+            try {
+                $checkCols = $wawi_db->query("SELECT TOP 1 * FROM Verkauf.lvAuftragsverwaltung")->fetch();
+                $allCols = array_keys($checkCols);
+                echo "  Available columns: " . implode(", ", $allCols) . "\n";
                 
-                if ($affected > 0) {
-                    $updated++;
-                }
+                // Wir suchen nach Spalten, die "Gruppe" oder "Kategorie" enthalten
+                $foundGroup = preg_grep('/Gruppe/i', $allCols);
+                $foundCat = preg_grep('/Kategorie/i', $allCols);
+                echo "  Potential Group: " . implode(", ", $foundGroup) . "\n";
+                echo "  Potential Cat: " . implode(", ", $foundCat) . "\n";
+                
+                exit("Diagnostic finished.");
+            } catch (Exception $e) {
+                echo "  Error querying WAWI: " . $e->getMessage() . "\n";
             }
-            echo "  Updated $updated records in Olgav2 DB for this WAWI.\n";
 
         } catch (Exception $e) {
-            echo "  Error: " . $e->getMessage() . "\n";
+            echo "  Error connecting to WAWI: " . $e->getMessage() . "\n";
         }
     }
 
