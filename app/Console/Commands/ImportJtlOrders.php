@@ -92,21 +92,23 @@ class ImportJtlOrders extends Command
 
                 // Aufträge abrufen (lvAuftragsverwaltung)
                 $orders = $wawi_db->query("
-                    SELECT kAuftrag, cAuftragsnummer, cBenutzername, cFirmenname, cStatustext,
-                           dErstellt, dVoraussichtlichesLieferdatum, fAuftragswertNetto,
-                           cRechnungsadresseFirma, cRechnungsadresseAnrede, cRechnungsadresseTitel,
-                           cRechnungsadresseVorname, cRechnungsadresseNachname,
-                           cRechnungsadresseStrasse, cRechnungsadressePlz, cRechnungsadresseOrt, 
-                           cRechnungsadresseLand, cRechnungsadresseMail, cRechnungsadresseTelefon, 
-                           cRechnungsadresseMobilTelefon, cKundeNr,
-                           cLieferadresseFirma, cLieferadresseAnrede, cLieferadresseTitel,
-                           cLieferadresseVorname, cLieferadresseNachname,
-                           cLieferadresseStrasse, cLieferadressePlz, cLieferadresseOrt,
-                           cLieferadresseLand,
-                           cKundenGruppeName, cKundenKategorieName
-                    FROM Verkauf.lvAuftragsverwaltung
-                    WHERE nStorniert = 0 AND dErstellt >= DATEADD(month, -12, GETDATE())
-                    ORDER BY dErstellt DESC
+                    SELECT t1.kAuftrag, t1.cAuftragsnummer, t1.cBenutzername, t1.cFirmenname, t1.cStatustext,
+                           t1.dErstellt, t1.dVoraussichtlichesLieferdatum, t1.fAuftragswertNetto,
+                           t1.cRechnungsadresseFirma, t1.cRechnungsadresseAnrede, t1.cRechnungsadresseTitel,
+                           t1.cRechnungsadresseVorname, t1.cRechnungsadresseNachname,
+                           t1.cRechnungsadresseStrasse, t1.cRechnungsadressePlz, t1.cRechnungsadresseOrt, 
+                           t1.cRechnungsadresseLand, t1.cRechnungsadresseMail, t1.cRechnungsadresseTelefon, 
+                           t1.cRechnungsadresseMobilTelefon, t1.cKundeNr,
+                           t1.cLieferadresseFirma, t1.cLieferadresseAnrede, t1.cLieferadresseTitel,
+                           t1.cLieferadresseVorname, t1.cLieferadresseNachname,
+                           t1.cLieferadresseStrasse, t1.cLieferadressePlz, t1.cLieferadresseOrt,
+                           t1.cLieferadresseLand,
+                           t1.cKundengruppe, kk.cName as cKundenKategorieName
+                    FROM Verkauf.lvAuftragsverwaltung t1
+                    LEFT JOIN dbo.tKunde k ON k.kKunde = t1.kKunde
+                    LEFT JOIN dbo.tKundenKategorie kk ON kk.kKundenKategorie = k.kKundenKategorie
+                    WHERE t1.nStorniert = 0 AND t1.dErstellt >= DATEADD(month, -12, GETDATE())
+                    ORDER BY t1.dErstellt DESC
                 ")->fetchAll();
 
                 $activeJtlIds = [];
@@ -189,7 +191,7 @@ class ImportJtlOrders extends Command
                         'lieferadresse_plz' => $obj['cLieferadressePlz'] ?? '',
                         'lieferadresse_ort' => $obj['cLieferadresseOrt'] ?? '',
                         'lieferadresse_land' => $obj['cLieferadresseLand'] ?? '',
-                        'kundengruppe' => $obj['cKundenGruppeName'] ?? '',
+                        'kundengruppe' => $obj['cKundengruppe'] ?? '',
                         'kundenkategorie' => $obj['cKundenKategorieName'] ?? '',
                         'projekt_firmenname_kuerzel' => $firma->name_kuerzel ?? '',
                         'projekt_farbe_hex' => $firma->bg ?? '',

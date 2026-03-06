@@ -32,46 +32,33 @@ try {
 
             // 2. Fetch data from WAWI (NO DATE FILTER as requested)
             try {
-                echo "--- Diagnosis for Verkauf.lvAuftragsverwaltung ---\n";
-                $checkCols = $wawi_db->query("SELECT TOP 1 * FROM Verkauf.lvAuftragsverwaltung")->fetch();
-                if ($checkCols) {
-                    $allCols = array_keys($checkCols);
-                    $foundGroup = preg_grep('/Gruppe/i', $allCols);
-                    $foundCat = preg_grep('/Kategorie/i', $allCols);
-                    echo "  Potential Group: " . implode(", ", $foundGroup) . "\n";
-                    echo "  Potential Cat: " . implode(", ", $foundCat) . "\n";
-                }
-
-                echo "--- Diagnosis for dbo.tKunde ---\n";
-                try {
-                    $checkKunde = $wawi_db->query("SELECT TOP 1 * FROM dbo.tKunde")->fetch();
-                    if ($checkKunde) {
-                        $kundeCols = array_keys($checkKunde);
-                        echo "  Kunde Columns (filtered): " . implode(", ", preg_grep('/Kategorie|Gruppe|kKunde/i', $kundeCols)) . "\n";
-                    }
-                } catch (Exception $e) { echo "  dbo.tKunde not accessible: " . $e->getMessage() . "\n"; }
-
-                echo "--- Diagnosis for dbo.tKundenKategorie ---\n";
-                try {
-                    $checkKK = $wawi_db->query("SELECT TOP 1 * FROM dbo.tKundenKategorie")->fetch();
-                    if ($checkKK) {
-                        $kkCols = array_keys($checkKK);
-                        echo "  KundenKategorie Columns: " . implode(", ", $kkCols) . "\n";
-                    }
-                } catch (Exception $e) { echo "  dbo.tKundenKategorie not accessible: " . $e->getMessage() . "\n"; }
-
-                echo "--- Checking link for kKunde link ---\n";
-                $res = $wawi_db->query("SELECT TOP 1 v.kKunde, k.kKundenKategorie, kk.cName as KatName 
-                                        FROM Verkauf.lvAuftragsverwaltung v
-                                        JOIN dbo.tKunde k ON k.kKunde = v.kKunde
-                                        JOIN dbo.tKundenKategorie kk ON kk.kKundenKategorie = k.kKundenKategorie")->fetch();
-                if ($res) {
-                    print_r($res);
-                } else {
-                    echo "  Could not link Order -> Kunde -> Kategorie.\n";
-                }
+                // 2. Fetch data from WAWI
+                $query = "
+                    SELECT v.kAuftrag, v.cKundengruppe, kk.cName as cKundenKategorie
+                    FROM Verkauf.lvAuftragsverwaltung v
+                    LEFT JOIN dbo.tKunde k ON k.kKunde = v.kKunde
+                    LEFT JOIN dbo.tKundenKategorie kk ON kk.kKundenKategorie = k.kKundenKategorie
+                ";
                 
-                exit("Diagnostic finished.");
+                $orders = $wawi_db->query($query)->fetchAll();
+                echo "  Fetched " . count($orders) . " orders from WAWI.\n";
+
+                // 3. Update Olgav2 DB
+                $updated = 0;
+                foreach ($orders as $o) {
+                    $affected = DB::table('auftrag_tabelle')
+                        ->where('auftrag_id', $o['kAuftrag'])
+                        ->update([
+                            'kundengruppe' => $o['cKundengruppe'] ?? '',
+                            'kundenkategorie' => $o['cKundenKategorie'] ?? ''
+                        ]);
+                    
+                    if ($affected > 0) {
+                        $updated++;
+                    }
+                }
+                echo "  Updated $updated records in Olgav2 DB for this WAWI.\n";
+
             } catch (Exception $e) {
                 echo "  Error querying WAWI: " . $e->getMessage() . "\n";
             }
