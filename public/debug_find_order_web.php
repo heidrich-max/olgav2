@@ -14,35 +14,28 @@ use Illuminate\Support\Facades\DB;
 $orderNo = $_GET['order'] ?? 'PAU.032026-10049';
 echo "<h1>Debug Info for Order: $orderNo</h1>";
 
-// 1. Projects and Aliases
-echo "<h2>Local Project Configuration</h2>";
+echo "<h2>1. auftrag_projekt</h2>";
 $projects = DB::table('auftrag_projekt')->get();
-echo "<h3>auftrag_projekt</h3><table border='1'><tr><th>ID</th><th>Firmenname</th><th>Prefix</th></tr>";
 foreach($projects as $p) {
-    echo "<tr><td>{$p->id}</td><td>{$p->firmenname}</td><td>" . ($p->name_kuerzel ?? 'N/A') . "</td></tr>";
+    echo "PROJ: ID={$p->id}, Name={$p->firmenname}, Kuerzel=" . ($p->name_kuerzel ?? '') . "<br>";
 }
-echo "</table>";
 
+echo "<h2>2. Aliases</h2>";
 $aliases = DB::table('auftrag_projekt_firma_namen')
     ->join('auftrag_projekt_firma', 'auftrag_projekt_firma.id', '=', 'auftrag_projekt_firma_namen.name_id')
     ->select('auftrag_projekt_firma_namen.begriff', 'auftrag_projekt_firma.name')
     ->get();
-echo "<h3>Aliases (auftrag_projekt_firma_namen)</h3><table border='1'><tr><th>Begriff</th><th>Zielname</th></tr>";
 foreach($aliases as $a) {
-    echo "<tr><td>{$a->begriff}</td><td>{$a->name}</td></tr>";
+    echo "ALIAS: Begriff={$a->begriff} -> Ziel={$a->name}<br>";
 }
-echo "</table>";
 
-// 2. WAWI Mandanten
-echo "<h2>WAWI Mandanten (auftrag_projekt_wawi)</h2>";
+echo "<h2>3. WAWI Mandanten (auftrag_projekt_wawi)</h2>";
 $wawis = DB::table('auftrag_projekt_wawi')->get();
-echo "<table border='1'><tr><th>Name</th><th>DB</th><th>Projekt ID</th></tr>";
 foreach($wawis as $w) {
-    echo "<tr><td>{$w->dataname}</td><td>{$w->host}</td><td>{$w->auftrag_projekt_id}</td></tr>";
+    echo "WAWI: Name={$w->dataname}, ProjectID={$w->auftrag_projekt_id}<br>";
 }
-echo "</table>";
 
-// 3. Search in JTL
+echo "<h2>4. Search in JTL</h2>";
 foreach ($wawis as $wawi) {
     echo "<h3>Checking JTL: {$wawi->dataname}</h3>";
     try {
@@ -60,13 +53,46 @@ foreach ($wawis as $wawi) {
         $result = $stmt->fetch();
 
         if ($result) {
-            echo "<p style='color:green'>FOUND!</p>";
-            echo "<pre>" . print_r($result, true) . "</pre>";
+            echo "FOUND in {$wawi->dataname}: " . print_r($result, true) . "<br>";
+            
+            // Simulation logic
+            $fname = trim($result['cFirmenname'] ?? '');
+            $fname_lower = strtolower($fname);
+            echo "DEBUG: cFirmenname='$fname' (lower: '$fname_lower')<br>";
+            
+            // Check alias
+            $foundAlias = false;
+            foreach($aliases as $a) {
+                if (strtolower($a->begriff) == $fname_lower) {
+                    echo "MATCHED ALIAS: {$a->begriff} -> {$a->name}<br>";
+                    $fname = $a->name;
+                    $fname_lower = strtolower($fname);
+                    $foundAlias = true;
+                    break;
+                }
+            }
+            
+            // Check project
+            $foundProj = false;
+            foreach($projects as $p) {
+                if (strtolower($p->firmenname) == $fname_lower) {
+                    echo "MATCHED PROJECT: ID={$p->id}, Name={$p->firmenname}<br>";
+                    $foundProj = true;
+                    break;
+                }
+            }
+            
+            if (!$foundProj) {
+                echo "<b style='color:red'>FAILURE: No matching project found for '$fname'!</b><br>";
+            } else {
+                echo "<b style='color:green'>SUCCESS: Should be imported!</b><br>";
+            }
+
         } else {
-            echo "<p>Not found.</p>";
+            echo "Not found in {$wawi->dataname}.<br>";
         }
     } catch (Exception $e) {
-        echo "<p style='color:red'>Error: " . $e->getMessage() . "</p>";
+        echo "Error: " . $e->getMessage() . "<br>";
     }
 }
 echo "<hr><p>Done.</p>";
