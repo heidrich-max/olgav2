@@ -586,9 +586,15 @@
                     <div class="info-list">
                         <div class="info-item" style="align-items: flex-start;">
                             <span class="label" style="margin-top: 2px;">Kunde:</span>
-                            <div style="text-align: right;">
-                                <div style="font-weight: bold;">{{ $offer->firmenname }}</div>
-                                <div style="font-size: 0.8rem; color: var(--text-muted);">{{ $offer->kunden_nr ?? '—' }}</div>
+                            <div style="text-align: right; max-width: 70%;">
+                                <div style="font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $offer->firmenname }}">
+                                    {{ $offer->firmenname }}
+                                </div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">
+                                    {{ $offer->kunden_nr ?? '—' }}
+                                    @if(!empty($offer->kundengruppe)) / {{ $offer->kundengruppe }} @endif
+                                    @if(!empty($offer->kundenkategorie)) / {{ $offer->kundenkategorie }} @endif
+                                </div>
                             </div>
                         </div>
                         <div class="info-item">
