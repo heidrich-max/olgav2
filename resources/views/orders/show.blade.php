@@ -443,7 +443,7 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="info-item" style="margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
+                        <div class="info-item">
                             <span class="label">Bearbeiter:</span>
                             <span>{{ $order->benutzer }}</span>
                         </div>
