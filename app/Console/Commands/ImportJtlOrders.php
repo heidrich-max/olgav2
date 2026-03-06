@@ -102,7 +102,8 @@ class ImportJtlOrders extends Command
                            cLieferadresseFirma, cLieferadresseAnrede, cLieferadresseTitel,
                            cLieferadresseVorname, cLieferadresseNachname,
                            cLieferadresseStrasse, cLieferadressePlz, cLieferadresseOrt,
-                           cLieferadresseLand
+                           cLieferadresseLand,
+                           cKundenGruppeName, cKundenKategorieName
                     FROM Verkauf.lvAuftragsverwaltung
                     WHERE nStorniert = 0 AND dErstellt >= DATEADD(month, -12, GETDATE())
                     ORDER BY dErstellt DESC
@@ -188,6 +189,8 @@ class ImportJtlOrders extends Command
                         'lieferadresse_plz' => $obj['cLieferadressePlz'] ?? '',
                         'lieferadresse_ort' => $obj['cLieferadresseOrt'] ?? '',
                         'lieferadresse_land' => $obj['cLieferadresseLand'] ?? '',
+                        'kundengruppe' => $obj['cKundenGruppeName'] ?? '',
+                        'kundenkategorie' => $obj['cKundenKategorieName'] ?? '',
                         'projekt_firmenname_kuerzel' => $firma->name_kuerzel ?? '',
                         'projekt_farbe_hex' => $firma->bg ?? '',
                     ];
@@ -218,8 +221,7 @@ class ImportJtlOrders extends Command
                             $data['bestellnummer'] = '';
                             $data['hersteller'] = '';
                             $data['plz'] = '';
-                            $data['kundengruppe'] = '';
-                            $data['kundenkategorie'] = '';
+                            // kundengruppe und kundenkategorie werden bereits oben in $data gesetzt
                             $data['istbezahlt'] = '';
                             $data['storniert'] = '';
                             $data['timestamp'] = date("Y-m-d H:i:s");
