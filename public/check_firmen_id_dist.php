@@ -17,8 +17,6 @@ $stats = DB::table('auftrag_tabelle')
     ->get();
 
 echo "<h1>firmen_id Distribution</h1>";
-echo "<table border='1'><tr><th>Projekt ID</th><th>Firmen ID</th><th>Anzahl</th></tr>";
 foreach($stats as $s) {
-    echo "<tr><td>{$s->projekt_id}</td><td>{$s->firmen_id}</td><td>{$s->count}</td></tr>";
+    echo "PROJ: {$s->projekt_id}, FIRM: {$s->firmen_id}, COUNT: {$s->count}<br>";
 }
-echo "</table>";
