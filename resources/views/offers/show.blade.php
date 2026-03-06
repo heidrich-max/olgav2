@@ -597,14 +597,14 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="info-item" style="align-items: flex-start; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
+                        <div class="info-item" style="align-items: flex-start;">
                             <span class="label" style="margin-top: 2px;">Angebot:</span>
                             <div style="text-align: right;">
                                 <div style="font-weight: bold;">{{ $offer->angebotsnummer }}</div>
                                 <div style="font-size: 0.8rem; color: var(--text-muted);">{{ $offer->projekt_firmenname }}{{ !empty($offer->projektname) ? ' / ' . $offer->projektname : '' }}</div>
                             </div>
                         </div>
-                        <div class="info-item" style="align-items: flex-start; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
+                        <div class="info-item" style="align-items: flex-start;">
                             <span class="label" style="margin-top: 2px;">Datum:</span>
                             <div style="text-align: right;">
                                 <div style="font-weight: bold;">{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</div>
