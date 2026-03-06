@@ -32,15 +32,30 @@ try {
 
             // 2. Fetch data from WAWI (NO DATE FILTER as requested)
             try {
+                echo "--- Diagnosis for Verkauf.lvAuftragsverwaltung ---\n";
                 $checkCols = $wawi_db->query("SELECT TOP 1 * FROM Verkauf.lvAuftragsverwaltung")->fetch();
-                $allCols = array_keys($checkCols);
-                echo "  Available columns: " . implode(", ", $allCols) . "\n";
-                
-                // Wir suchen nach Spalten, die "Gruppe" oder "Kategorie" enthalten
-                $foundGroup = preg_grep('/Gruppe/i', $allCols);
-                $foundCat = preg_grep('/Kategorie/i', $allCols);
-                echo "  Potential Group: " . implode(", ", $foundGroup) . "\n";
-                echo "  Potential Cat: " . implode(", ", $foundCat) . "\n";
+                if ($checkCols) {
+                    $allCols = array_keys($checkCols);
+                    $foundGroup = preg_grep('/Gruppe/i', $allCols);
+                    $foundCat = preg_grep('/Kategorie/i', $allCols);
+                    echo "  Potential Group: " . implode(", ", $foundGroup) . "\n";
+                    echo "  Potential Cat: " . implode(", ", $foundCat) . "\n";
+                }
+
+                echo "--- Diagnosis for Kunde.tKunde --- (via kKunde link)\n";
+                try {
+                    $checkKunde = $wawi_db->query("SELECT TOP 1 * FROM Kunde.tKunde")->fetch();
+                    if ($checkKunde) {
+                        $kundeCols = array_keys($checkKunde);
+                        echo "  Kunde Columns: " . implode(", ", preg_grep('/Kategorie|Gruppe/i', $kundeCols)) . "\n";
+                    }
+                } catch (Exception $e) { echo "  Kunde.tKunde not accessible: " . $e->getMessage() . "\n"; }
+
+                echo "--- List of all Tables/Views with 'Kategorie' in name ---\n";
+                $tables = $wawi_db->query("SELECT TABLE_SCHEMA, TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE '%Kategorie%'")->fetchAll();
+                foreach($tables as $t) {
+                    echo "  " . $t['TABLE_SCHEMA'] . "." . $t['TABLE_NAME'] . "\n";
+                }
                 
                 exit("Diagnostic finished.");
             } catch (Exception $e) {
