@@ -604,9 +604,11 @@
                                 <div style="font-size: 0.8rem; color: var(--text-muted);">{{ $offer->projekt_firmenname }}{{ !empty($offer->projektname) ? ' / ' . $offer->projektname : '' }}</div>
                             </div>
                         </div>
-                        <div class="info-item" style="margin-top: 5px;">
-                            <span class="label">Angebotsdatum:</span>
-                            <span>{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</span>
+                        <div class="info-item" style="align-items: flex-start; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
+                            <span class="label" style="margin-top: 2px;">Datum:</span>
+                            <div style="text-align: right;">
+                                <div style="font-weight: bold;">{{ \Carbon\Carbon::parse($offer->erstelldatum)->format('d.m.Y') }}</div>
+                            </div>
                         </div>
                         <div class="info-item">
                             <span class="label">Bearbeiter:</span>
