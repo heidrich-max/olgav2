@@ -729,7 +729,12 @@
                                     </div>
                                 @endif
                             </td>
-                            <td style="background: {{ $rowBg }};">{{ $offer->firmenname }}</td>
+                            <td style="background: {{ $rowBg }};">
+                                {{ $offer->firmenname }}
+                                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">
+                                    {{ $offer->kunden_nr ?: '—' }}
+                                </div>
+                            </td>
                             <td style="background: {{ $rowBg }};" class="amount">
                                 {{ number_format($offer->angebotssumme, 2, ',', '.') }} €
                             </td>

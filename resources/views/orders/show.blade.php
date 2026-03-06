@@ -432,8 +432,8 @@
                             <span>{{ $order->auftragsnummer }}</span>
                         </div>
                         <div class="info-item">
-                            <span class="label">Kunden-Nr:</span>
-                            <span>{{ $order->kunden_nr ?? '—' }}</span>
+                            <span class="label">Kunden:</span>
+                            <span>{{ $order->kundennummer ?? '—' }}</span>
                         </div>
                         <div class="info-item">
                             <span class="label">Bearbeiter:</span>

@@ -752,7 +752,12 @@
                                     {{ $order->hersteller ?: '—' }}
                                 </div>
                             </td>
-                            <td style="background: {{ $rowBg }};">{{ $order->firmenname }}</td>
+                            <td style="background: {{ $rowBg }};">
+                                {{ $order->firmenname }}
+                                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">
+                                    {{ $order->kundennummer ?: '—' }}
+                                </div>
+                            </td>
                             <td style="background: {{ $rowBg }};" class="amount">
                                 {{ number_format($order->auftragssumme, 2, ',', '.') }} €
                             </td>

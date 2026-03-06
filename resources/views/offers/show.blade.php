@@ -603,7 +603,7 @@
                             <span>{{ $offer->angebotsnummer }}</span>
                         </div>
                         <div class="info-item">
-                            <span class="label">Kunden-Nr:</span>
+                            <span class="label">Kunden:</span>
                             <span>{{ $offer->kunden_nr ?? '—' }}</span>
                         </div>
                         <div class="info-item">
