@@ -614,6 +614,10 @@
                             <span class="label">Bearbeiter:</span>
                             <span>{{ $offer->benutzer }}</span>
                         </div>
+                        <div class="info-item">
+                            <span class="label">Projekt:</span>
+                            <span style="font-weight: bold;">{{ $offer->projekt_firmenname }}</span>
+                        </div>
                     </div>
                 </div>
 
