@@ -810,9 +810,12 @@ class DashboardController extends Controller
 
         // Hersteller laden
         $manufacturers = DB::table('hersteller')->orderBy('firmenname')->get();
+        $minDate = \Carbon\Carbon::parse($order->erstelldatum)->subDay()->toDateTimeString();
+
         $currentManufacturerRel = DB::table('auftrag_hersteller')
             ->where('auftrag_id', $order->id)
             ->where('projekt_id', $order->projekt_id)
+            ->where('timestamp', '>=', $minDate)
             ->orderBy('timestamp', 'desc')
             ->first();
         
@@ -826,11 +829,12 @@ class DashboardController extends Controller
             ->leftJoin('user', 'auftrag_hersteller.user_id', '=', 'user.id')
             ->where('auftrag_hersteller.auftrag_id', $order->id)
             ->where('auftrag_hersteller.projekt_id', $order->projekt_id)
+            ->where('auftrag_hersteller.timestamp', '>=', $minDate)
             ->orderBy('auftrag_hersteller.timestamp', 'desc')
             ->select('auftrag_hersteller.*', 'hersteller.firmenname as hersteller_name', 'user.name_komplett as user_name')
             ->get();
 
-        // 1. Korrekturabzug
+        // 1. Korrekturabzug - Hat leider kein Timestamp, hier müssen wir mit der Recycel-Logik leben oder hoffen
         $proofs = DB::table('auftrag_korrekturabzug')
             ->where('auftrag_id', $order->id)
             ->where('projekt_id', $order->projekt_id)
@@ -840,26 +844,30 @@ class DashboardController extends Controller
         $shipments = DB::table('auftrag_sendungsnummer')
             ->where('auftrag_id', $order->id)
             ->where('projekt_id', $order->projekt_id)
+            ->where('timestamp', '>=', $minDate)
             ->get();
 
         // 3. Buchhaltung / Rechnung
         $invoices = DB::table('auftrag_rechnung')
             ->where('auftrag_id', $order->id)
             ->where('projekt_id', $order->projekt_id)
+            ->where('timestamp', '>=', $minDate)
             ->get();
 
         // 4. Lieferscheine
         $deliveryNotes = DB::table('auftrag_lieferschein')
             ->where('auftrag_id', $order->id)
             ->where('projekt_id', $order->projekt_id)
+            ->where('timestamp', '>=', $minDate)
             ->get();
 
-        // Historie laden (Versuch über eine generische DB Abfrage, falls Tabelle existiert)
+        // Historie laden
         $history = [];
         if (Schema::hasTable('auftrag_informationen')) {
             $history = DB::table('auftrag_informationen')
                 ->where('auftrag_id', $order->id)
                 ->where('projekt_id', $order->projekt_id)
+                ->where('timestamp', '>=', $minDate)
                 ->orderBy('timestamp', 'desc')
                 ->get()
                 ->map(function($h) {
