@@ -42,19 +42,33 @@ try {
                     echo "  Potential Cat: " . implode(", ", $foundCat) . "\n";
                 }
 
-                echo "--- Diagnosis for Kunde.tKunde --- (via kKunde link)\n";
+                echo "--- Diagnosis for dbo.tKunde ---\n";
                 try {
-                    $checkKunde = $wawi_db->query("SELECT TOP 1 * FROM Kunde.tKunde")->fetch();
+                    $checkKunde = $wawi_db->query("SELECT TOP 1 * FROM dbo.tKunde")->fetch();
                     if ($checkKunde) {
                         $kundeCols = array_keys($checkKunde);
-                        echo "  Kunde Columns: " . implode(", ", preg_grep('/Kategorie|Gruppe/i', $kundeCols)) . "\n";
+                        echo "  Kunde Columns (filtered): " . implode(", ", preg_grep('/Kategorie|Gruppe|kKunde/i', $kundeCols)) . "\n";
                     }
-                } catch (Exception $e) { echo "  Kunde.tKunde not accessible: " . $e->getMessage() . "\n"; }
+                } catch (Exception $e) { echo "  dbo.tKunde not accessible: " . $e->getMessage() . "\n"; }
 
-                echo "--- List of all Tables/Views with 'Kategorie' in name ---\n";
-                $tables = $wawi_db->query("SELECT TABLE_SCHEMA, TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME LIKE '%Kategorie%'")->fetchAll();
-                foreach($tables as $t) {
-                    echo "  " . $t['TABLE_SCHEMA'] . "." . $t['TABLE_NAME'] . "\n";
+                echo "--- Diagnosis for dbo.tKundenKategorie ---\n";
+                try {
+                    $checkKK = $wawi_db->query("SELECT TOP 1 * FROM dbo.tKundenKategorie")->fetch();
+                    if ($checkKK) {
+                        $kkCols = array_keys($checkKK);
+                        echo "  KundenKategorie Columns: " . implode(", ", $kkCols) . "\n";
+                    }
+                } catch (Exception $e) { echo "  dbo.tKundenKategorie not accessible: " . $e->getMessage() . "\n"; }
+
+                echo "--- Checking link for kKunde link ---\n";
+                $res = $wawi_db->query("SELECT TOP 1 v.kKunde, k.kKundenKategorie, kk.cName as KatName 
+                                        FROM Verkauf.lvAuftragsverwaltung v
+                                        JOIN dbo.tKunde k ON k.kKunde = v.kKunde
+                                        JOIN dbo.tKundenKategorie kk ON kk.kKundenKategorie = k.kKundenKategorie")->fetch();
+                if ($res) {
+                    print_r($res);
+                } else {
+                    echo "  Could not link Order -> Kunde -> Kategorie.\n";
                 }
                 
                 exit("Diagnostic finished.");
