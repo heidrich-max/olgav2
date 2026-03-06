@@ -114,6 +114,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/search-redirect', [DashboardController::class, 'globalSearch'])->name('global.search');
     Route::get('/offers/{id}', [DashboardController::class, 'showOffer'])->name('offers.show');
     Route::get('/orders/{id}', [DashboardController::class, 'showOrder'])->name('orders.show');
+    Route::post('/orders/{id}/manufacturer', [DashboardController::class, 'updateManufacturer'])->name('orders.manufacturer.update');
     Route::post('/offers/{id}/note', [DashboardController::class, 'storeOfferNote'])->name('offers.note.store');
     Route::post('/offers/{id}/close', [DashboardController::class, 'closeOffer'])->name('offers.close');
     Route::post('/offers/{id}/reminder', [DashboardController::class, 'sendReminder'])->name('offers.reminder.store');

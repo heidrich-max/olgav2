@@ -808,6 +808,26 @@ class DashboardController extends Controller
             $order->letzter_status_farbe_hex = '#' . $order->letzter_status_farbe_hex;
         }
 
+        // Hersteller laden
+        $manufacturers = DB::table('hersteller')->orderBy('firmenname')->get();
+        $currentManufacturerRel = DB::table('auftrag_hersteller')
+            ->where('auftrag_id', $order->id)
+            ->orderBy('timestamp', 'desc')
+            ->first();
+        
+        $currentManufacturer = null;
+        if ($currentManufacturerRel) {
+            $currentManufacturer = DB::table('hersteller')->where('id', $currentManufacturerRel->hersteller_id)->first();
+        }
+
+        $manufacturerHistory = DB::table('auftrag_hersteller')
+            ->leftJoin('hersteller', 'auftrag_hersteller.hersteller_id', '=', 'hersteller.id')
+            ->leftJoin('user', 'auftrag_hersteller.user_id', '=', 'user.id')
+            ->where('auftrag_hersteller.auftrag_id', $order->id)
+            ->orderBy('auftrag_hersteller.timestamp', 'desc')
+            ->select('auftrag_hersteller.*', 'hersteller.firmenname as hersteller_name', 'user.name_komplett as user_name')
+            ->get();
+
         // Historie laden (Versuch über eine generische DB Abfrage, falls Tabelle existiert)
         $history = [];
         if (Schema::hasTable('auftrag_informationen')) {
@@ -822,7 +842,35 @@ class DashboardController extends Controller
                 });
         }
 
-        return view('orders.show', compact('user', 'order', 'items', 'companyId', 'companyName', 'accentColor', 'history'));
+        return view('orders.show', compact(
+            'user', 'order', 'items', 'companyId', 'companyName', 'accentColor', 
+            'history', 'manufacturers', 'currentManufacturer', 'manufacturerHistory'
+        ));
+    }
+
+    /**
+     * Speichert die Hersteller-Zuweisung für einen Auftrag.
+     */
+    public function updateManufacturer(Request $request, $id)
+    {
+        $request->validate([
+            'hersteller_id' => 'required|exists:hersteller,id',
+        ]);
+
+        $order = DB::table('auftrag_tabelle')->where('id', $id)->first();
+        if (!$order) {
+            return back()->with('error', 'Auftrag nicht gefunden.');
+        }
+
+        DB::table('auftrag_hersteller')->insert([
+            'auftrag_id'    => $order->id,
+            'projekt_id'    => $order->projekt_id,
+            'hersteller_id' => $request->hersteller_id,
+            'user_id'       => Auth::id(),
+            'timestamp'     => now(),
+        ]);
+
+        return back()->with('success', 'Hersteller wurde erfolgreich zugewiesen.');
     }
 
     /**

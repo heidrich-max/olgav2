@@ -249,6 +249,70 @@
             -webkit-background-clip: initial;
             margin-left: 5px;
         }
+        .manufacturer-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .edit-btn-small {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.75rem;
+        }
+
+        .edit-btn-small:hover {
+            background: var(--primary-accent);
+            border-color: var(--primary-accent);
+        }
+
+        .history-popover {
+            position: absolute;
+            background: #1a1e2e;
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            z-index: 1000;
+            width: 300px;
+            display: none;
+            right: 0;
+            top: 30px;
+        }
+
+        .history-popover h4 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--primary-accent);
+            margin-bottom: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 5px;
+        }
+
+        .history-mini-item {
+            font-size: 0.75rem;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .history-mini-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-mini-date {
+            color: var(--text-muted);
+            font-size: 0.7rem;
+        }
     </style>
 </head>
 <body>
@@ -470,6 +534,56 @@
                         </div>
                         <div class="info-item">
                             <span class="label">Projekt:</span>
+                            <span>{{ $order->projekt_firmenname }}</span>
+                        </div>
+                        <div class="info-item" style="position: relative;">
+                            <span class="label">Hersteller:</span>
+                            <div class="manufacturer-section">
+                                <div style="text-align: right;">
+                                    <div id="currentManufacturerName" style="font-weight: bold;">
+                                        {{ $currentManufacturer->firmenname ?? 'Nicht zugewiesen' }}
+                                    </div>
+                                    @if($manufacturerHistory->count() > 1)
+                                        <div style="font-size: 0.7rem; color: var(--text-muted); cursor: pointer;" onclick="toggleHistoryPopover()">
+                                            <i class="fas fa-history"></i> Historie anzeigen
+                                        </div>
+                                    @elseif($manufacturerHistory->count() == 1)
+                                        <div style="font-size: 0.7rem; color: var(--text-muted);">
+                                            von {{ $manufacturerHistory[0]->user_name }} am {{ \Carbon\Carbon::parse($manufacturerHistory[0]->timestamp)->format('d.m.Y H:i') }}
+                                        </div>
+                                    @endif
+                                </div>
+                                <button class="edit-btn-small" onclick="toggleManufacturerEdit()"><i class="fas fa-pencil-alt"></i></button>
+                                
+                                <div id="historyPopover" class="history-popover">
+                                    <h4>Zuweisungs-Historie</h4>
+                                    @foreach($manufacturerHistory as $h)
+                                        <div class="history-mini-item">
+                                            <strong>{{ $h->hersteller_name }}</strong><br>
+                                            <span class="history-mini-date">durch {{ $h->user_name }} am {{ \Carbon\Carbon::parse($h->timestamp)->format('d.m.Y H:i') }}</span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+
+                            <div id="manufacturerEditForm" style="display: none; position: absolute; right: 0; top: 0; background: #1a1e2e; border: 1px solid var(--glass-border); padding: 10px; border-radius: 8px; z-index: 1001; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+                                <form action="{{ route('orders.manufacturer.update', $order->id) }}" method="POST" style="display: flex; gap: 8px; align-items: center;">
+                                    @csrf
+                                    <select name="hersteller_id" class="form-control" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.85rem; width: 180px;">
+                                        <option value="">Hersteller wählen...</option>
+                                        @foreach($manufacturers as $m)
+                                            <option value="{{ $m->id }}" {{ ($currentManufacturer && $currentManufacturer->id == $m->id) ? 'selected' : '' }}>
+                                                {{ $m->firmenname }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    <button type="submit" class="btn-primary-small" style="padding: 4px 10px; font-size: 0.75rem;">Speichern</button>
+                                    <button type="button" class="btn-secondary-small" onclick="toggleManufacturerEdit()" style="padding: 4px 10px; font-size: 0.75rem;">X</button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Projekt:</span>
                             <span style="font-weight: bold;">{{ $order->projekt_firmenname }}</span>
                         </div>
                     </div>
@@ -593,6 +707,31 @@
         document.addEventListener('click', () => {
             if(companySwitcher) companySwitcher.classList.remove('active');
             if(userDropdown) userDropdown.classList.remove('active');
+        });
+        function toggleManufacturerEdit() {
+            const form = document.getElementById('manufacturerEditForm');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function toggleHistoryPopover() {
+            const popover = document.getElementById('historyPopover');
+            popover.style.display = popover.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Close popovers on click outside
+        document.addEventListener('click', function(event) {
+            const historyPopover = document.getElementById('historyPopover');
+            const historyBtn = event.target.closest('[onclick="toggleHistoryPopover()"]');
+            
+            if (historyPopover && historyPopover.style.display === 'block' && !historyPopover.contains(event.target) && !historyBtn) {
+                historyPopover.style.display = 'none';
+            }
+
+            const editForm = document.getElementById('manufacturerEditForm');
+            const editBtn = event.target.closest('[onclick="toggleManufacturerEdit()"]');
+            if (editForm && editForm.style.display === 'block' && !editForm.contains(event.target) && !editBtn) {
+                editForm.style.display = 'none';
+            }
         });
     </script>
 </body>
