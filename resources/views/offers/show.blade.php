@@ -587,8 +587,8 @@
                         <div class="info-item" style="align-items: flex-start;">
                             <span class="label" style="margin-top: 2px;">Kunde:</span>
                             <div style="text-align: right; max-width: 70%;">
-                                <div style="font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $offer->firmenname }}">
-                                    {{ $offer->firmenname }}
+                                <div style="font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $offer->firmenname ?: ($offer->ansprechpartner_vorname . ' ' . $offer->ansprechpartner_nachname) }}">
+                                    {{ $offer->firmenname ?: ($offer->ansprechpartner_vorname . ' ' . $offer->ansprechpartner_nachname) }}
                                 </div>
                                 <div style="font-size: 0.8rem; color: var(--text-muted);">
                                     {{ $offer->kunden_nr ?? '—' }}
