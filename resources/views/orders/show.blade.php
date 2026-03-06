@@ -386,7 +386,28 @@
                                 <strong>{{ $order->firmenname }}</strong><br>
                                 {{ $order->kunde_strasse ?? 'Keine Straße hinterlegt' }}<br>
                                 {{ $order->kunde_plz ?? '' }} {{ $order->kunde_ort ?? '' }}<br>
-                                {{ $order->kunde_land ?? 'Deutschland' }}
+                                {{ $order->kunde_land ?? 'Deutschland' }}<br>
+                                @if($order->kunde_telefon)
+                                <span class="contact-info"><i class="fas fa-phone"></i> {{ $order->kunde_telefon }}</span>
+                                @endif
+                                @if($order->kunde_mail)
+                                <span class="contact-info"><i class="fas fa-envelope"></i> {{ $order->kunde_mail }}</span>
+                                @endif
+
+                                @if($order->ansprechpartner_vorname || $order->ansprechpartner_nachname)
+                                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+                                    <h3 style="font-size: 0.75rem; margin-bottom: 8px;">Ansprechpartner</h3>
+                                    <strong>
+                                        {{ $order->ansprechpartner_anrede }} 
+                                        {{ $order->ansprechpartner_titel }} 
+                                        {{ $order->ansprechpartner_vorname }} 
+                                        {{ $order->ansprechpartner_nachname }}
+                                    </strong>
+                                    @if($order->ansprechpartner_mobil)
+                                    <span class="contact-info"><i class="fas fa-mobile-alt"></i> {{ $order->ansprechpartner_mobil }}</span>
+                                    @endif
+                                </div>
+                                @endif
                             </p>
                         </div>
                         <div class="address-box">
