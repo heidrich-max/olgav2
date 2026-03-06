@@ -313,6 +313,60 @@
             color: var(--text-muted);
             font-size: 0.7rem;
         }
+
+        /* ---- TABS STYLES ---- */
+        .tab-navigation {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 1px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 12px 5px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            color: #fff;
+        }
+
+        .tab-btn.active {
+            color: var(--primary-accent);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary-accent);
+            box-shadow: 0 0 10px var(--primary-accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
@@ -437,7 +491,31 @@
                 </div>
             </div>
 
-            <div class="detail-grid">
+            <!-- Tab Navigation -->
+            <div class="tab-navigation">
+                <button class="tab-btn active" onclick="switchTab(event, 'tab-infos')">
+                    <i class="fas fa-info-circle" style="margin-right: 8px;"></i> Infos
+                </button>
+                <button class="tab-btn" onclick="switchTab(event, 'tab-proof')">
+                    <i class="fas fa-file-signature" style="margin-right: 8px;"></i> Korrekturabzug
+                </button>
+                <button class="tab-btn" onclick="switchTab(event, 'tab-order')">
+                    <i class="fas fa-box" style="margin-right: 8px;"></i> Bestellung
+                </button>
+                <button class="tab-btn" onclick="switchTab(event, 'tab-shipping')">
+                    <i class="fas fa-truck" style="margin-right: 8px;"></i> Versand
+                </button>
+                <button class="tab-btn" onclick="switchTab(event, 'tab-accounting')">
+                    <i class="fas fa-file-invoice-doll" style="margin-right: 8px;"></i> Buchhaltung
+                </button>
+                <button class="tab-btn" onclick="switchTab(event, 'tab-history')">
+                    <i class="fas fa-history" style="margin-right: 8px;"></i> Historie & Notizen
+                </button>
+            </div>
+
+            <!-- Tab Content: INFOS -->
+            <div id="tab-infos" class="tab-content active">
+                <div class="detail-grid">
                 <!-- Addresses -->
                 <div class="card glass-card address-card">
                     <div class="card-header">
@@ -589,7 +667,7 @@
                     </div>
                 </div>
 
-                <!-- Items Table -->
+                <!-- Items Table (Always visible or in Infos?) -> Placing inside Infos for now as it's core info -->
                 <div class="card glass-card items-card" style="grid-column: span 2;">
                     <div class="card-header">
                         <h2><i class="fas fa-list-ul"></i> Artikelpositionen</h2>
@@ -646,15 +724,224 @@
                                 </tr>
                                 <tr class="summary-row total-brutto">
                                     <td colspan="7">Gesamtbetrag</td>
-                                    <td class="amount highlight">{{ number_format($grossTotal, 2, ',', '.') }} €</td>
+                                    <td class="amount">{{ number_format($grossTotal, 2, ',', '.') }} €</td>
                                 </tr>
                             </tfoot>
                         </table>
                     </div>
                 </div>
+            </div>
 
-                <!-- Verlauf & Notizen -->
-                <div class="card glass-card history-card" style="grid-column: span 2;">
+            <!-- Tab Content: KORREKTURABZUG -->
+            <div id="tab-proof" class="tab-content">
+                <div class="card glass-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-file-signature"></i> Korrekturabzug</h2>
+                    </div>
+                    <div style="padding: 20px; text-align: center; color: var(--text-muted);">
+                        @if($proofs->count() > 0)
+                            <!-- Hier käme die Liste der Korrekturabzüge -->
+                            <table class="items-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Projekt</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($proofs as $p)
+                                    <tr>
+                                        <td>{{ $p->id }}</td>
+                                        <td>{{ $p->projektname }}</td>
+                                        <td><span class="badge" style="background: rgba(255,255,255,0.1);">In Arbeit</span></td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @else
+                            Keine Daten für Korrekturabzüge vorhanden.
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: BESTELLUNG -->
+            <div id="tab-order" class="tab-content">
+                <div class="detail-grid" style="grid-template-columns: 1fr 1fr;">
+                    <div class="card glass-card">
+                        <div class="card-header">
+                            <h2><i class="fas fa-industry"></i> Hersteller-Zuweisung</h2>
+                        </div>
+                        <div class="info-list">
+                            <div class="info-item" style="position: relative; justify-content: space-between;">
+                                <span class="label">Aktueller Hersteller:</span>
+                                <div class="manufacturer-section">
+                                    <div style="text-align: right;">
+                                        <div id="currentManufacturerNameTab" style="font-weight: bold; font-size: 1.1rem;">
+                                            {{ $currentManufacturer->firmenname ?? 'Nicht zugewiesen' }}
+                                        </div>
+                                        @if($manufacturerHistory->count() > 1)
+                                            <div style="font-size: 0.75rem; color: var(--text-muted); cursor: pointer;" onclick="toggleHistoryPopover()">
+                                                <i class="fas fa-history"></i> Historie anzeigen
+                                            </div>
+                                        @elseif($manufacturerHistory->count() == 1)
+                                            <div style="font-size: 0.75rem; color: var(--text-muted);">
+                                                von {{ $manufacturerHistory[0]->user_name }} am {{ \Carbon\Carbon::parse($manufacturerHistory[0]->timestamp)->format('d.m.Y H:i') }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <button class="edit-btn-small" onclick="toggleManufacturerEdit()"><i class="fas fa-pencil-alt"></i></button>
+
+                                    <div id="historyPopover" class="history-popover">
+                                        <h4>Zuweisungs-Historie</h4>
+                                        @foreach($manufacturerHistory as $h)
+                                            <div class="history-mini-item">
+                                                <strong>{{ $h->hersteller_name }}</strong><br>
+                                                <span class="history-mini-date">durch {{ $h->user_name }} am {{ \Carbon\Carbon::parse($h->timestamp)->format('d.m.Y H:i') }}</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+
+                                <div id="manufacturerEditForm" style="display: none; position: absolute; right: 0; top: 0; background: #1a1e2e; border: 1px solid var(--glass-border); padding: 15px; border-radius: 12px; z-index: 1001; box-shadow: 0 15px 35px rgba(0,0,0,0.6);">
+                                    <form action="{{ route('orders.manufacturer.update', $order->id) }}" method="POST">
+                                        @csrf
+                                        <div style="margin-bottom: 12px;">
+                                            <label style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 5px;">Hersteller auswählen</label>
+                                            <select name="hersteller_id" class="form-control" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; width: 250px;">
+                                                <option value="">Hersteller wählen...</option>
+                                                @foreach($manufacturers as $m)
+                                                    <option value="{{ $m->id }}" {{ ($currentManufacturer && $currentManufacturer->id == $m->id) ? 'selected' : '' }}>
+                                                        {{ $m->firmenname }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                                            <button type="button" class="btn-glass-default" onclick="toggleManufacturerEdit()" style="padding: 6px 12px; font-size: 0.8rem;">Abbrechen</button>
+                                            <button type="submit" class="btn-glass-default" style="padding: 6px 12px; font-size: 0.8rem; background: var(--primary-accent); border-color: var(--primary-accent);">Speichern</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card glass-card">
+                        <div class="card-header">
+                            <h2><i class="fas fa-file-invoice"></i> Lieferschein</h2>
+                        </div>
+                        <div style="text-align: center; color: var(--text-muted); padding: 20px;">
+                            @if($deliveryNotes->count() > 0)
+                                <table class="items-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Nr.</th>
+                                            <th>Datum</th>
+                                            <th>Aktion</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($deliveryNotes as $dn)
+                                        <tr>
+                                            <td>{{ $dn->id }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($dn->timestamp)->format('d.m.Y') }}</td>
+                                            <td><a href="#" class="btn-glass-default" style="padding: 4px 8px; font-size: 0.7rem;"><i class="fas fa-download"></i></a></td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            @else
+                                <p>Noch keine Lieferscheine generiert.</p>
+                                <button class="btn-glass-default" style="margin-top: 15px;">
+                                    <i class="fas fa-plus"></i> Lieferschein generieren
+                                </button>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: VERSAND -->
+            <div id="tab-shipping" class="tab-content">
+                <div class="card glass-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-truck"></i> Versandinformationen</h2>
+                    </div>
+                    <div style="padding: 20px;">
+                        @if($shipments->count() > 0)
+                            <table class="items-table">
+                                <thead>
+                                    <tr>
+                                        <th>Sendungsnummer</th>
+                                        <th>Datum</th>
+                                        <th>Tracking</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($shipments as $s)
+                                    <tr>
+                                        <td>{{ $s->sendungsnummer }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($s->timestamp)->format('d.m.Y H:i') }}</td>
+                                        <td>
+                                            <a href="https://www.dhl.de/de/privatkunden/pakete-empfangen/verfolgen.html?piececode={{ $s->sendungsnummer }}" target="_blank" class="btn-glass-default" style="padding: 4px 10px; font-size: 0.75rem;">
+                                                <i class="fas fa-external-link-alt"></i> DHL Tracking
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @else
+                            <div style="text-align: center; color: var(--text-muted); padding: 20px;">
+                                Keine Sendungsnummern für diesen Auftrag hinterlegt.
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: BUCHHALTUNG -->
+            <div id="tab-accounting" class="tab-content">
+                <div class="card glass-card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-file-invoice-dollar"></i> Buchhaltung & Rechnungen</h2>
+                    </div>
+                    <div style="padding: 20px;">
+                        @if($invoices->count() > 0)
+                            <table class="items-table">
+                                <thead>
+                                    <tr>
+                                        <th>Rechnungsnr.</th>
+                                        <th>Datum</th>
+                                        <th>Betrag</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($invoices as $inv)
+                                    <tr>
+                                        <td>{{ $inv->id }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($inv->timestamp)->format('d.m.Y') }}</td>
+                                        <td class="amount">{{ number_format($order->auftragssumme, 2, ',', '.') }} €</td>
+                                        <td><span class="badge" style="background: rgba(34,197,94,0.1); color: #4ade80; border-color: rgba(34,197,94,0.2);">Bezahlt</span></td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @else
+                            <div style="text-align: center; color: var(--text-muted); padding: 20px;">
+                                Keine Rechnungsdaten gefunden.
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: HISTORIE -->
+            <div id="tab-history" class="tab-content">
+                <div class="card glass-card history-card">
                     <div class="card-header">
                         <h2><i class="fas fa-history"></i> Verlauf & Notizen</h2>
                     </div>
@@ -678,7 +965,9 @@
                     </div>
                 </div>
             </div>
+
         </div>
+    </div>
     </div>
 
     <script>
@@ -729,10 +1018,20 @@
 
             const editForm = document.getElementById('manufacturerEditForm');
             const editBtn = event.target.closest('[onclick="toggleManufacturerEdit()"]');
-            if (editForm && editForm.style.display === 'block' && !editForm.contains(event.target) && !editBtn) {
+            if(editForm && editForm.style.display === 'block' && !editForm.contains(event.target) && !editBtn) {
                 editForm.style.display = 'none';
             }
         });
+
+        function switchTab(event, tabId) {
+            // Remove active class from all buttons and tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // Add active class to current button and tab
+            event.currentTarget.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
     </script>
 </body>
 </html>

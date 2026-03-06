@@ -828,6 +828,26 @@ class DashboardController extends Controller
             ->select('auftrag_hersteller.*', 'hersteller.firmenname as hersteller_name', 'user.name_komplett as user_name')
             ->get();
 
+        // 1. Korrekturabzug
+        $proofs = DB::table('auftrag_korrekturabzug')
+            ->where('auftrag_id', $order->id)
+            ->get();
+
+        // 2. Versand / Sendungsnummern
+        $shipments = DB::table('auftrag_sendungsnummer')
+            ->where('auftrag_id', $order->id)
+            ->get();
+
+        // 3. Buchhaltung / Rechnung
+        $invoices = DB::table('auftrag_rechnung')
+            ->where('auftrag_id', $order->id)
+            ->get();
+
+        // 4. Lieferscheine
+        $deliveryNotes = DB::table('auftrag_lieferschein')
+            ->where('auftrag_id', $order->id)
+            ->get();
+
         // Historie laden (Versuch über eine generische DB Abfrage, falls Tabelle existiert)
         $history = [];
         if (Schema::hasTable('auftrag_informationen')) {
@@ -844,7 +864,8 @@ class DashboardController extends Controller
 
         return view('orders.show', compact(
             'user', 'order', 'items', 'companyId', 'companyName', 'accentColor', 
-            'history', 'manufacturers', 'currentManufacturer', 'manufacturerHistory'
+            'history', 'manufacturers', 'currentManufacturer', 'manufacturerHistory',
+            'proofs', 'shipments', 'invoices', 'deliveryNotes'
         ));
     }
 
