@@ -34,7 +34,10 @@ class ImportJtlOrders extends Command
 
         // 1. Lookup-Daten laden (Pre-Caching wie bei Offers)
         // Wir laden alle Projekte und gruppieren sie nach Name (kleingeschrieben)
-        $projects = DB::table('auftrag_projekt')->get();
+        $projects = DB::table('auftrag_projekt')
+            ->leftJoin('auftrag_projekt_firma', 'auftrag_projekt.id', '=', 'auftrag_projekt_firma.projekt_id')
+            ->select('auftrag_projekt.*', 'auftrag_projekt_firma.firma_id', 'auftrag_projekt_firma.bg', 'auftrag_projekt_firma.name_kuerzel')
+            ->get();
         $firmenMap = [];
         foreach ($projects as $p) {
             $nameLower = strtolower($p->firmenname);
