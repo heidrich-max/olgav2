@@ -684,6 +684,7 @@
                         </table>
                     </div>
                 </div>
+                </div>
             </div>
 
             <!-- Tab Content: KORREKTURABZUG -->
@@ -694,21 +695,24 @@
                     </div>
                     <div style="padding: 20px; text-align: center; color: var(--text-muted);">
                         @if($proofs->count() > 0)
-                            <!-- Hier käme die Liste der Korrekturabzüge -->
                             <table class="items-table">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
+                                        <th>Datum</th>
                                         <th>Projekt</th>
-                                        <th>Status</th>
+                                        <th>Aktion</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach($proofs as $p)
                                     <tr>
-                                        <td>{{ $p->id }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($p->timestamp)->format('d.m.Y H:i') }}</td>
                                         <td>{{ $p->projektname }}</td>
-                                        <td><span class="badge" style="background: rgba(255,255,255,0.1);">In Arbeit</span></td>
+                                        <td>
+                                            <a href="#" class="btn-glass-default" style="padding: 4px 10px; font-size: 0.75rem;">
+                                                <i class="fas fa-eye"></i> Öffnen
+                                            </a>
+                                        </td>
                                     </tr>
                                     @endforeach
                                 </tbody>
@@ -921,7 +925,6 @@
             </div>
 
         </div>
-    </div>
     </div>
 
     <script>
