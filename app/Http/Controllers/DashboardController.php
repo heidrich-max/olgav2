@@ -811,9 +811,10 @@ class DashboardController extends Controller
         // Hersteller laden
         $manufacturers = DB::table('hersteller')->orderBy('firmenname')->get();
         $minDate = \Carbon\Carbon::parse($order->erstelldatum)->subDay()->toDateTimeString();
+        $orderIds = [$order->id, $order->auftrag_id];
 
         $currentManufacturerRel = DB::table('auftrag_hersteller')
-            ->where('auftrag_id', $order->id)
+            ->whereIn('auftrag_id', $orderIds)
             ->where('projekt_id', $order->projekt_id)
             ->where('timestamp', '>=', $minDate)
             ->orderBy('timestamp', 'desc')
@@ -827,36 +828,36 @@ class DashboardController extends Controller
         $manufacturerHistory = DB::table('auftrag_hersteller')
             ->leftJoin('hersteller', 'auftrag_hersteller.hersteller_id', '=', 'hersteller.id')
             ->leftJoin('user', 'auftrag_hersteller.user_id', '=', 'user.id')
-            ->where('auftrag_hersteller.auftrag_id', $order->id)
+            ->whereIn('auftrag_hersteller.auftrag_id', $orderIds)
             ->where('auftrag_hersteller.projekt_id', $order->projekt_id)
             ->where('auftrag_hersteller.timestamp', '>=', $minDate)
             ->orderBy('auftrag_hersteller.timestamp', 'desc')
             ->select('auftrag_hersteller.*', 'hersteller.firmenname as hersteller_name', 'user.name_komplett as user_name')
             ->get();
 
-        // 1. Korrekturabzug - Hat leider kein Timestamp, hier müssen wir mit der Recycel-Logik leben oder hoffen
+        // 1. Korrekturabzug
         $proofs = DB::table('auftrag_korrekturabzug')
-            ->where('auftrag_id', $order->id)
+            ->whereIn('auftrag_id', $orderIds)
             ->where('projekt_id', $order->projekt_id)
             ->get();
 
         // 2. Versand / Sendungsnummern
         $shipments = DB::table('auftrag_sendungsnummer')
-            ->where('auftrag_id', $order->id)
+            ->whereIn('auftrag_id', $orderIds)
             ->where('projekt_id', $order->projekt_id)
             ->where('timestamp', '>=', $minDate)
             ->get();
 
         // 3. Buchhaltung / Rechnung
         $invoices = DB::table('auftrag_rechnung')
-            ->where('auftrag_id', $order->id)
+            ->whereIn('auftrag_id', $orderIds)
             ->where('projekt_id', $order->projekt_id)
             ->where('timestamp', '>=', $minDate)
             ->get();
 
         // 4. Lieferscheine
         $deliveryNotes = DB::table('auftrag_lieferschein')
-            ->where('auftrag_id', $order->id)
+            ->whereIn('auftrag_id', $orderIds)
             ->where('projekt_id', $order->projekt_id)
             ->where('timestamp', '>=', $minDate)
             ->get();
@@ -865,7 +866,7 @@ class DashboardController extends Controller
         $history = [];
         if (Schema::hasTable('auftrag_informationen')) {
             $history = DB::table('auftrag_informationen')
-                ->where('auftrag_id', $order->id)
+                ->whereIn('auftrag_id', $orderIds)
                 ->where('projekt_id', $order->projekt_id)
                 ->where('timestamp', '>=', $minDate)
                 ->orderBy('timestamp', 'desc')
