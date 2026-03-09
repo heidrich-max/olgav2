@@ -234,6 +234,15 @@ class ImportJtlOrders extends Command
                             DB::table('auftrag_tabelle')->insert($data);
                             $existingOrders[$lookupKey] = 'NEU';
                             $totalInserted++;
+
+                            // Initialer Status in Legacy-Tabelle (WAWI-ID synchronisation)
+                            DB::table('auftrag_status_a')->insert([
+                                'projekt_id' => $projekt_id,
+                                'auftrag_id' => $auftrag_id,
+                                'user_id'    => $userData->id ?? 3,
+                                'timestamp'  => date("Y-m-d H:i:s"),
+                                'status'     => 1 // Status NEU
+                            ]);
                         }
                     } catch (Exception $rowEx) {
                         $this->error("Fehler bei Auftrag #{$auftrag_id}: " . $rowEx->getMessage());
