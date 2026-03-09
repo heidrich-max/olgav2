@@ -314,6 +314,67 @@
             font-size: 0.7rem;
         }
 
+        /* Searchable Select Styles */
+        .search-container {
+            margin-bottom: 12px;
+        }
+        .search-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .search-input:focus {
+            border-color: var(--primary-accent);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        .manufacturer-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        .manufacturer-option {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .manufacturer-option:last-child {
+            border-bottom: none;
+        }
+        .manufacturer-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .manufacturer-option.selected {
+            background: rgba(52, 152, 219, 0.2);
+            color: var(--primary-accent);
+            border-left: 3px solid var(--primary-accent);
+        }
+        .manufacturer-option .m-num {
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            color: var(--primary-accent);
+            font-weight: 600;
+            margin-right: 12px;
+            min-width: 60px;
+            display: inline-block;
+        }
+        .manufacturer-option .m-name {
+            flex-grow: 1;
+        }
+
         /* ---- TABS STYLES ---- */
         .tab-navigation {
             display: flex;
@@ -811,23 +872,33 @@
                                         </div>
                                     </div>
 
-                                    <div id="manufacturerEditForm" style="display: none; position: absolute; right: 0; top: 0; background: #1a1e2e; border: 1px solid var(--glass-border); padding: 15px; border-radius: 12px; z-index: 1001; box-shadow: 0 15px 35px rgba(0,0,0,0.6);">
-                                        <form action="{{ route('orders.manufacturer.update', $order->id) }}" method="POST">
+                                    <div id="manufacturerEditForm" style="display: none; position: absolute; right: 0; top: 0; background: #1a1e2e; border: 1px solid var(--glass-border); padding: 20px; border-radius: 15px; z-index: 1001; box-shadow: 0 20px 50px rgba(0,0,0,0.8); width: 400px;">
+                                        <form action="{{ route('orders.manufacturer.update', $order->id) }}" method="POST" id="manufacturerForm">
                                             @csrf
-                                            <div style="margin-bottom: 12px;">
-                                                <label style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 5px;">Hersteller auswählen</label>
-                                                <select name="hersteller_id" class="form-control" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; width: 250px;">
-                                                    <option value="">Hersteller wählen...</option>
-                                                    @foreach($manufacturers as $m)
-                                                        <option value="{{ $m->id }}" {{ ($currentManufacturer && $currentManufacturer->id == $m->id) ? 'selected' : '' }}>
-                                                            {{ $m->firmenname }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
+                                            <input type="hidden" name="hersteller_id" id="selected_hersteller_id" value="{{ $currentManufacturer->id ?? '' }}">
+                                            
+                                            <div class="search-container">
+                                                <label style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">Hersteller auswählen</label>
+                                                <input type="text" id="manufacturerSearch" class="search-input" placeholder="Nach Name oder Nummer suchen..." autocomplete="off">
                                             </div>
-                                            <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                                                <button type="button" class="btn-glass-default" onclick="toggleManufacturerEdit()" style="padding: 6px 12px; font-size: 0.8rem;">Abbrechen</button>
-                                                <button type="submit" class="btn-glass-default" style="padding: 6px 12px; font-size: 0.8rem; background: var(--primary-accent); border-color: var(--primary-accent);">Speichern</button>
+
+                                            <div class="manufacturer-list" id="manufacturerList">
+                                                <div class="manufacturer-option {{ !$currentManufacturer ? 'selected' : '' }}" onclick="selectManufacturer('', 'Nicht zugewiesen')">
+                                                    <span class="m-name" style="font-style: italic; color: var(--text-muted);">Kein Hersteller</span>
+                                                </div>
+                                                @foreach($manufacturers as $m)
+                                                    <div class="manufacturer-option {{ ($currentManufacturer && $currentManufacturer->id == $m->id) ? 'selected' : '' }}" 
+                                                         onclick="selectManufacturer('{{ $m->id }}', '{{ $m->herstellernummer }} - {{ $m->firmenname }}')"
+                                                         data-search="{{ strtolower($m->herstellernummer . ' ' . $m->firmenname) }}">
+                                                        <span class="m-num">{{ $m->herstellernummer }}</span>
+                                                        <span class="m-name">{{ $m->firmenname }}</span>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+
+                                            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                                                <button type="button" class="btn-glass-default" onclick="toggleManufacturerEdit()" style="padding: 8px 16px;">Abbrechen</button>
+                                                <button type="submit" class="btn-glass-default" style="padding: 8px 16px; background: var(--primary-accent); border-color: var(--primary-accent);">Zuweisen</button>
                                             </div>
                                         </form>
                                     </div>
@@ -1038,6 +1109,27 @@
             // Add active class to current button and tab
             event.currentTarget.classList.add('active');
             document.getElementById(tabId).classList.add('active');
+        }
+
+        // Manufacturer Search Logic
+        const manufacturerSearch = document.getElementById('manufacturerSearch');
+        if (manufacturerSearch) {
+            manufacturerSearch.addEventListener('input', function(e) {
+                const term = e.target.value.toLowerCase();
+                const options = document.querySelectorAll('.manufacturer-option');
+                options.forEach(opt => {
+                    if (opt.hasAttribute('data-search')) {
+                        const searchData = opt.getAttribute('data-search');
+                        opt.style.display = searchData.includes(term) ? 'flex' : 'none';
+                    }
+                });
+            });
+        }
+
+        function selectManufacturer(id, displayName) {
+            document.getElementById('selected_hersteller_id').value = id;
+            document.querySelectorAll('.manufacturer-option').forEach(opt => opt.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
         }
     </script>
 </body>

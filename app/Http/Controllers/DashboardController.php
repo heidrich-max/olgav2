@@ -809,7 +809,7 @@ class DashboardController extends Controller
         }
 
         // Hersteller laden
-        $manufacturers = DB::table('hersteller')->orderBy('firmenname')->get();
+        $manufacturers = DB::table('hersteller')->orderBy('herstellernummer')->get();
         $minDate = \Carbon\Carbon::parse($order->erstelldatum)->subDay()->toDateTimeString();
         $orderIds = [$order->id, $order->auftrag_id];
 
