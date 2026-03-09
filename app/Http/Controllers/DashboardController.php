@@ -107,6 +107,23 @@ class DashboardController extends Controller
         if (isset($order->projekt_farbe_hex) && $order->projekt_farbe_hex && strpos($order->projekt_farbe_hex, '#') !== 0) {
             $order->projekt_farbe_hex = '#' . $order->projekt_farbe_hex;
         }
+
+        // Load Manufacturer
+        $minDate = \Carbon\Carbon::parse($order->erstelldatum)->subDay()->toDateTimeString();
+        $orderIds = [$order->id, $order->auftrag_id];
+        $mRel = DB::table('auftrag_hersteller')
+            ->whereIn('auftrag_id', $orderIds)
+            ->where('projekt_id', $order->projekt_id)
+            ->where('timestamp', '>=', $minDate)
+            ->orderBy('timestamp', 'desc')
+            ->first();
+        
+        $order->hersteller = '—';
+        if ($mRel) {
+            $h = DB::table('hersteller')->where('id', $mRel->hersteller_id)->first();
+            if ($h) $order->hersteller = $h->firmenname;
+        }
+
         return $order;
     });
             
@@ -457,6 +474,23 @@ class DashboardController extends Controller
             if (isset($order->projekt_farbe_hex) && $order->projekt_farbe_hex && strpos($order->projekt_farbe_hex, '#') !== 0) {
                 $order->projekt_farbe_hex = '#' . $order->projekt_farbe_hex;
             }
+
+            // Load Manufacturer
+            $minDate = \Carbon\Carbon::parse($order->erstelldatum)->subDay()->toDateTimeString();
+            $orderIds = [$order->id, $order->auftrag_id];
+            $mRel = DB::table('auftrag_hersteller')
+                ->whereIn('auftrag_id', $orderIds)
+                ->where('projekt_id', $order->projekt_id)
+                ->where('timestamp', '>=', $minDate)
+                ->orderBy('timestamp', 'desc')
+                ->first();
+            
+            $order->hersteller = '—';
+            if ($mRel) {
+                $h = DB::table('hersteller')->where('id', $mRel->hersteller_id)->first();
+                if ($h) $order->hersteller = $h->firmenname;
+            }
+
             return $order;
         });
 
