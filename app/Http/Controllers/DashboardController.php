@@ -932,12 +932,19 @@ class DashboardController extends Controller
             return back()->with('error', 'Auftrag nicht gefunden.');
         }
 
+        $hersteller = DB::table('hersteller')->where('id', $request->hersteller_id)->first();
+
         DB::table('auftrag_hersteller')->insert([
             'auftrag_id'    => (int)$order->auftrag_id,
             'projekt_id'    => $order->projekt_id,
             'hersteller_id' => $request->hersteller_id,
             'user_id'       => Auth::id(),
             'timestamp'     => now(),
+        ]);
+
+        // Update main table for cache/compatibility
+        DB::table('auftrag_tabelle')->where('id', $id)->update([
+            'hersteller' => $hersteller->firmenname ?? null
         ]);
 
         return back()->with('success', 'Hersteller wurde erfolgreich zugewiesen.');
