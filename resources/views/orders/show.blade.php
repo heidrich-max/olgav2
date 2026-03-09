@@ -837,7 +837,7 @@
                     </div>
 
                     <div style="display: flex; flex-direction: column; gap: 20px;">
-                        <div class="card glass-card">
+                        <div class="card glass-card" style="position: relative; z-index: 100;">
                             <div class="card-header">
                                 <h2><i class="fas fa-industry"></i> Hersteller-Zuweisung</h2>
                             </div>
@@ -861,7 +861,7 @@
                                         </div>
                                         <button class="edit-btn-small" onclick="toggleManufacturerEdit()"><i class="fas fa-pencil-alt"></i></button>
 
-                                        <div id="historyPopover" class="history-popover">
+                                        <div id="historyPopover" class="history-popover" style="z-index: 2000;">
                                             <h4>Zuweisungs-Historie</h4>
                                             @foreach($manufacturerHistory as $h)
                                                 <div class="history-mini-item">
@@ -872,7 +872,7 @@
                                         </div>
                                     </div>
 
-                                    <div id="manufacturerEditForm" style="display: none; position: absolute; right: 0; top: 0; background: #1a1e2e; border: 1px solid var(--glass-border); padding: 20px; border-radius: 15px; z-index: 1001; box-shadow: 0 20px 50px rgba(0,0,0,0.8); width: 400px;">
+                                    <div id="manufacturerEditForm" style="display: none; position: absolute; right: 0; top: 0; background: #1a1e2e; border: 1px solid var(--glass-border); padding: 20px; border-radius: 15px; z-index: 2000; box-shadow: 0 20px 50px rgba(0,0,0,0.8); width: 400px;">
                                         <form action="{{ route('orders.manufacturer.update', $order->id) }}" method="POST" id="manufacturerForm">
                                             @csrf
                                             <input type="hidden" name="hersteller_id" id="selected_hersteller_id" value="{{ $currentManufacturer->id ?? '' }}">
