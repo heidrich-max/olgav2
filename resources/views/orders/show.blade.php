@@ -608,11 +608,7 @@
                         </div>
                         <div class="info-item">
                             <span class="label">Bearbeiter:</span>
-                            <span>{{ $order->benutzer }}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="label">Projekt:</span>
-                            <span>{{ $order->projekt_firmenname }}</span>
+                            <span style="font-weight: bold;">{{ $order->benutzer }}</span>
                         </div>
                         <div class="info-item">
                             <span class="label">Projekt:</span>
