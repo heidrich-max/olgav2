@@ -722,96 +722,150 @@
 
             <!-- Tab Content: BESTELLUNG -->
             <div id="tab-order" class="tab-content">
-                <div class="detail-grid" style="grid-template-columns: 1fr 1fr;">
-                    <div class="card glass-card">
+                <div class="detail-grid">
+                    <!-- Addresses -->
+                    <div class="card glass-card address-card">
                         <div class="card-header">
-                            <h2><i class="fas fa-industry"></i> Hersteller-Zuweisung</h2>
+                            <h2><i class="fas fa-map-marker-alt"></i> Adressinformationen</h2>
                         </div>
-                        <div class="info-list">
-                            <div class="info-item" style="position: relative; justify-content: space-between;">
-                                <span class="label">Aktueller Hersteller:</span>
-                                <div class="manufacturer-section">
-                                    <div style="text-align: right;">
-                                        <div id="currentManufacturerNameTab" style="font-weight: bold; font-size: 1.1rem;">
-                                            {{ $currentManufacturer->firmenname ?? 'Nicht zugewiesen' }}
-                                        </div>
-                                        @if($manufacturerHistory->count() > 1)
-                                            <div style="font-size: 0.75rem; color: var(--text-muted); cursor: pointer;" onclick="toggleHistoryPopover()">
-                                                <i class="fas fa-history"></i> Historie anzeigen
-                                            </div>
-                                        @elseif($manufacturerHistory->count() == 1)
-                                            <div style="font-size: 0.75rem; color: var(--text-muted);">
-                                                von {{ $manufacturerHistory[0]->user_name }} am {{ \Carbon\Carbon::parse($manufacturerHistory[0]->timestamp)->format('d.m.Y H:i') }}
-                                            </div>
+                        <div class="address-split">
+                            <div class="address-box">
+                                <h3>Rechnungsadresse</h3>
+                                <p>
+                                    <strong>{{ $order->firmenname }}</strong><br>
+                                    {{ $order->kunde_strasse ?? 'Keine Straße hinterlegt' }}<br>
+                                    {{ $order->kunde_plz ?? '' }} {{ $order->kunde_ort ?? '' }}<br>
+                                    {{ $order->kunde_land ?? 'Deutschland' }}<br>
+                                    @if($order->kunde_telefon)
+                                    <span class="contact-info"><i class="fas fa-phone"></i> {{ $order->kunde_telefon }}</span>
+                                    @endif
+                                    @if($order->kunde_mail)
+                                    <span class="contact-info"><i class="fas fa-envelope"></i> {{ $order->kunde_mail }}</span>
+                                    @endif
+
+                                    @if($order->ansprechpartner_vorname || $order->ansprechpartner_nachname)
+                                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+                                        <h3 style="font-size: 0.75rem; margin-bottom: 8px;">Ansprechpartner</h3>
+                                        <strong>
+                                            {{ $order->ansprechpartner_anrede }} 
+                                            {{ $order->ansprechpartner_titel }} 
+                                            {{ $order->ansprechpartner_vorname }} 
+                                            {{ $order->ansprechpartner_nachname }}
+                                        </strong>
+                                        @if($order->ansprechpartner_mobil)
+                                        <span class="contact-info"><i class="fas fa-mobile-alt"></i> {{ $order->ansprechpartner_mobil }}</span>
                                         @endif
                                     </div>
-                                    <button class="edit-btn-small" onclick="toggleManufacturerEdit()"><i class="fas fa-pencil-alt"></i></button>
-
-                                    <div id="historyPopover" class="history-popover">
-                                        <h4>Zuweisungs-Historie</h4>
-                                        @foreach($manufacturerHistory as $h)
-                                            <div class="history-mini-item">
-                                                <strong>{{ $h->hersteller_name }}</strong><br>
-                                                <span class="history-mini-date">durch {{ $h->user_name }} am {{ \Carbon\Carbon::parse($h->timestamp)->format('d.m.Y H:i') }}</span>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-
-                                <div id="manufacturerEditForm" style="display: none; position: absolute; right: 0; top: 0; background: #1a1e2e; border: 1px solid var(--glass-border); padding: 15px; border-radius: 12px; z-index: 1001; box-shadow: 0 15px 35px rgba(0,0,0,0.6);">
-                                    <form action="{{ route('orders.manufacturer.update', $order->id) }}" method="POST">
-                                        @csrf
-                                        <div style="margin-bottom: 12px;">
-                                            <label style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 5px;">Hersteller auswählen</label>
-                                            <select name="hersteller_id" class="form-control" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; width: 250px;">
-                                                <option value="">Hersteller wählen...</option>
-                                                @foreach($manufacturers as $m)
-                                                    <option value="{{ $m->id }}" {{ ($currentManufacturer && $currentManufacturer->id == $m->id) ? 'selected' : '' }}>
-                                                        {{ $m->firmenname }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                                            <button type="button" class="btn-glass-default" onclick="toggleManufacturerEdit()" style="padding: 6px 12px; font-size: 0.8rem;">Abbrechen</button>
-                                            <button type="submit" class="btn-glass-default" style="padding: 6px 12px; font-size: 0.8rem; background: var(--primary-accent); border-color: var(--primary-accent);">Speichern</button>
-                                        </div>
-                                    </form>
-                                </div>
+                                    @endif
+                                </p>
+                            </div>
+                            <div class="address-box">
+                                <h3>Lieferadresse</h3>
+                                <p>
+                                    @if(!empty($order->lieferadresse_strasse))
+                                        <strong>{{ $order->lieferadresse_firma ?: ($order->lieferadresse_vorname . ' ' . $order->lieferadresse_nachname) }}</strong><br>
+                                        {{ $order->lieferadresse_strasse }}<br>
+                                        {{ $order->lieferadresse_plz }} {{ $order->lieferadresse_ort }}<br>
+                                        {{ $order->lieferadresse_land ?: 'Deutschland' }}
+                                    @else
+                                        <span style="color: var(--text-muted); font-style: italic;">Identisch mit Rechnungsadresse</span>
+                                    @endif
+                                </p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card glass-card">
-                        <div class="card-header">
-                            <h2><i class="fas fa-file-invoice"></i> Lieferschein</h2>
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+                        <div class="card glass-card">
+                            <div class="card-header">
+                                <h2><i class="fas fa-industry"></i> Hersteller-Zuweisung</h2>
+                            </div>
+                            <div class="info-list">
+                                <div class="info-item" style="position: relative; justify-content: space-between;">
+                                    <span class="label">Aktueller Hersteller:</span>
+                                    <div class="manufacturer-section">
+                                        <div style="text-align: right;">
+                                            <div id="currentManufacturerNameTab" style="font-weight: bold; font-size: 1.1rem;">
+                                                {{ $currentManufacturer->firmenname ?? 'Nicht zugewiesen' }}
+                                            </div>
+                                            @if($manufacturerHistory->count() > 1)
+                                                <div style="font-size: 0.75rem; color: var(--text-muted); cursor: pointer;" onclick="toggleHistoryPopover()">
+                                                    <i class="fas fa-history"></i> Historie anzeigen
+                                                </div>
+                                            @elseif($manufacturerHistory->count() == 1)
+                                                <div style="font-size: 0.75rem; color: var(--text-muted);">
+                                                    von {{ $manufacturerHistory[0]->user_name }} am {{ \Carbon\Carbon::parse($manufacturerHistory[0]->timestamp)->format('d.m.Y H:i') }}
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <button class="edit-btn-small" onclick="toggleManufacturerEdit()"><i class="fas fa-pencil-alt"></i></button>
+
+                                        <div id="historyPopover" class="history-popover">
+                                            <h4>Zuweisungs-Historie</h4>
+                                            @foreach($manufacturerHistory as $h)
+                                                <div class="history-mini-item">
+                                                    <strong>{{ $h->hersteller_name }}</strong><br>
+                                                    <span class="history-mini-date">durch {{ $h->user_name }} am {{ \Carbon\Carbon::parse($h->timestamp)->format('d.m.Y H:i') }}</span>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+
+                                    <div id="manufacturerEditForm" style="display: none; position: absolute; right: 0; top: 0; background: #1a1e2e; border: 1px solid var(--glass-border); padding: 15px; border-radius: 12px; z-index: 1001; box-shadow: 0 15px 35px rgba(0,0,0,0.6);">
+                                        <form action="{{ route('orders.manufacturer.update', $order->id) }}" method="POST">
+                                            @csrf
+                                            <div style="margin-bottom: 12px;">
+                                                <label style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 5px;">Hersteller auswählen</label>
+                                                <select name="hersteller_id" class="form-control" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #fff; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; width: 250px;">
+                                                    <option value="">Hersteller wählen...</option>
+                                                    @foreach($manufacturers as $m)
+                                                        <option value="{{ $m->id }}" {{ ($currentManufacturer && $currentManufacturer->id == $m->id) ? 'selected' : '' }}>
+                                                            {{ $m->firmenname }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                                                <button type="button" class="btn-glass-default" onclick="toggleManufacturerEdit()" style="padding: 6px 12px; font-size: 0.8rem;">Abbrechen</button>
+                                                <button type="submit" class="btn-glass-default" style="padding: 6px 12px; font-size: 0.8rem; background: var(--primary-accent); border-color: var(--primary-accent);">Speichern</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div style="text-align: center; color: var(--text-muted); padding: 20px;">
-                            @if($deliveryNotes->count() > 0)
-                                <table class="items-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Nr.</th>
-                                            <th>Datum</th>
-                                            <th>Aktion</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($deliveryNotes as $dn)
-                                        <tr>
-                                            <td>{{ $dn->id }}</td>
-                                            <td>{{ \Carbon\Carbon::parse($dn->timestamp)->format('d.m.Y') }}</td>
-                                            <td><a href="#" class="btn-glass-default" style="padding: 4px 8px; font-size: 0.7rem;"><i class="fas fa-download"></i></a></td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            @else
-                                <p>Noch keine Lieferscheine generiert.</p>
-                                <button class="btn-glass-default" style="margin-top: 15px;">
-                                    <i class="fas fa-plus"></i> Lieferschein generieren
-                                </button>
-                            @endif
+
+                        <div class="card glass-card">
+                            <div class="card-header">
+                                <h2><i class="fas fa-file-invoice"></i> Lieferschein</h2>
+                            </div>
+                            <div style="text-align: center; color: var(--text-muted); padding: 20px;">
+                                @if($deliveryNotes->count() > 0)
+                                    <table class="items-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Nr.</th>
+                                                <th>Datum</th>
+                                                <th>Aktion</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($deliveryNotes as $dn)
+                                            <tr>
+                                                <td>{{ $dn->id }}</td>
+                                                <td>{{ \Carbon\Carbon::parse($dn->timestamp)->format('d.m.Y') }}</td>
+                                                <td><a href="#" class="btn-glass-default" style="padding: 4px 8px; font-size: 0.7rem;"><i class="fas fa-download"></i></a></td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                @else
+                                    <p>Noch keine Lieferscheine generiert.</p>
+                                    <button class="btn-glass-default" style="margin-top: 15px;">
+                                        <i class="fas fa-plus"></i> Lieferschein generieren
+                                    </button>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>
