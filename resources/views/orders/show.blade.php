@@ -848,13 +848,15 @@
                                             <div id="currentManufacturerNameTab" style="font-weight: bold; font-size: 1.1rem;">
                                                 {{ $currentManufacturer ? ($currentManufacturer->herstellernummer . ' - ' . $currentManufacturer->firmenname) : 'Nicht zugewiesen' }}
                                             </div>
-                                            @if($manufacturerHistory->count() > 1)
-                                                <div style="font-size: 0.75rem; color: var(--text-muted); cursor: pointer;" onclick="toggleHistoryPopover()">
-                                                    <i class="fas fa-history"></i> Historie anzeigen
-                                                </div>
-                                            @elseif($manufacturerHistory->count() == 1)
+                                            @if($manufacturerHistory->count() > 0)
+                                                @php $latest = $manufacturerHistory[0]; @endphp
                                                 <div style="font-size: 0.75rem; color: var(--text-muted);">
-                                                    von {{ $manufacturerHistory[0]->user_name }} am {{ \Carbon\Carbon::parse($manufacturerHistory[0]->timestamp)->format('d.m.Y H:i') }}
+                                                    von {{ $latest->user_name ?? 'Unbekannt' }} am {{ \Carbon\Carbon::parse($latest->timestamp)->format('d.m.Y H:i') }}
+                                                    @if($manufacturerHistory->count() > 1)
+                                                        <span style="cursor: pointer; text-decoration: underline; margin-left: 5px;" onclick="toggleHistoryPopover()">
+                                                            <i class="fas fa-history"></i> (+{{ $manufacturerHistory->count() - 1 }})
+                                                        </span>
+                                                    @endif
                                                 </div>
                                             @endif
                                         </div>

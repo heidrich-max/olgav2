@@ -899,7 +899,7 @@ class DashboardController extends Controller
         }
 
         DB::table('auftrag_hersteller')->insert([
-            'auftrag_id'    => $order->id,
+            'auftrag_id'    => (int)$order->auftrag_id,
             'projekt_id'    => $order->projekt_id,
             'hersteller_id' => $request->hersteller_id,
             'user_id'       => Auth::id(),
