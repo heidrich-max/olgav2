@@ -839,15 +839,14 @@
                     <div style="display: flex; flex-direction: column; gap: 20px;">
                         <div class="card glass-card" style="position: relative; z-index: 100;">
                             <div class="card-header">
-                                <h2><i class="fas fa-industry"></i> Hersteller-Zuweisung</h2>
+                                <h2><i class="fas fa-industry"></i> Hersteller</h2>
                             </div>
                             <div class="info-list">
                                 <div class="info-item" style="position: relative; justify-content: space-between;">
-                                    <span class="label">Aktueller Hersteller:</span>
-                                    <div class="manufacturer-section">
-                                        <div style="text-align: right;">
+                                    <div class="manufacturer-section" style="width: 100%; justify-content: flex-start; gap: 15px;">
+                                        <div style="flex-grow: 1;">
                                             <div id="currentManufacturerNameTab" style="font-weight: bold; font-size: 1.1rem;">
-                                                {{ $currentManufacturer->firmenname ?? 'Nicht zugewiesen' }}
+                                                {{ $currentManufacturer ? ($currentManufacturer->herstellernummer . ' - ' . $currentManufacturer->firmenname) : 'Nicht zugewiesen' }}
                                             </div>
                                             @if($manufacturerHistory->count() > 1)
                                                 <div style="font-size: 0.75rem; color: var(--text-muted); cursor: pointer;" onclick="toggleHistoryPopover()">
