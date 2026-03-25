@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 
 use App\Models\Produkt;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class ProduktController extends Controller
 {
