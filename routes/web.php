@@ -180,6 +180,13 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/manufacturers/ai', [AiController::class, 'ask'])->name('manufacturers.ai');
 
+    // Produktverwaltung
+    Route::get('/products', [\App\Http\Controllers\ProduktController::class, 'index'])->name('products.index');
+    Route::get('/products/export', [\App\Http\Controllers\ProduktController::class, 'export'])->name('products.export');
+    Route::get('/products/{product}', [\App\Http\Controllers\ProduktController::class, 'show'])->name('products.show');
+    Route::get('/products/{product}/edit', [\App\Http\Controllers\ProduktController::class, 'edit'])->name('products.edit');
+    Route::put('/products/{product}', [\App\Http\Controllers\ProduktController::class, 'update'])->name('products.update');
+
     Route::get('/run-migrations', function() {
         try {
             \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
