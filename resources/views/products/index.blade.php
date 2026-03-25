@@ -184,7 +184,42 @@
             <button class="user-btn" id="userBtn">
                 <i class="fas fa-user-circle" style="color: var(--primary-accent); font-size: 1.1rem;"></i>
                 <span>{{ $user->name_komplett }}</span>
+                <i class="fas fa-chevron-down" style="font-size: 0.65rem; color: var(--text-muted);"></i>
             </button>
+            <div class="user-dropdown-menu">
+                <div class="user-dropdown-header" style="padding: 14px 18px; background: rgba(255,255,255,0.04); border-bottom: 1px solid var(--glass-border);">
+                    <div class="user-name" style="font-weight: 600; font-size: 0.9rem; color: #fff;">{{ $user->name_komplett }}</div>
+                    <div class="user-role" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">{{ $companyName }}</div>
+                </div>
+                <a href="{{ route('my.dashboard') }}" class="user-dropdown-item">
+                    <i class="fas fa-user-cog"></i> Mein Dashboard
+                </a>
+                <a href="{{ route('calendar') }}" class="user-dropdown-item">
+                    <i class="fas fa-calendar-alt"></i> Mein Kalender
+                </a>
+                <a href="{{ route('products.index') }}" class="user-dropdown-item active">
+                    <i class="fas fa-boxes"></i> Produkte
+                </a>
+                <a href="{{ route('manufacturers.index') }}" class="user-dropdown-item">
+                    <i class="fas fa-industry"></i> Hersteller
+                </a>
+                <a href="{{ route('portals.index') }}" class="user-dropdown-item">
+                    <i class="fas fa-globe"></i> Portale
+                </a>
+                <a href="{{ route('companies.index') }}" class="user-dropdown-item">
+                    <i class="fas fa-building"></i> Firmen verwalten
+                </a>
+                <a href="{{ route('settings.email.index') }}" class="user-dropdown-item">
+                    <i class="fas fa-envelope-open-text"></i> E-Mail Einstellungen
+                </a>
+                <div class="user-dropdown-divider"></div>
+                <a href="#" class="user-dropdown-item logout" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    <i class="fas fa-sign-out-alt"></i> Abmelden
+                </a>
+            </div>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+            </form>
         </div>
     </nav>
 
@@ -267,8 +302,23 @@
     </div>
 
     <script>
-        // Simplified Switcher/Dropdown for demo
-        document.getElementById('switcherBtn').addEventListener('click', () => {
+        // Dropdown Logic
+        const userBtn = document.getElementById('userBtn');
+        const userDropdown = document.getElementById('userDropdown');
+        
+        if(userBtn) {
+            userBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userDropdown.classList.toggle('active');
+            });
+        }
+
+        document.addEventListener('click', () => {
+            if(userDropdown) userDropdown.classList.remove('active');
+        });
+
+        document.getElementById('switcherBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
             alert('Firmenwechsel über Dashboard möglich.');
         });
         

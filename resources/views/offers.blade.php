@@ -603,6 +603,9 @@
                     <a href="{{ route('calendar') }}" class="user-dropdown-item">
                         <i class="fas fa-calendar-alt"></i> Mein Kalender
                     </a>
+                    <a href="{{ route('products.index') }}" class="user-dropdown-item {{ request()->routeIs('products.*') ? 'active' : '' }}">
+                        <i class="fas fa-boxes"></i> Produkte
+                    </a>
                     <a href="{{ route('manufacturers.index') }}" class="user-dropdown-item">
                         <i class="fas fa-industry"></i> Hersteller
                     </a>
