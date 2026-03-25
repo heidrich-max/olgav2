@@ -733,10 +733,14 @@
                             </td>
                             <td style="background: {{ $rowBg }};">
                                 <span>{{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}</span>
-                                @if($order->lieferdatum)
-                                    <div style="font-size: 0.75rem; color: {{ \Carbon\Carbon::parse($order->lieferdatum)->lt(now()->startOfDay()) ? '#ef4444' : 'var(--text-muted)' }}; margin-top: 4px; display: flex; align-items: center; gap: 6px; font-weight: {{ \Carbon\Carbon::parse($order->lieferdatum)->lt(now()->startOfDay()) ? '700' : '400' }};">
+                                @php
+                                    $displayDate = $order->lieferdatum_effektiv;
+                                    $isOverdue = $displayDate && \Carbon\Carbon::parse($displayDate)->lt(now()->startOfDay());
+                                @endphp
+                                @if($displayDate)
+                                    <div style="font-size: 0.75rem; color: {{ $isOverdue ? '#ef4444' : 'var(--text-muted)' }}; margin-top: 4px; display: flex; align-items: center; gap: 6px; font-weight: {{ $isOverdue ? '700' : '400' }};">
                                         <i class="fas fa-truck" title="Lieferdatum"></i>
-                                        {{ \Carbon\Carbon::parse($order->lieferdatum)->format('d.m.Y') }}
+                                        {{ \Carbon\Carbon::parse($displayDate)->format('d.m.Y') }}
                                     </div>
                                 @endif
                             </td>

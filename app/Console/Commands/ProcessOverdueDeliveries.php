@@ -29,11 +29,25 @@ class ProcessOverdueDeliveries extends Command
         
         $today = \Carbon\Carbon::now()->toDateString();
         
-        // Finde alle nicht abgeschlossenen Aufträge mit Lieferdatum in der Vergangenheit
+        // Finde alle nicht abgeschlossenen Aufträge mit Lieferdatum in der Vergangenheit (unter Berücksichtigung von Korrekturen)
         $overdueOrders = \Illuminate\Support\Facades\DB::table('auftrag_tabelle')
-            ->whereNotNull('lieferdatum')
-            ->where('lieferdatum', '<', $today)
-            ->where('abgeschlossen_status', '!=', 'Auftrag abgeschlossen')
+            ->leftJoin('bestelldatum_korrektur', function($join) {
+                $join->on('auftrag_tabelle.auftrag_id', '=', 'bestelldatum_korrektur.auftrag_id')
+                     ->on('auftrag_tabelle.projekt_id', '=', 'bestelldatum_korrektur.projekt_id');
+            })
+            ->select('auftrag_tabelle.*')
+            ->where(function($query) use ($today) {
+                $query->where(function($q) use ($today) {
+                    $q->whereNotNull('bestelldatum_korrektur.bestelldatum')
+                      ->where('bestelldatum_korrektur.bestelldatum', '<', $today);
+                })
+                ->orWhere(function($q) use ($today) {
+                    $q->whereNull('bestelldatum_korrektur.bestelldatum')
+                      ->whereNotNull('auftrag_tabelle.lieferdatum')
+                      ->where('auftrag_tabelle.lieferdatum', '<', $today);
+                });
+            })
+            ->where('auftrag_tabelle.abgeschlossen_status', '!=', 'Auftrag abgeschlossen')
             ->get();
 
         $this->info(count($overdueOrders) . " überfällige Aufträge gefunden.");

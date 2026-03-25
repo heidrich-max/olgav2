@@ -48,6 +48,10 @@ class DashboardController extends Controller
         $projectRevenues = DB::table('auftrag_tabelle')
             ->join('auftrag_projekt', 'auftrag_tabelle.projekt_id', '=', 'auftrag_projekt.id')
             ->leftJoin('auftrag_projekt_firma', 'auftrag_projekt.firmenname', '=', 'auftrag_projekt_firma.name')
+            ->leftJoin('bestelldatum_korrektur', function($join) {
+                $join->on('auftrag_tabelle.auftrag_id', '=', 'bestelldatum_korrektur.auftrag_id')
+                     ->on('auftrag_tabelle.projekt_id', '=', 'bestelldatum_korrektur.projekt_id');
+            })
             ->where('auftrag_tabelle.firmen_id', $companyId)
             ->whereMonth('auftrag_tabelle.erstelldatum', $selectedMonth)
             ->whereYear('auftrag_tabelle.erstelldatum', $selectedYear)
@@ -82,6 +86,10 @@ class DashboardController extends Controller
     $orders = DB::table('auftrag_tabelle')
         ->leftJoin('auftrag_status', 'auftrag_tabelle.letzter_status', '=', 'auftrag_status.status_sh')
         ->leftJoin('auftrag_projekt_firma', 'auftrag_tabelle.projekt_firmenname', '=', 'auftrag_projekt_firma.name')
+        ->leftJoin('bestelldatum_korrektur', function($join) {
+            $join->on('auftrag_tabelle.auftrag_id', '=', 'bestelldatum_korrektur.auftrag_id')
+                 ->on('auftrag_tabelle.projekt_id', '=', 'bestelldatum_korrektur.projekt_id');
+        })
         ->where('auftrag_tabelle.firmen_id', $companyId)
         ->where('auftrag_tabelle.abgeschlossen_status', '!=', 'Auftrag abgeschlossen')
         ->orderBy('auftrag_tabelle.erstelldatum', 'asc')
@@ -91,7 +99,8 @@ class DashboardController extends Controller
             'auftrag_status.color as status_color', 
             'auftrag_status.status_sh as status_kuerzel',
             'auftrag_status.status_lg as status_name_raw',
-            'auftrag_projekt_firma.name_kuerzel as project_kuerzel'
+            'auftrag_projekt_firma.name_kuerzel as project_kuerzel',
+            DB::raw('COALESCE(bestelldatum_korrektur.bestelldatum, auftrag_tabelle.lieferdatum) as lieferdatum_effektiv')
         )
         ->limit(10)
         ->get();
@@ -445,13 +454,18 @@ class DashboardController extends Controller
         }
 
         $orders = $query->orderBy('auftrag_tabelle.erstelldatum', 'desc')
+            ->leftJoin('bestelldatum_korrektur', function($join) {
+                $join->on('auftrag_tabelle.auftrag_id', '=', 'bestelldatum_korrektur.auftrag_id')
+                     ->on('auftrag_tabelle.projekt_id', '=', 'bestelldatum_korrektur.projekt_id');
+            })
             ->select(
                 'auftrag_tabelle.*', 
                 'auftrag_status.bg as status_bg', 
                 'auftrag_status.color as status_color', 
                 'auftrag_status.status_lg as status_name',
                 'auftrag_status.status_sh as status_sh',
-                'auftrag_projekt_firma.name_kuerzel as project_kuerzel'
+                'auftrag_projekt_firma.name_kuerzel as project_kuerzel',
+                DB::raw('COALESCE(bestelldatum_korrektur.bestelldatum, auftrag_tabelle.lieferdatum) as lieferdatum_effektiv')
             )
             ->paginate(20)
             ->appends([
@@ -556,6 +570,10 @@ class DashboardController extends Controller
         $myOrders = DB::table('auftrag_tabelle')
             ->leftJoin('auftrag_status', 'auftrag_tabelle.letzter_status', '=', 'auftrag_status.status_sh')
             ->leftJoin('auftrag_projekt_firma', 'auftrag_tabelle.projekt_firmenname', '=', 'auftrag_projekt_firma.name')
+            ->leftJoin('bestelldatum_korrektur', function($join) {
+                $join->on('auftrag_tabelle.auftrag_id', '=', 'bestelldatum_korrektur.auftrag_id')
+                     ->on('auftrag_tabelle.projekt_id', '=', 'bestelldatum_korrektur.projekt_id');
+            })
             ->where('auftrag_tabelle.benutzer', $userName)
             ->where('auftrag_tabelle.abgeschlossen_status', '!=', 'Auftrag abgeschlossen')
             ->orderBy('auftrag_tabelle.erstelldatum', 'asc')
@@ -565,7 +583,8 @@ class DashboardController extends Controller
                 'auftrag_status.color as status_color',
                 'auftrag_status.status_sh as status_kuerzel',
                 'auftrag_status.status_lg as status_name_raw',
-                'auftrag_projekt_firma.name_kuerzel as project_kuerzel'
+                'auftrag_projekt_firma.name_kuerzel as project_kuerzel',
+                DB::raw('COALESCE(bestelldatum_korrektur.bestelldatum, auftrag_tabelle.lieferdatum) as lieferdatum_effektiv')
             )
             ->get();
 
@@ -818,7 +837,12 @@ class DashboardController extends Controller
         $companyId = Session::get('active_company_id', 1);
 
         $order = DB::table('auftrag_tabelle')
-            ->where('id', $id)
+            ->leftJoin('bestelldatum_korrektur', function($join) {
+                $join->on('auftrag_tabelle.auftrag_id', '=', 'bestelldatum_korrektur.auftrag_id')
+                     ->on('auftrag_tabelle.projekt_id', '=', 'bestelldatum_korrektur.projekt_id');
+            })
+            ->where('auftrag_tabelle.id', $id)
+            ->select('auftrag_tabelle.*', 'bestelldatum_korrektur.bestelldatum as lieferdatum_korrektur', 'bestelldatum_korrektur.bemerkung as lieferdatum_bemerkung')
             ->first();
 
         if (!$order) {

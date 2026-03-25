@@ -659,11 +659,24 @@
                             <span class="label" style="margin-top: 2px;">Datum:</span>
                             <div style="text-align: right;">
                                 <div style="font-weight: bold;">{{ \Carbon\Carbon::parse($order->erstelldatum)->format('d.m.Y') }}</div>
-                                @if($order->lieferdatum)
-                                    <div style="font-size: 0.8rem; color: {{ \Carbon\Carbon::parse($order->lieferdatum)->lt(now()) ? '#ef4444' : 'var(--text-muted)' }};">
+                                @php
+                                    $displayDate = $order->lieferdatum_korrektur ?: $order->lieferdatum;
+                                    $isCorrected = !empty($order->lieferdatum_korrektur);
+                                    $isOverdue = $displayDate && \Carbon\Carbon::parse($displayDate)->lt(now()->startOfDay());
+                                @endphp
+                                @if($displayDate)
+                                    <div style="font-size: 0.8rem; color: {{ $isOverdue ? '#ef4444' : 'var(--text-muted)' }};">
                                         <i class="fas fa-truck" style="font-size: 0.75rem; margin-right: 4px;"></i>
-                                        {{ \Carbon\Carbon::parse($order->lieferdatum)->format('d.m.Y') }}
+                                        {{ \Carbon\Carbon::parse($displayDate)->format('d.m.Y') }}
+                                        @if($isCorrected)
+                                            <i class="fas fa-info-circle" style="color: var(--primary-accent); margin-left: 4px; cursor: help;" title="Korrigiertes Datum: {{ $order->lieferdatum_bemerkung }}"></i>
+                                        @endif
                                     </div>
+                                    @if($isCorrected && $order->lieferdatum)
+                                        <div style="font-size: 0.7rem; color: var(--text-muted); opacity: 0.7; font-style: italic;">
+                                            Ursprünglich: {{ \Carbon\Carbon::parse($order->lieferdatum)->format('d.m.Y') }}
+                                        </div>
+                                    @endif
                                 @endif
                             </div>
                         </div>
