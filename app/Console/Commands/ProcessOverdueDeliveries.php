@@ -86,5 +86,17 @@ class ProcessOverdueDeliveries extends Command
         }
 
         $this->info("Fertig! {$createdCount} neue To-Dos erzeugt.");
+
+        // BEREINIGUNG: Lösche System-To-Dos für Aufträge, die NICHT mehr überfällig sind
+        $this->info("Bereinige veraltete To-Dos...");
+        $overdueOrderIds = $overdueOrders->pluck('id')->toArray();
+        
+        $deletedCount = \App\Models\Todo::where('is_system', true)
+            ->where('is_completed', false)
+            ->where('task', 'like', 'Lieferdatum überschritten:%')
+            ->whereNotIn('order_id', $overdueOrderIds)
+            ->delete();
+
+        $this->info("{$deletedCount} veraltete To-Dos entfernt.");
     }
 }
