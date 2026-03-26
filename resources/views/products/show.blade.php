@@ -215,51 +215,84 @@
                             @foreach($produkt->varianten as $index => $v)
                                 <div id="price-table-container-{{ $v->id }}" class="price-table-variant" style="{{ $index === 0 ? '' : 'display:none;' }}">
                                     @if($v->preise->count() > 0)
-                                        <div class="table-responsive">
-                                            <table class="data-table price-matrix">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Menge</th>
-                                                        <th>Basis</th>
-                                                        <th>Ges. EK</th>
-                                                        <th>G. o.D.</th>
-                                                        <th>%</th>
-                                                        <th>G. m.D.</th>
-                                                        <th>%</th>
-                                                        <th>P. o.D.</th>
-                                                        <th>P. m.D.</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach($v->preise as $p)
-                                                        @php 
-                                                            $totalCost = $p->base_price * $p->quantity;
-                                                            $percentWo = $totalCost > 0 ? ($p->profit_without_print / $totalCost) * 100 : 0;
-                                                            $percentW = $totalCost > 0 ? ($p->profit_print / $totalCost) * 100 : 0;
-                                                            $totalWo = $p->base_price + ($p->profit_without_print / $p->quantity);
-                                                            $totalW = $p->base_price + ($p->profit_print / $p->quantity);
-                                                        @endphp
-                                                        <tr>
-                                                            <td style="font-weight: 600;">{{ number_format($p->quantity, 0, ',', '.') }}</td>
-                                                            <td class="muted-value">{{ number_format($p->base_price, 2, ',', '.') }} €</td>
-                                                            <td class="muted-value">{{ number_format($totalCost, 2, ',', '.') }} €</td>
-                                                            <td class="muted-value">{{ number_format($p->profit_without_print, 2, ',', '.') }} €</td>
-                                                            <td class="muted-value">{{ number_format($percentWo, 1, ',', '.') }}%</td>
-                                                            <td class="muted-value">{{ number_format($p->profit_print, 2, ',', '.') }} €</td>
-                                                            <td class="muted-value">{{ number_format($percentW, 1, ',', '.') }}%</td>
-                                                            <td style="font-weight: 700; white-space: nowrap;">{{ number_format($totalWo, 2, ',', '.') }} €</td>
-                                                            <td style="font-weight: 700; color: var(--primary-accent); white-space: nowrap;">{{ number_format($totalW, 2, ',', '.') }} €</td>
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
+                                        <div class="calculation-split">
+                                            <!-- TABLE: OHNE DRUCK -->
+                                            <div class="calc-block">
+                                                <h4 style="color: #fff; margin-bottom: 10px; font-size: 0.9rem;"><i class="fas fa-minus-circle" style="color: var(--text-muted);"></i> Kalkulation OHNE Druck</h4>
+                                                <div class="table-responsive">
+                                                    <table class="data-table price-matrix">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Menge</th>
+                                                                <th>Basis</th>
+                                                                <th>Ges. EK</th>
+                                                                <th>Gewinn</th>
+                                                                <th>%</th>
+                                                                <th>Preis / Stk</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach($v->preise as $p)
+                                                                @php 
+                                                                    $totalCost = $p->base_price * $p->quantity;
+                                                                    $percentWo = $totalCost > 0 ? ($p->profit_without_print / $totalCost) * 100 : 0;
+                                                                    $totalWo = $p->base_price + ($p->profit_without_print / $p->quantity);
+                                                                @endphp
+                                                                <tr>
+                                                                    <td style="font-weight: 600;">{{ number_format($p->quantity, 0, ',', '.') }}</td>
+                                                                    <td class="muted-value">{{ number_format($p->base_price, 2, ',', '.') }} €</td>
+                                                                    <td class="muted-value">{{ number_format($totalCost, 2, ',', '.') }} €</td>
+                                                                    <td class="muted-value">{{ number_format($p->profit_without_print, 2, ',', '.') }} €</td>
+                                                                    <td class="muted-value">{{ number_format($percentWo, 1, ',', '.') }}%</td>
+                                                                    <td style="font-weight: 700;">{{ number_format($totalWo, 2, ',', '.') }} €</td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+                                            <!-- TABLE: MIT DRUCK -->
+                                            <div class="calc-block" style="margin-top: 25px;">
+                                                <h4 style="color: var(--primary-accent); margin-bottom: 10px; font-size: 0.9rem;"><i class="fas fa-print"></i> Kalkulation MIT Druck</h4>
+                                                <div class="table-responsive">
+                                                    <table class="data-table price-matrix">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Menge</th>
+                                                                <th>Basis</th>
+                                                                <th>Ges. EK</th>
+                                                                <th>Gewinn</th>
+                                                                <th>%</th>
+                                                                <th>Preis / Stk</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach($v->preise as $p)
+                                                                @php 
+                                                                    $totalCost = $p->base_price * $p->quantity;
+                                                                    $percentW = $totalCost > 0 ? ($p->profit_print / $totalCost) * 100 : 0;
+                                                                    $totalW = $p->base_price + ($p->profit_print / $p->quantity);
+                                                                @endphp
+                                                                <tr>
+                                                                    <td style="font-weight: 600;">{{ number_format($p->quantity, 0, ',', '.') }}</td>
+                                                                    <td class="muted-value">{{ number_format($p->base_price, 2, ',', '.') }} €</td>
+                                                                    <td class="muted-value">{{ number_format($totalCost, 2, ',', '.') }} €</td>
+                                                                    <td class="muted-value">{{ number_format($p->profit_print, 2, ',', '.') }} €</td>
+                                                                    <td class="muted-value">{{ number_format($percentW, 1, ',', '.') }}%</td>
+                                                                    <td style="font-weight: 700; color: var(--primary-accent);">{{ number_format($totalW, 2, ',', '.') }} €</td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div style="margin-top: 8px; font-size: 0.65rem; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 10px;">
+                                        <div style="margin-top: 10px; font-size: 0.65rem; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 10px; opacity: 0.8;">
                                             <span><strong>Basis:</strong> Einkauf/Stk</span>
                                             <span><strong>Ges. EK:</strong> Menge * Basis</span>
-                                            <span><strong>G. o.D. / G. m.D.:</strong> Gewinn Gesamt (Staffel)</span>
+                                            <span><strong>Gewinn:</strong> Staffelgewinn (Gesamt)</span>
                                             <span><strong>%:</strong> Aufschlag auf Ges. EK</span>
-                                            <span><strong>P. o.D. / P. m.D.:</strong> Preis pro Stück</span>
                                         </div>
                                     @else
                                         <div style="font-size: 0.85rem; color: var(--text-muted); font-style: italic; padding: 10px;">
