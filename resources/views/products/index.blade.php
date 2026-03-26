@@ -256,11 +256,27 @@
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>Art.-Nr.</th>
-                        <th>Name (WAWI)</th>
-                        <th>Kategorie</th>
+                        <th>
+                            <a href="{{ route('products.index', array_merge(request()->all(), ['sort' => 'base_artikelnummer', 'direction' => request('sort') == 'base_artikelnummer' && request('direction') == 'asc' ? 'desc' : 'asc'])) }}" style="color: {{ request('sort', 'base_artikelnummer') == 'base_artikelnummer' ? 'var(--primary-accent)' : 'inherit' }}; text-decoration: none;">
+                                Art.-Nr. @if(request('sort', 'base_artikelnummer') == 'base_artikelnummer') <i class="fas fa-sort-{{ request('direction') == 'desc' ? 'down' : 'up' }}"></i> @endif
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ route('products.index', array_merge(request()->all(), ['sort' => 'produktname', 'direction' => request('sort') == 'produktname' && request('direction') == 'asc' ? 'desc' : 'asc'])) }}" style="color: {{ request('sort') == 'produktname' ? 'var(--primary-accent)' : 'inherit' }}; text-decoration: none;">
+                                Name (WAWI) @if(request('sort') == 'produktname') <i class="fas fa-sort-{{ request('direction') == 'desc' ? 'down' : 'up' }}"></i> @endif
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ route('products.index', array_merge(request()->all(), ['sort' => 'kategorie1', 'direction' => request('sort') == 'kategorie1' && request('direction') == 'asc' ? 'desc' : 'asc'])) }}" style="color: {{ request('sort') == 'kategorie1' ? 'var(--primary-accent)' : 'inherit' }}; text-decoration: none;">
+                                Kategorie @if(request('sort') == 'kategorie1') <i class="fas fa-sort-{{ request('direction') == 'desc' ? 'down' : 'up' }}"></i> @endif
+                            </a>
+                        </th>
                         <th>Farbe</th>
-                        <th>Preis</th>
+                        <th>
+                            <a href="{{ route('products.index', array_merge(request()->all(), ['sort' => 'preis', 'direction' => request('sort') == 'preis' && request('direction') == 'asc' ? 'desc' : 'asc'])) }}" style="color: {{ request('sort') == 'preis' ? 'var(--primary-accent)' : 'inherit' }}; text-decoration: none;">
+                                Preis @if(request('sort') == 'preis') <i class="fas fa-sort-{{ request('direction') == 'desc' ? 'down' : 'up' }}"></i> @endif
+                            </a>
+                        </th>
                         <th style="text-align: center;">Aktionen</th>
                     </tr>
                 </thead>

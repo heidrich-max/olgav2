@@ -28,7 +28,13 @@ class ProduktController extends Controller
                   ->orWhere('produktname_hersteller', 'like', "%{$search}%");
         }
 
-        $produkte = $query->with('varianten')->orderBy('base_artikelnummer')->paginate(50);
+        $sort = $request->get('sort', 'base_artikelnummer');
+        $direction = $request->get('direction', 'asc');
+        $allowedSorts = ['base_artikelnummer', 'produktname', 'kategorie1', 'preis'];
+        if (!in_array($sort, $allowedSorts)) { $sort = 'base_artikelnummer'; }
+        if (!in_array($direction, ['asc', 'desc'])) { $direction = 'asc'; }
+
+        $produkte = $query->with('varianten')->orderBy($sort, $direction)->paginate(50);
 
         return view('products.index', compact('user', 'produkte', 'companyId', 'companyName', 'accentColor'));
     }
