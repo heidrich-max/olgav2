@@ -218,16 +218,16 @@
                                         <div class="calculation-split">
                                             <!-- TABLE: OHNE DRUCK -->
                                             <div class="calc-block">
-                                                <h4 style="color: #fff; margin-bottom: 10px; font-size: 0.9rem;"><i class="fas fa-minus-circle" style="color: var(--text-muted);"></i> Kalkulation OHNE Druck</h4>
+                                                <h4 style="color: var(--primary-accent); margin-bottom: 10px; font-size: 0.9rem;">Kalkulation ohne Druck</h4>
                                                 <div class="table-responsive">
                                                     <table class="data-table price-matrix">
                                                         <thead>
                                                             <tr>
-                                                                <th>Menge</th>
-                                                                <th>Basis</th>
-                                                                <th>Ges. EK</th>
-                                                                <th>Gewinn</th>
-                                                                <th>%</th>
+                                                                <th style="width: 15%;">Menge</th>
+                                                                <th style="width: 15%;">Basis</th>
+                                                                <th style="width: 15%;">Ges. EK</th>
+                                                                <th style="width: 15%;">Gewinn</th>
+                                                                <th style="width: 10%;">%</th>
                                                                 <th>Preis / Stk</th>
                                                             </tr>
                                                         </thead>
@@ -254,16 +254,16 @@
 
                                             <!-- TABLE: MIT DRUCK -->
                                             <div class="calc-block" style="margin-top: 25px;">
-                                                <h4 style="color: var(--primary-accent); margin-bottom: 10px; font-size: 0.9rem;"><i class="fas fa-print"></i> Kalkulation MIT Druck</h4>
+                                                <h4 style="color: var(--primary-accent); margin-bottom: 10px; font-size: 0.9rem;">Kalkulation mit Druck</h4>
                                                 <div class="table-responsive">
                                                     <table class="data-table price-matrix">
                                                         <thead>
                                                             <tr>
-                                                                <th>Menge</th>
-                                                                <th>Basis</th>
-                                                                <th>Ges. EK</th>
-                                                                <th>Gewinn</th>
-                                                                <th>%</th>
+                                                                <th style="width: 15%;">Menge</th>
+                                                                <th style="width: 15%;">Basis</th>
+                                                                <th style="width: 15%;">Ges. EK</th>
+                                                                <th style="width: 15%;">Gewinn</th>
+                                                                <th style="width: 10%;">%</th>
                                                                 <th>Preis / Stk</th>
                                                             </tr>
                                                         </thead>
