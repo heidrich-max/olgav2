@@ -23,9 +23,15 @@ class ProduktController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where('artikelnummer', 'like', "%{$search}%")
+            $query->where(function($q) use ($search) {
+                $q->where('base_artikelnummer', 'like', "%{$search}%")
                   ->orWhere('produktname', 'like', "%{$search}%")
                   ->orWhere('produktname_hersteller', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('category')) {
+            $query->where('kategorie1', $request->category);
         }
 
         $sort = $request->get('sort', 'base_artikelnummer');
@@ -35,8 +41,9 @@ class ProduktController extends Controller
         if (!in_array($direction, ['asc', 'desc'])) { $direction = 'asc'; }
 
         $produkte = $query->with('varianten')->orderBy($sort, $direction)->paginate(50);
+        $categories = Produkt::distinct()->where('kategorie1', '!=', '')->pluck('kategorie1');
 
-        return view('products.index', compact('user', 'produkte', 'companyId', 'companyName', 'accentColor'));
+        return view('products.index', compact('user', 'produkte', 'companyId', 'companyName', 'accentColor', 'categories'));
     }
 
     public function show(Request $request, Produkt $product)

@@ -247,8 +247,20 @@
 
         <div class="filters-glass">
             <form action="{{ route('products.index') }}" method="GET" style="display: flex; flex: 1; gap: 15px;">
-                <input type="text" name="search" class="search-input" placeholder="Nach Artikelnummer oder Name suchen..." value="{{ request('search') }}">
-                <button type="submit" class="btn-action btn-primary"><i class="fas fa-search"></i> Suchen</button>
+                <input type="text" name="search" class="search-input" placeholder="Suchen..." value="{{ request('search') }}">
+                
+                <select name="category" class="search-input" style="flex: 0 0 250px;">
+                    <option value="">Alle Kategorien</option>
+                    @foreach($categories as $cat)
+                        <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                    @endforeach
+                </select>
+
+                <input type="hidden" name="sort" value="{{ request('sort', 'base_artikelnummer') }}">
+                <input type="hidden" name="direction" value="{{ request('direction', 'asc') }}">
+
+                <button type="submit" class="btn-action btn-primary"><i class="fas fa-filter"></i> Filtern</button>
+                <a href="{{ route('products.index') }}" class="btn-action" title="Filter zurücksetzen"><i class="fas fa-times"></i></a>
             </form>
         </div>
 
