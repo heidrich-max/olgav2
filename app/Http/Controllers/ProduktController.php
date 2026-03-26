@@ -54,7 +54,7 @@ class ProduktController extends Controller
         $companyName = ($companyId == 1) ? 'Branding Europe GmbH' : 'Europe Pen GmbH';
         $accentColor = ($companyId == 1) ? '#1DA1F2' : '#0088CC';
 
-        $product->load('varianten.druckpositionen');
+        $product->load(['varianten.druckpositionen', 'varianten.preise']);
 
         return view('products.show', [
             'produkt' => $product,

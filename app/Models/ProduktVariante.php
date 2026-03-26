@@ -28,4 +28,9 @@ class ProduktVariante extends Model
     {
         return $this->hasMany(ProduktDruckPosition::class, 'produkt_variante_id');
     }
+
+    public function preise()
+    {
+        return $this->hasMany(ProduktPreis::class, 'produkt_variante_id')->orderBy('tier_number');
+    }
 }
