@@ -80,6 +80,17 @@
         .variant-btn.active { background: var(--primary-accent); border-color: var(--primary-accent); box-shadow: 0 0 15px var(--primary-accent); }
         
         .color-dot { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); }
+
+        .print-pos-card {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+            border-radius: 12px; padding: 15px; margin-bottom: 10px;
+        }
+        .tech-badge {
+            background: rgba(var(--primary-accent-rgb, 29, 161, 242), 0.2);
+            color: var(--primary-accent); border: 1px solid var(--primary-accent);
+            padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 600;
+            display: inline-block; margin: 2px;
+        }
     </style>
 </head>
 <body>
@@ -125,24 +136,29 @@
 
                 <div class="card">
                     <div class="info-section">
-                        <h3>Preise & Logistik</h3>
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <span class="info-label">Netto Preis</span>
-                                <span class="info-value" style="font-size: 1.5rem; color: var(--primary-accent);">{{ number_format($produkt->preis, 2, ',', '.') }} €</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Mindestmenge</span>
-                                <span class="info-value">{{ $produkt->mindestmenge ?? '—' }} Stk.</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Menge pro Karton</span>
-                                <span class="info-value">{{ $produkt->menge_pro_karton ?? '—' }} Stk.</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Zolltarifnummer</span>
-                                <span class="info-value">{{ $produkt->zolltarifnummer ?? '—' }}</span>
-                            </div>
+                        <h3>Veredelung / Druckmöglichkeiten</h3>
+                        <div id="printContainer">
+                            @foreach($produkt->varianten as $index => $v)
+                                <div class="variant-print" id="variant-print-{{ $v->id }}" style="{{ $index === 0 ? '' : 'display:none;' }}">
+                                    @if($v->druckpositionen->count() > 0)
+                                        @foreach($v->druckpositionen as $pos)
+                                            <div class="print-pos-card">
+                                                <div style="font-weight: 700; color: var(--primary-accent); margin-bottom: 5px;">{{ $pos->position_name }}</div>
+                                                <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Größe: {{ $pos->print_size ?: 'Standard' }}</div>
+                                                <div style="display: flex; flex-wrap: wrap;">
+                                                    @foreach($pos->techniques as $tech)
+                                                        <span class="tech-badge">{{ $tech }}</span>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        <div style="color: var(--text-muted); font-size: 0.9rem; font-style: italic;">
+                                            Keine Druckdaten für diese Variante verfügbar.
+                                        </div>
+                                    @endif
+                                </div>
+                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -207,13 +223,20 @@
                             @if($produkt->kategorie3)<span class="lang-badge" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 4px 10px; border-radius: 5px; font-size: 0.8rem;">{{ $produkt->kategorie3 }}</span>@endif
                         </div>
                     </div>
-
                     <div class="info-section">
                         <h3>Beschreibung</h3>
                         <div class="description">
                             {!! nl2br(e($produkt->beschreibung)) !!}
                         </div>
                     </div>
+                    @if($produkt->hinweis)
+                    <div class="info-section">
+                        <h3>Hinweise</h3>
+                        <div style="background: rgba(255,165,0,0.1); border-left: 4px solid orange; padding: 15px; border-radius: 8px; font-size: 0.9rem;">
+                            {{ $produkt->hinweis }}
+                        </div>
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -231,6 +254,10 @@
             // Update Images
             document.querySelectorAll('.variant-images').forEach(div => div.style.display = 'none');
             document.getElementById('variant-images-' + variantId).style.display = 'block';
+
+            // Update Print Info
+            document.querySelectorAll('.variant-print').forEach(div => div.style.display = 'none');
+            document.getElementById('variant-print-' + variantId).style.display = 'block';
         }
     </script>
 </body>

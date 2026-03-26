@@ -23,4 +23,9 @@ class ProduktVariante extends Model
     {
         return $this->belongsTo(Produkt::class, 'produkt_id');
     }
+
+    public function druckpositionen()
+    {
+        return $this->hasMany(ProduktDruckPosition::class, 'produkt_variante_id');
+    }
 }
