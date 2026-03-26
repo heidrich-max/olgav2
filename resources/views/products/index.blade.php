@@ -35,7 +35,6 @@
             pointer-events: none;
         }
 
-        .user-dropdown-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
 
         /* ---- LAYOUT ---- */
         .container { position: relative; z-index: 10; padding: 40px; max-width: 1600px; margin: 0 auto; }

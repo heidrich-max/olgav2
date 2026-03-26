@@ -50,12 +50,6 @@
             margin-bottom: 30px;
         }
 
-        h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-
         .btn-back {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);

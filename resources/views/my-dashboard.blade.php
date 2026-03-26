@@ -35,17 +35,6 @@
             pointer-events: none;
         }
 
-        .user-dropdown-header .user-role { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
-        .user-dropdown-item {
-            padding: 11px 18px; color: var(--text-muted); text-decoration: none;
-            display: flex; align-items: center; gap: 10px; font-size: 0.85rem;
-            transition: background 0.2s, color 0.2s;
-        }
-        .user-dropdown-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
-        .user-dropdown-item.active { color: var(--primary-accent); background: rgba(29,161,242,0.07); }
-        .user-dropdown-item.logout { color: #fca5a5; }
-        .user-dropdown-item.logout:hover { background: rgba(239,68,68,0.1); color: #fff; }
-        .user-dropdown-divider { height: 1px; background: var(--glass-border); margin: 4px 0; }
 
         .btn-logout {
             background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);
