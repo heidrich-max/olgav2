@@ -256,7 +256,6 @@
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th style="width: 50px;">Bild</th>
                         <th>Art.-Nr.</th>
                         <th>Name (WAWI)</th>
                         <th>Kategorie</th>
@@ -271,15 +270,6 @@
                         $firstVariant = $p->varianten->first();
                     @endphp
                     <tr>
-                        <td>
-                            @if($firstVariant && $firstVariant->foto01)
-                                <img src="/img/produkte/{{ $firstVariant->foto01 }}" class="product-img" onerror="this.src='/img/placeholder_product.webp'">
-                            @else
-                                <div class="product-img" style="background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center;">
-                                    <i class="fas fa-image" style="color: var(--text-muted);"></i>
-                                </div>
-                            @endif
-                        </td>
                         <td style="font-weight: 700;">{{ $p->base_artikelnummer }}</td>
                         <td>
                             <div style="font-weight: 600;">{{ $p->produktname }}</div>
