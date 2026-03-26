@@ -170,13 +170,9 @@ class DashboardController extends Controller
             ];
         }
 
-        $companyName = ($companyId == 1) ? 'Branding Europe GmbH' : 'Europe Pen GmbH';
-        $accentColor = ($companyId == 1) ? '#1DA1F2' : '#0088CC';
-
         return view('dashboard', compact(
-            'user', 'projectRevenues', 'monthTotal', 'companyStats', 
-            'orders', 'offers', 'companyId', 'companyName', 'accentColor',
-            'selectedMonth', 'selectedYear', 'displayDate', 'availableMonths'
+            'projectRevenues', 'monthTotal', 'companyStats', 
+            'orders', 'offers', 'selectedMonth', 'selectedYear', 'displayDate', 'availableMonths'
         ));
     }
 
@@ -316,12 +312,8 @@ class DashboardController extends Controller
             return $offer;
         });
 
-        $companyName = ($companyId == 1) ? 'Branding Europe GmbH' : 'Europe Pen GmbH';
-        $accentColor = ($companyId == 1) ? '#1DA1F2' : '#0088CC';
-
         return view('offers', compact(
-            'user', 'offers', 'companyId', 'companyName', 'accentColor', 
-            'search', 'statusCounts', 'selectedStatus', 'totalOfferCount',
+            'offers', 'search', 'statusCounts', 'selectedStatus', 'totalOfferCount',
             'salespersons', 'selectedSalesperson', 'view'
         ));
     }
@@ -508,12 +500,8 @@ class DashboardController extends Controller
             return $order;
         });
 
-        $companyName = ($companyId == 1) ? 'Branding Europe GmbH' : 'Europe Pen GmbH';
-        $accentColor = ($companyId == 1) ? '#1DA1F2' : '#0088CC';
-
         return view('orders', compact(
-            'user', 'orders', 'companyId', 'companyName', 'accentColor', 
-            'search', 'statusCounts', 'selectedStatus', 'totalOrderCount',
+            'orders', 'search', 'statusCounts', 'selectedStatus', 'totalOrderCount',
             'salespersons', 'selectedSalesperson', 'view', 'projects', 'selectedProject'
         ));
     }
@@ -613,7 +601,7 @@ class DashboardController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('my-dashboard', compact('user', 'myOffers', 'myOrders', 'calendarEvents', 'todos', 'companyId', 'companyName', 'accentColor'));
+        return view('my-dashboard', compact('myOffers', 'myOrders', 'calendarEvents', 'todos'));
     }
 
     public function calendar()

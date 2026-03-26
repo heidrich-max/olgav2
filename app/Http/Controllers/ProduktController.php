@@ -13,12 +13,6 @@ class ProduktController extends Controller
 {
     public function index(Request $request)
     {
-        $user = Auth::user();
-        $companyId = Session::get('active_company_id', $request->cookie('active_company_id', 1));
-        if (!in_array($companyId, [1, 2])) { $companyId = 1; }
-        $companyName = ($companyId == 1) ? 'Branding Europe GmbH' : 'Europe Pen GmbH';
-        $accentColor = ($companyId == 1) ? '#1DA1F2' : '#0088CC';
-
         $query = Produkt::query();
 
         if ($request->filled('search')) {
@@ -43,31 +37,19 @@ class ProduktController extends Controller
         $produkte = $query->with('varianten.druckpositionen')->orderBy($sort, $direction)->paginate(50);
         $categories = Produkt::distinct()->where('kategorie1', '!=', '')->pluck('kategorie1');
 
-        return view('products.index', compact('user', 'produkte', 'companyId', 'companyName', 'accentColor', 'categories'));
+        return view('products.index', compact('produkte', 'categories'));
     }
 
     public function show(Request $request, Produkt $product)
     {
-        $user = Auth::user();
-        $companyId = Session::get('active_company_id', $request->cookie('active_company_id', 1));
-        if (!in_array($companyId, [1, 2])) { $companyId = 1; }
-        $companyName = ($companyId == 1) ? 'Branding Europe GmbH' : 'Europe Pen GmbH';
-        $accentColor = ($companyId == 1) ? '#1DA1F2' : '#0088CC';
-
-        $product->load(['varianten.druckpositionen', 'varianten.preise']);
-
         return view('products.show', [
-            'produkt' => $product,
-            'user' => $user,
-            'companyId' => $companyId,
-            'companyName' => $companyName,
-            'accentColor' => $accentColor
+            'produkt' => $product
         ]);
     }
 
-    public function edit(Produkt $product)
+    public function edit(Request $request, Produkt $produkt)
     {
-        return view('products.edit', ['produkt' => $product]);
+        return view('products.edit', compact('produkt'));
     }
 
     public function update(Request $request, Produkt $product)

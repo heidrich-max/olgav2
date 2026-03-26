@@ -11,13 +11,6 @@ class ManufacturerController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
-
-        $companyId = Session::get('active_company_id', request()->cookie('active_company_id', 1));
-        if (!in_array($companyId, [1, 2])) { $companyId = 1; }
-        $companyName = ($companyId == 1) ? 'Branding Europe GmbH' : 'Europe Pen GmbH';
-        $accentColor = ($companyId == 1) ? '#1DA1F2' : '#0088CC';
-
         $manufacturers = DB::table('hersteller')
             ->select('hersteller.*')
             ->selectSub(function ($query) {
@@ -28,19 +21,12 @@ class ManufacturerController extends Controller
             ->orderByRaw("COALESCE(NULLIF(herstellernummer, ''), LPAD(id, 3, '0')) ASC")
             ->get();
 
-        return view('manufacturers.index', compact('user', 'manufacturers', 'companyId', 'companyName', 'accentColor'));
+        return view('manufacturers.index', compact('manufacturers'));
     }
 
     public function create()
     {
-        $user = Auth::user();
-
-        $companyId = Session::get('active_company_id', request()->cookie('active_company_id', 1));
-        if (!in_array($companyId, [1, 2])) { $companyId = 1; }
-        $companyName = ($companyId == 1) ? 'Branding Europe GmbH' : 'Europe Pen GmbH';
-        $accentColor = ($companyId == 1) ? '#1DA1F2' : '#0088CC';
-
-        return view('manufacturers.create', compact('user', 'companyId', 'companyName', 'accentColor'));
+        return view('manufacturers.create');
     }
 
     public function store(Request $request)

@@ -6,6 +6,7 @@
     <title>OLGA - Produktdetails {{ $produkt->artikelnummer }}</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+    @stack('styles')
 
     <style>
         :root {
@@ -26,11 +27,56 @@
         }
 
         .navbar {
+            position: sticky; top: 0; z-index: 100;
             background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(15px);
             padding: 12px 40px; display: flex; justify-content: space-between; align-items: center;
             border-bottom: 1px solid var(--glass-border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
+        .nav-left { display: flex; align-items: center; gap: 30px; }
         .navbar img { height: 38px; }
+
+        /* Dropdown Styles */
+        .company-switcher { position: relative; display: inline-block; }
+        .switcher-btn {
+            background: var(--glass-bg); border: 1px solid var(--glass-border);
+            padding: 8px 16px; border-radius: 10px; color: var(--text-main);
+            cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; gap: 10px;
+            transition: all 0.3s;
+        }
+        .switcher-btn:hover { background: rgba(255,255,255,0.15); border-color: var(--primary-accent); }
+        .switcher-content {
+            display: none; position: absolute; top: 100%; left: 0;
+            background: #1e293b; min-width: 220px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border-radius: 10px; margin-top: 8px; overflow: hidden;
+            border: 1px solid var(--glass-border);
+        }
+        .company-switcher.active .switcher-content { display: block; }
+        .switcher-item {
+            padding: 12px 20px; color: var(--text-muted); text-decoration: none;
+            display: flex; align-items: center; gap: 10px; transition: background 0.3s, color 0.3s;
+        }
+        .switcher-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
+        .switcher-item.active { border-left: 3px solid var(--primary-accent); color: var(--text-main); background: rgba(255,255,255,0.05); }
+
+        .user-dropdown { position: relative; }
+        .user-btn {
+            background: none; border: none; color: var(--text-main); cursor: pointer;
+            display: flex; align-items: center; gap: 8px; font-size: 0.95rem; font-family: 'Inter', sans-serif;
+            padding: 6px 10px; border-radius: 8px; transition: background 0.2s;
+        }
+        .user-btn:hover { background: rgba(255,255,255,0.08); }
+        .user-dropdown-menu {
+            display: none; position: absolute; top: 110%; right: 0;
+            background: #1e293b; min-width: 220px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border-radius: 12px; overflow: hidden; border: 1px solid var(--glass-border); z-index: 200;
+        }
+        .user-dropdown.active .user-dropdown-menu { display: block; }
+        .user-dropdown-item {
+            padding: 11px 18px; color: var(--text-muted); text-decoration: none;
+            display: flex; align-items: center; gap: 10px; font-size: 0.85rem; transition: background 0.2s, color 0.2s;
+        }
+        .user-dropdown-item:hover { background: rgba(255,255,255,0.05); color: var(--text-main); }
 
         .container { padding: 40px; max-width: 1200px; margin: 0 auto; }
 
@@ -115,10 +161,7 @@
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <a href="{{ route('dashboard') }}"><img src="/logo/olga_neu.svg" alt="Frank Group"></a>
-        <div style="color: var(--text-muted); font-size: 0.9rem;">{{ $user->name_komplett }}</div>
-    </nav>
+    @include('partials.navbar')
 
     <div class="container">
         <div class="header-section">
@@ -374,12 +417,18 @@
 
             // Update Images
             document.querySelectorAll('.variant-images').forEach(div => div.style.display = 'none');
-            document.getElementById('variant-images-' + variantId).style.display = 'block';
+            const variantImages = document.getElementById('variant-images-' + variantId);
+            if(variantImages) variantImages.style.display = 'block';
 
             // Update Print Info
             document.querySelectorAll('.variant-print').forEach(div => div.style.display = 'none');
-            document.getElementById('variant-print-' + variantId).style.display = 'block';
+            const variantPrint = document.getElementById('variant-print-' + variantId);
+            if(variantPrint) variantPrint.style.display = 'block';
         }
+
+        // Dropdown Logic (erledigt durch partials.navbar)
     </script>
+    @include('partials.ai_assistant')
+    @stack('scripts')
 </body>
 </html>

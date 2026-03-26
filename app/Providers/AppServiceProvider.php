@@ -21,9 +21,19 @@ class AppServiceProvider extends ServiceProvider
     {
         \Illuminate\Support\Facades\View::composer('*', function ($view) {
             if (\Illuminate\Support\Facades\Auth::check()) {
-                $view->with('openTodoCount', \App\Models\Todo::where('user_id', \Illuminate\Support\Facades\Auth::id())
-                    ->where('is_completed', false)
-                    ->count());
+                $activeUser = \Illuminate\Support\Facades\Auth::user();
+                $companyId = \Illuminate\Support\Facades\Session::get('active_company_id', \Illuminate\Support\Facades\Cookie::get('active_company_id', 1));
+                if (!in_array($companyId, [1, 2])) { $companyId = 1; }
+
+                $view->with([
+                    'user' => $activeUser,
+                    'companyId' => $companyId,
+                    'companyName' => ($companyId == 1) ? 'Branding Europe GmbH' : 'Europe Pen GmbH',
+                    'accentColor' => ($companyId == 1) ? '#1DA1F2' : '#0088CC',
+                    'openTodoCount' => \App\Models\Todo::where('user_id', $activeUser->id)
+                        ->where('is_completed', false)
+                        ->count()
+                ]);
             }
         });
     }
