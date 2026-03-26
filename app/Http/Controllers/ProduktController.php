@@ -28,7 +28,7 @@ class ProduktController extends Controller
                   ->orWhere('produktname_hersteller', 'like', "%{$search}%");
         }
 
-        $produkte = $query->orderBy('artikelnummer')->paginate(50);
+        $produkte = $query->with('varianten')->orderBy('base_artikelnummer')->paginate(50);
 
         return view('products.index', compact('user', 'produkte', 'companyId', 'companyName', 'accentColor'));
     }
@@ -40,6 +40,8 @@ class ProduktController extends Controller
         if (!in_array($companyId, [1, 2])) { $companyId = 1; }
         $companyName = ($companyId == 1) ? 'Branding Europe GmbH' : 'Europe Pen GmbH';
         $accentColor = ($companyId == 1) ? '#1DA1F2' : '#0088CC';
+
+        $product->load('varianten');
 
         return view('products.show', [
             'produkt' => $product,

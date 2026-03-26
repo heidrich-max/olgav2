@@ -69,6 +69,17 @@
         .description { line-height: 1.6; color: var(--text-muted); font-size: 0.95rem; }
 
         .badge { background: var(--primary-accent); color: #fff; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; }
+
+        .variant-selector { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
+        .variant-btn {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+            padding: 8px 12px; border-radius: 8px; cursor: pointer; color: #fff;
+            transition: all 0.2s; font-size: 0.85rem; display: flex; align-items: center; gap: 8px;
+        }
+        .variant-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--primary-accent); }
+        .variant-btn.active { background: var(--primary-accent); border-color: var(--primary-accent); box-shadow: 0 0 15px var(--primary-accent); }
+        
+        .color-dot { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); }
     </style>
 </head>
 <body>
@@ -88,21 +99,27 @@
         <div class="grid">
             <div class="product-gallery">
                 <div class="card" style="padding: 15px;">
-                    @if($produkt->foto01)
-                        <img src="/img/produkte/{{ $produkt->foto01 }}" class="main-img" id="mainImage" onerror="this.src='/img/placeholder_product.webp'">
-                    @else
-                        <div class="main-img" style="height: 300px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05);">
-                            <i class="fas fa-image fa-4x" style="color: var(--text-muted);"></i>
-                        </div>
-                    @endif
-                    
-                    <div class="thumb-grid">
-                        @for($i=1; $i<=4; $i++)
-                            @php $field = 'foto0'. $i; @endphp
-                            @if($produkt->$field)
-                                <img src="/img/produkte/{{ $produkt->$field }}" class="thumb" onclick="document.getElementById('mainImage').src=this.src">
-                            @endif
-                        @endfor
+                    <div id="galleryContainer">
+                        @foreach($produkt->varianten as $index => $v)
+                            <div class="variant-images" id="variant-images-{{ $v->id }}" style="{{ $index === 0 ? '' : 'display:none;' }}">
+                                @if($v->foto01)
+                                    <img src="/img/produkte/{{ $v->foto01 }}" class="main-img" id="mainImage-{{ $v->id }}" onerror="this.src='/img/placeholder_product.webp'">
+                                @else
+                                    <div class="main-img" style="height: 300px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.05);">
+                                        <i class="fas fa-image fa-4x" style="color: var(--text-muted);"></i>
+                                    </div>
+                                @endif
+                                
+                                <div class="thumb-grid" style="margin-top: 15px;">
+                                    @for($i=1; $i<=4; $i++)
+                                        @php $field = 'foto0'. $i; @endphp
+                                        @if($v->$field)
+                                            <img src="/img/produkte/{{ $v->$field }}" class="thumb" onclick="document.getElementById('mainImage-{{ $v->id }}').src=this.src">
+                                        @endif
+                                    @endfor
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
 
@@ -134,9 +151,26 @@
             <div class="product-info">
                 <div class="card">
                     <div style="margin-bottom: 25px;">
-                        <span class="badge">Art.-Nr: {{ $produkt->artikelnummer }}</span>
+                        <span class="badge">Base Art.-Nr: {{ $produkt->base_artikelnummer }}</span>
                         <h1 style="margin-top: 10px;">{{ $produkt->produktname }}</h1>
                         <p style="color: var(--text-muted); font-size: 1.1rem;">{{ $produkt->produktname_hersteller }}</p>
+                    </div>
+
+                    <div class="info-section">
+                        <h3>Verfügbare Farben / Varianten</h3>
+                        <div class="variant-selector">
+                            @foreach($produkt->varianten as $index => $v)
+                                <button class="variant-btn {{ $index === 0 ? 'active' : '' }}" 
+                                        onclick="switchVariant('{{ $v->id }}', this)"
+                                        data-artnr="{{ $v->artikelnummer_full }}">
+                                    <span>{{ $v->farbcode }}</span>
+                                    <span>{{ $v->farbe }}</span>
+                                </button>
+                            @endforeach
+                        </div>
+                        <div style="margin-top: 12px; font-size: 0.85rem; color: var(--text-muted);">
+                            Aktuelle Art.-Nr: <span id="currentArtNr" style="color: #fff; font-weight: 600;">{{ $produkt->varianten->first()->artikelnummer_full ?? '—' }}</span>
+                        </div>
                     </div>
 
                     <div class="info-section">
@@ -149,10 +183,6 @@
                             <div class="info-item">
                                 <span class="info-label">Material</span>
                                 <span class="info-value">{{ $produkt->material }}</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Farbe</span>
-                                <span class="info-value">{{ $produkt->farbe }}</span>
                             </div>
                             <div class="info-item">
                                 <span class="info-label">Minenfarbe</span>
@@ -179,37 +209,29 @@
                     </div>
 
                     <div class="info-section">
-                        <h3>Lieferzeiten (Arbeitstage)</h3>
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <span class="info-label">Ohne Druck</span>
-                                <span class="info-value">{{ $produkt->lieferzeit_ohne_druck_min }} - {{ $produkt->lieferzeit_ohne_druck_max }}</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Mit Druck</span>
-                                <span class="info-value">{{ $produkt->lieferzeit_mit_druck_min }} - {{ $produkt->lieferzeit_mit_druck_max }}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="info-section">
                         <h3>Beschreibung</h3>
                         <div class="description">
                             {!! nl2br(e($produkt->beschreibung)) !!}
                         </div>
                     </div>
-
-                    @if($produkt->hinweis)
-                    <div class="info-section">
-                        <h3>Hinweise</h3>
-                        <div style="background: rgba(255,165,0,0.1); border-left: 4px solid orange; padding: 15px; border-radius: 8px; font-size: 0.9rem;">
-                            {{ $produkt->hinweis }}
-                        </div>
-                    </div>
-                    @endif
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        function switchVariant(variantId, btn) {
+            // Update Buttons
+            document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Update Art-Nr
+            document.getElementById('currentArtNr').innerText = btn.getAttribute('data-artnr');
+            
+            // Update Images
+            document.querySelectorAll('.variant-images').forEach(div => div.style.display = 'none');
+            document.getElementById('variant-images-' + variantId).style.display = 'block';
+        }
+    </script>
 </body>
 </html>

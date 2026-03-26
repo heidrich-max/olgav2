@@ -164,6 +164,12 @@
             color: #fff; padding: 8px 14px; border-radius: 8px; text-decoration: none;
         }
         .pagination-container .page-item.active .page-link { background: var(--primary-accent); border-color: var(--primary-accent); }
+
+        .badge {
+            display: inline-block; padding: 2px 6px; border-radius: 4px;
+            background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border);
+            font-size: 0.65rem; color: var(--text-muted); font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -261,17 +267,20 @@
                 </thead>
                 <tbody>
                     @foreach($produkte as $p)
+                    @php 
+                        $firstVariant = $p->varianten->first();
+                    @endphp
                     <tr>
                         <td>
-                            @if($p->foto01)
-                                <img src="/img/produkte/{{ $p->foto01 }}" class="product-img" onerror="this.src='/img/placeholder_product.webp'">
+                            @if($firstVariant && $firstVariant->foto01)
+                                <img src="/img/produkte/{{ $firstVariant->foto01 }}" class="product-img" onerror="this.src='/img/placeholder_product.webp'">
                             @else
                                 <div class="product-img" style="background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center;">
                                     <i class="fas fa-image" style="color: var(--text-muted);"></i>
                                 </div>
                             @endif
                         </td>
-                        <td style="font-weight: 700;">{{ $p->artikelnummer }}</td>
+                        <td style="font-weight: 700;">{{ $p->base_artikelnummer }}</td>
                         <td>
                             <div style="font-weight: 600;">{{ $p->produktname }}</div>
                             <div style="font-size: 0.75rem; color: var(--text-muted);">{{ $p->produktname_hersteller }}</div>
@@ -280,7 +289,19 @@
                             <div style="font-size: 0.8rem;">{{ $p->kategorie1 }}</div>
                             <div style="font-size: 0.7rem; color: var(--text-muted);">{{ $p->kategorie2 }}</div>
                         </td>
-                        <td>{{ $p->farbe }}</td>
+                        <td>
+                            <div style="display: flex; flex-wrap: wrap; gap: 4px; max-width: 200px;">
+                                @foreach($p->varianten->take(5) as $v)
+                                    <span class="badge" title="{{ $v->farbe }}">{{ $v->farbcode }}</span>
+                                @endforeach
+                                @if($p->varianten->count() > 5)
+                                    <span class="badge" style="opacity: 0.6;">+{{ $p->varianten->count() - 5 }}</span>
+                                @endif
+                            </div>
+                            <div style="font-size: 0.7rem; margin-top: 4px; color: var(--text-muted);">
+                                {{ $p->varianten->count() }} Varianten
+                            </div>
+                        </td>
                         <td style="font-weight: 700;">{{ number_format($p->preis, 2, ',', '.') }} €</td>
                         <td style="text-align: center;">
                             <a href="{{ route('products.show', $p->id) }}" class="action-btn" title="Details">

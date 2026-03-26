@@ -22,19 +22,32 @@ class ImportProduktXml extends Command
             return 1;
         }
 
-        $this->info("Importiere Produkte...");
+        // Farbcodes laden
+        $farbcodes = include config_path('farbcodes.php');
+
+        $this->info("Importiere Produkte und Varianten...");
         $xml = simplexml_load_file($xmlPath, 'SimpleXMLElement', LIBXML_NOCDATA);
         $total = count($xml->row);
         $bar = $this->output->createProgressBar($total);
         $bar->start();
 
         foreach ($xml->row as $row) {
-            \App\Models\Produkt::updateOrCreate(
-                ['artikelnummer' => (string)$row->Artikelnummer],
+            $fullArtNr = (string)$row->Artikelnummer;
+            $parts = explode('-', $fullArtNr);
+            $baseArtNr = $parts[0];
+            $variantCode = isset($parts[1]) ? $parts[1] : '00';
+            $produktName = (string)$row->Produktname;
+
+            // 1. Stamm-Produkt finden oder erstellen
+            // Wir gruppieren nach Basis-Artikelnummer AND Produktname
+            $produkt = \App\Models\Produkt::updateOrCreate(
+                [
+                    'base_artikelnummer' => $baseArtNr,
+                    'produktname' => $produktName,
+                ],
                 [
                     'hersteller_id'              => (int)$row->Hersteller ?: null,
                     'produktname_hersteller'    => (string)$row->ProduktnameHersteller,
-                    'produktname'               => (string)$row->Produktname,
                     'material'                  => (string)$row->Material,
                     'produktmasse'              => (string)$row->Produktmasse,
                     'gewicht_g'                 => (string)$row->GewichtG,
@@ -60,13 +73,25 @@ class ImportProduktXml extends Command
                     'bearbeitungscode'          => (string)$row->Bearbeitungscode,
                     'hinweis'                   => (string)$row->Hinweis,
                     'kapazitaet'                => (string)$row->Kapazitaet,
-                    'farbe'                     => (string)$row->Farbe,
-                    'foto01'                    => (string)$row->Foto01,
-                    'foto02'                    => (string)$row->Foto02,
-                    'foto03'                    => (string)$row->Foto03,
-                    'foto04'                    => (string)$row->Foto04,
                 ]
             );
+
+            // 2. Variante erstellen
+            $farbe = $farbcodes[$variantCode] ?? ((string)$row->Farbe ?: 'Unbekannt');
+
+            \App\Models\ProduktVariante::updateOrCreate(
+                ['artikelnummer_full' => $fullArtNr],
+                [
+                    'produkt_id' => $produkt->id,
+                    'farbcode'   => $variantCode,
+                    'farbe'      => $farbe,
+                    'foto01'     => (string)$row->Foto01,
+                    'foto02'     => (string)$row->Foto02,
+                    'foto03'     => (string)$row->Foto03,
+                    'foto04'     => (string)$row->Foto04,
+                ]
+            );
+
             $bar->advance();
         }
 

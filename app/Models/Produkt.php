@@ -22,4 +22,9 @@ class Produkt extends Model
         'lieferzeit_mit_druck_min' => 'integer',
         'lieferzeit_mit_druck_max' => 'integer',
     ];
+
+    public function varianten()
+    {
+        return $this->hasMany(ProduktVariante::class, 'produkt_id');
+    }
 }
