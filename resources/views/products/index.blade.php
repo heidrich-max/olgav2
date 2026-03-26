@@ -126,6 +126,11 @@
             border-radius: 8px; padding: 10px 15px; color: #fff; font-size: 0.9rem;
         }
         .search-input:focus { border-color: var(--primary-accent); outline: none; }
+        
+        .search-input option {
+            background: #1e293b;
+            color: #fff;
+        }
 
         /* ---- TABLE ---- */
         .card {
