@@ -244,7 +244,7 @@
                                                                     <td class="muted-value" style="text-align: left;">{{ number_format($totalCost, 2, ',', '.') }} €</td>
                                                                     <td class="muted-value" style="text-align: left;">{{ number_format($p->profit_without_print, 2, ',', '.') }} €</td>
                                                                     <td class="muted-value" style="text-align: left;">{{ number_format($percentWo, 1, ',', '.') }}%</td>
-                                                                    <td style="font-weight: 700; text-align: left;">{{ number_format($totalWo, 2, ',', '.') }} €</td>
+                                                                    <td style="font-weight: 700; color: var(--primary-accent); text-align: center;">{{ number_format($totalWo, 2, ',', '.') }} €</td>
                                                                 </tr>
                                                             @endforeach
                                                         </tbody>
@@ -280,7 +280,7 @@
                                                                     <td class="muted-value" style="text-align: left;">{{ number_format($totalCost, 2, ',', '.') }} €</td>
                                                                     <td class="muted-value" style="text-align: left;">{{ number_format($p->profit_print, 2, ',', '.') }} €</td>
                                                                     <td class="muted-value" style="text-align: left;">{{ number_format($percentW, 1, ',', '.') }}%</td>
-                                                                    <td style="font-weight: 700; color: var(--primary-accent); text-align: left;">{{ number_format($totalW, 2, ',', '.') }} €</td>
+                                                                    <td style="font-weight: 700; color: var(--primary-accent); text-align: center;">{{ number_format($totalW, 2, ',', '.') }} €</td>
                                                                 </tr>
                                                             @endforeach
                                                         </tbody>
