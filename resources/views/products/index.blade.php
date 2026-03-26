@@ -274,34 +274,27 @@
                 <thead>
                     <tr>
                         <th>
-                            <a href="{{ route('products.index', array_merge(request()->all(), ['sort' => 'base_artikelnummer', 'direction' => request('sort') == 'base_artikelnummer' && request('direction') == 'asc' ? 'desc' : 'asc'])) }}" style="color: {{ request('sort', 'base_artikelnummer') == 'base_artikelnummer' ? 'var(--primary-accent)' : 'inherit' }}; text-decoration: none;">
-                                Art.-Nr. @if(request('sort', 'base_artikelnummer') == 'base_artikelnummer') <i class="fas fa-sort-{{ request('direction') == 'desc' ? 'down' : 'up' }}"></i> @endif
+                            <a href="{{ route('products.index', array_merge(request()->all(), ['sort' => 'base_artikelnummer', 'direction' => request('sort') == 'base_artikelnummer' && request('direction') == 'asc' ? 'desc' : 'asc'])) }}" style="color: var(--text-muted); text-decoration: none;">
+                                Art.-Nr. @if(request('sort', 'base_artikelnummer') == 'base_artikelnummer') <i class="fas fa-sort-{{ request('direction') == 'desc' ? 'down' : 'up' }}" style="color: var(--primary-accent);"></i> @endif
                             </a>
                         </th>
                         <th>
-                            <a href="{{ route('products.index', array_merge(request()->all(), ['sort' => 'produktname', 'direction' => request('sort') == 'produktname' && request('direction') == 'asc' ? 'desc' : 'asc'])) }}" style="color: {{ request('sort') == 'produktname' ? 'var(--primary-accent)' : 'inherit' }}; text-decoration: none;">
-                                Name (WAWI) @if(request('sort') == 'produktname') <i class="fas fa-sort-{{ request('direction') == 'desc' ? 'down' : 'up' }}"></i> @endif
+                            <a href="{{ route('products.index', array_merge(request()->all(), ['sort' => 'produktname', 'direction' => request('sort') == 'produktname' && request('direction') == 'asc' ? 'desc' : 'asc'])) }}" style="color: var(--text-muted); text-decoration: none;">
+                                Name @if(request('sort') == 'produktname') <i class="fas fa-sort-{{ request('direction') == 'desc' ? 'down' : 'up' }}" style="color: var(--primary-accent);"></i> @endif
                             </a>
                         </th>
                         <th>
-                            <a href="{{ route('products.index', array_merge(request()->all(), ['sort' => 'kategorie1', 'direction' => request('sort') == 'kategorie1' && request('direction') == 'asc' ? 'desc' : 'asc'])) }}" style="color: {{ request('sort') == 'kategorie1' ? 'var(--primary-accent)' : 'inherit' }}; text-decoration: none;">
-                                Kategorie @if(request('sort') == 'kategorie1') <i class="fas fa-sort-{{ request('direction') == 'desc' ? 'down' : 'up' }}"></i> @endif
+                            <a href="{{ route('products.index', array_merge(request()->all(), ['sort' => 'kategorie1', 'direction' => request('sort') == 'kategorie1' && request('direction') == 'asc' ? 'desc' : 'asc'])) }}" style="color: var(--text-muted); text-decoration: none;">
+                                Kategorie @if(request('sort') == 'kategorie1') <i class="fas fa-sort-{{ request('direction') == 'desc' ? 'down' : 'up' }}" style="color: var(--primary-accent);"></i> @endif
                             </a>
                         </th>
                         <th>Farbe</th>
-                        <th>
-                            <a href="{{ route('products.index', array_merge(request()->all(), ['sort' => 'preis', 'direction' => request('sort') == 'preis' && request('direction') == 'asc' ? 'desc' : 'asc'])) }}" style="color: {{ request('sort') == 'preis' ? 'var(--primary-accent)' : 'inherit' }}; text-decoration: none;">
-                                Preis @if(request('sort') == 'preis') <i class="fas fa-sort-{{ request('direction') == 'desc' ? 'down' : 'up' }}"></i> @endif
-                            </a>
-                        </th>
+                        <th>DRUCK</th>
                         <th style="text-align: center;">Aktionen</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($produkte as $p)
-                    @php 
-                        $firstVariant = $p->varianten->first();
-                    @endphp
                     <tr>
                         <td style="font-weight: 700;">{{ $p->base_artikelnummer }}</td>
                         <td>
@@ -325,7 +318,23 @@
                                 {{ $p->varianten->count() }} Varianten
                             </div>
                         </td>
-                        <td style="font-weight: 700;">{{ number_format($p->preis, 2, ',', '.') }} €</td>
+                        <td>
+                            @php
+                                $printCodes = [];
+                                if($p->varianten->count() > 0) {
+                                    $firstV = $p->varianten->first();
+                                    foreach($firstV->druckpositionen as $dp) {
+                                        if(is_array($dp->techniques)) {
+                                            $printCodes = array_merge($printCodes, $dp->techniques);
+                                        }
+                                    }
+                                }
+                                $printCodes = array_unique($printCodes);
+                            @endphp
+                            @foreach($printCodes as $code)
+                                <span class="badge" style="background: rgba(var(--primary-accent-rgb, 29, 161, 242), 0.1); color: var(--primary-accent); border-color: var(--primary-accent);">{{ $code }}</span>
+                            @endforeach
+                        </td>
                         <td style="text-align: center;">
                             <a href="{{ route('products.show', $p->id) }}" class="action-btn" title="Details">
                                 <i class="fas fa-eye"></i>

@@ -40,7 +40,7 @@ class ProduktController extends Controller
         if (!in_array($sort, $allowedSorts)) { $sort = 'base_artikelnummer'; }
         if (!in_array($direction, ['asc', 'desc'])) { $direction = 'asc'; }
 
-        $produkte = $query->with('varianten')->orderBy($sort, $direction)->paginate(50);
+        $produkte = $query->with('varianten.druckpositionen')->orderBy($sort, $direction)->paginate(50);
         $categories = Produkt::distinct()->where('kategorie1', '!=', '')->pluck('kategorie1');
 
         return view('products.index', compact('user', 'produkte', 'companyId', 'companyName', 'accentColor', 'categories'));
