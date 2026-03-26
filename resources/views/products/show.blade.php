@@ -35,7 +35,29 @@
         .container { padding: 40px; max-width: 1200px; margin: 0 auto; }
 
         .header-section { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
-        .header-section h1 { font-size: 2rem; font-weight: 700; color: #fff; }
+        .price-matrix {
+        font-size: 0.8rem;
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 4px;
+    }
+    .price-matrix th, .price-matrix td {
+        padding: 10px 8px !important;
+    }
+    .muted-value {
+        color: var(--text-muted);
+        font-size: 0.75rem;
+    }
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: 1rem;
+    }
+    .data-table th {
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 0.05rem;
+    }
         
         .btn-back {
             background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); color: #fff;
@@ -194,30 +216,44 @@
                             @foreach($produkt->varianten as $index => $v)
                                 <div id="price-table-container-{{ $v->id }}" class="price-table-variant" style="{{ $index === 0 ? '' : 'display:none;' }}">
                                     @if($v->preise->count() > 0)
-                                        <table class="data-table" style="font-size: 0.8rem;">
-                                            <thead>
-                                                <tr>
-                                                    <th>Menge</th>
-                                                    <th>Ohne Druck</th>
-                                                    <th>Inkl. Druck</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach($v->preise as $p)
+                                        <div class="table-responsive">
+                                            <table class="data-table price-matrix">
+                                                <thead>
                                                     <tr>
-                                                        <td>{{ number_format($p->quantity, 0, ',', '.') }}</td>
-                                                        <td style="font-weight: 600;">
-                                                            {{ number_format($p->base_price + ($p->profit_without_print / $p->quantity), 2, ',', '.') }} €
-                                                        </td>
-                                                        <td style="font-weight: 600; color: var(--primary-accent);">
-                                                            {{ number_format($p->base_price + ($p->profit_print / $p->quantity), 2, ',', '.') }} €
-                                                        </td>
+                                                        <th>Menge</th>
+                                                        <th>Basis</th>
+                                                        <th>G.o.D.</th>
+                                                        <th>G.m.D.</th>
+                                                        <th>Preis o.D.</th>
+                                                        <th class="highlight-col">Preis m.D.</th>
                                                     </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach($v->preise as $p)
+                                                        @php 
+                                                            $unitProfitWo = $p->profit_without_print / $p->quantity;
+                                                            $unitProfitW = $p->profit_print / $p->quantity;
+                                                            $totalWo = $p->base_price + $unitProfitWo;
+                                                            $totalW = $p->base_price + $unitProfitW;
+                                                        @endphp
+                                                        <tr>
+                                                            <td style="font-weight: 600;">{{ number_format($p->quantity, 0, ',', '.') }}</td>
+                                                            <td class="muted-value">{{ number_format($p->base_price, 2, ',', '.') }} €</td>
+                                                            <td class="muted-value">{{ number_format($unitProfitWo, 2, ',', '.') }} €</td>
+                                                            <td class="muted-value">{{ number_format($unitProfitW, 2, ',', '.') }} €</td>
+                                                            <td style="font-weight: 700; white-space: nowrap;">{{ number_format($totalWo, 2, ',', '.') }} €</td>
+                                                            <td style="font-weight: 700; color: var(--primary-accent); white-space: nowrap;">{{ number_format($totalW, 2, ',', '.') }} €</td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        <div style="margin-top: 8px; font-size: 0.7rem; color: var(--text-muted); display: flex; gap: 15px;">
+                                            <span><strong>Basis:</strong> Einkaufspreis (WAWI)</span>
+                                            <span><strong>G.o.D:</strong> Gewinn ohne Druck (pro Stk.)</span>
+                                            <span><strong>G.m.D:</strong> Gewinn mit Druck (pro Stk.)</span>
+                                        </div>
                                     @else
-                                        <div style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">
+                                        <div style="font-size: 0.85rem; color: var(--text-muted); font-style: italic; padding: 10px;">
                                             Keine Staffelpreise verfügbar.
                                         </div>
                                     @endif
