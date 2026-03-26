@@ -119,49 +119,8 @@
                                         <i class="fas fa-image fa-4x" style="color: var(--text-muted);"></i>
                                     </div>
                                 @endif
-                                
-                                <!-- PREISSTAFFELN -->
-            <div class="detail-card animate-slide-up" style="animation-delay: 0.2s;">
-                <div class="card-header">
-                    <i class="fas fa-tags"></i>
-                    <h2>Preisstaffeln / Kalkulation</h2>
-                </div>
-                <div id="price-table-container-{{ $v->id }}" class="price-table-variant" style="{{ $index === 0 ? '' : 'display:none;' }}">
-                    @php 
-                        $currentPrices = $v->preise ?? collect();
-                    @endphp
-                    @if($currentPrices->count() > 0)
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Menge</th>
-                                    <th>Preis (ohne Druck)</th>
-                                    <th>Preis (inkl. Druck)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($currentPrices as $p)
-                                    <tr>
-                                        <td>{{ number_format($p->quantity, 0, ',', '.') }} Stk.</td>
-                                        <td style="font-weight: 700;">
-                                            {{ number_format($p->base_price + ($p->profit_without_print / $p->quantity), 2, ',', '.') }} €
-                                        </td>
-                                        <td style="font-weight: 700; color: var(--primary-accent);">
-                                            {{ number_format($p->base_price + ($p->profit_print / $p->quantity), 2, ',', '.') }} €
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    @else
-                        <div style="padding: 20px; text-align: center; color: var(--text-muted);">
-                            <i class="fas fa-info-circle"></i> Keine Preisstaffeln für diese Variante verfügbar.
-                        </div>
-                    @endif
-                </div>
-            </div>
-                                
-                                <div class="thumb-grid" style="margin-top: 15px;">
+                                                                 <div class="thumb-grid" style="margin-top: 15px;">
+5px;">
                                     @for($i=1; $i<=4; $i++)
                                         @php $field = 'foto0'. $i; @endphp
                                         @if($v->$field)
@@ -230,6 +189,43 @@
                     </div>
 
                     <div class="info-section">
+                        <h3>Preisstaffeln / Kalkulation</h3>
+                        <div id="priceTiersContainer">
+                            @foreach($produkt->varianten as $index => $v)
+                                <div id="price-table-container-{{ $v->id }}" class="price-table-variant" style="{{ $index === 0 ? '' : 'display:none;' }}">
+                                    @if($v->preise->count() > 0)
+                                        <table class="data-table" style="font-size: 0.8rem;">
+                                            <thead>
+                                                <tr>
+                                                    <th>Menge</th>
+                                                    <th>Ohne Druck</th>
+                                                    <th>Inkl. Druck</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($v->preise as $p)
+                                                    <tr>
+                                                        <td>{{ number_format($p->quantity, 0, ',', '.') }}</td>
+                                                        <td style="font-weight: 600;">
+                                                            {{ number_format($p->base_price + ($p->profit_without_print / $p->quantity), 2, ',', '.') }} €
+                                                        </td>
+                                                        <td style="font-weight: 600; color: var(--primary-accent);">
+                                                            {{ number_format($p->base_price + ($p->profit_print / $p->quantity), 2, ',', '.') }} €
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    @else
+                                        <div style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">
+                                            Keine Staffelpreise verfügbar.
+                                        </div>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                    <div class="info-section">
                         <h3>Allgemeine Informationen</h3>
                         <div class="info-grid">
                             <div class="info-item">
@@ -292,32 +288,10 @@
             document.getElementById('currentArtNr').innerText = btn.getAttribute('data-artnr');
             
             // Update Prices
-            // Hide all price tables first
             document.querySelectorAll('.price-table-variant').forEach(div => div.style.display = 'none');
-            // Show the selected variant's price table
             const priceContainer = document.getElementById('price-table-container-' + variantId);
             if (priceContainer) {
                 priceContainer.style.display = 'block';
-
-                // Dynamically rebuild the table content based on data-variant-prices
-                const pricesData = JSON.parse(priceContainer.getAttribute('data-variant-prices'));
-                if (pricesData && pricesData.length > 0) {
-                    let html = '<table class="data-table"><thead><tr><th>Menge</th><th>Preis (ohne Druck)</th><th>Preis (inkl. Druck)</th></tr></thead><tbody>';
-                    pricesData.forEach(p => {
-                        const priceWo = parseFloat(p.base_price) + (parseFloat(p.profit_without_print) / parseInt(p.quantity));
-                        const priceW = parseFloat(p.base_price) + (parseFloat(p.profit_print) / parseInt(p.quantity));
-                        
-                        html += `<tr>
-                            <td>${parseInt(p.quantity).toLocaleString('de-DE')} Stk.</td>
-                            <td style="font-weight: 700;">${priceWo.toLocaleString('de-DE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} €</td>
-                            <td style="font-weight: 700; color: var(--primary-accent);">${priceW.toLocaleString('de-DE', {minimumFractionDigits: 2, maximumFractionDigits: 2})} €</td>
-                        </tr>`;
-                    });
-                    html += '</tbody></table>';
-                    priceContainer.innerHTML = html;
-                } else {
-                    priceContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-muted);"><i class="fas fa-info-circle"></i> Keine Preisstaffeln verfügbar.</div>';
-                }
             }
 
             // Update Images
