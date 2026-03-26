@@ -228,7 +228,7 @@
                                                                 <th style="width: 15%; text-align: left;">Ges. EK</th>
                                                                 <th style="width: 15%; text-align: left;">Gewinn</th>
                                                                 <th style="width: 10%; text-align: left;">%</th>
-                                                                <th style="width: 30%; text-align: left;">Preis / Stk</th>
+                                                                <th style="width: 30%; text-align: center;">Preis / Stk</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -264,7 +264,7 @@
                                                                 <th style="width: 15%; text-align: left;">Ges. EK</th>
                                                                 <th style="width: 15%; text-align: left;">Gewinn</th>
                                                                 <th style="width: 10%; text-align: left;">%</th>
-                                                                <th style="width: 30%; text-align: left;">Preis / Stk</th>
+                                                                <th style="width: 30%; text-align: center;">Preis / Stk</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
