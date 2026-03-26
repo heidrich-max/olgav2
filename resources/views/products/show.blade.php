@@ -141,8 +141,7 @@
                                         <i class="fas fa-image fa-4x" style="color: var(--text-muted);"></i>
                                     </div>
                                 @endif
-                                                                 <div class="thumb-grid" style="margin-top: 15px;">
-5px;">
+                                <div class="thumb-grid" style="margin-top: 15px;">
                                     @for($i=1; $i<=4; $i++)
                                         @php $field = 'foto0'. $i; @endphp
                                         @if($v->$field)
@@ -222,35 +221,45 @@
                                                     <tr>
                                                         <th>Menge</th>
                                                         <th>Basis</th>
-                                                        <th>G.o.D.</th>
-                                                        <th>G.m.D.</th>
-                                                        <th>Preis o.D.</th>
-                                                        <th class="highlight-col">Preis m.D.</th>
+                                                        <th>Ges. EK</th>
+                                                        <th>G. o.D.</th>
+                                                        <th>%</th>
+                                                        <th>G. m.D.</th>
+                                                        <th>%</th>
+                                                        <th>P. o.D.</th>
+                                                        <th>P. m.D.</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     @foreach($v->preise as $p)
                                                         @php 
-                                                            $unitProfitWo = $p->profit_without_print / $p->quantity;
-                                                            $unitProfitW = $p->profit_print / $p->quantity;
-                                                            $totalWo = $p->base_price + $unitProfitWo;
-                                                            $totalW = $p->base_price + $unitProfitW;
+                                                            $totalCost = $p->base_price * $p->quantity;
+                                                            $percentWo = $totalCost > 0 ? ($p->profit_without_print / $totalCost) * 100 : 0;
+                                                            $percentW = $totalCost > 0 ? ($p->profit_print / $totalCost) * 100 : 0;
+                                                            $totalWo = $p->base_price + ($p->profit_without_print / $p->quantity);
+                                                            $totalW = $p->base_price + ($p->profit_print / $p->quantity);
                                                         @endphp
                                                         <tr>
                                                             <td style="font-weight: 600;">{{ number_format($p->quantity, 0, ',', '.') }}</td>
                                                             <td class="muted-value">{{ number_format($p->base_price, 2, ',', '.') }} €</td>
-                                                            <td class="muted-value">{{ number_format($unitProfitWo, 2, ',', '.') }} €</td>
-                                                            <td class="muted-value">{{ number_format($unitProfitW, 2, ',', '.') }} €</td>
+                                                            <td class="muted-value">{{ number_format($totalCost, 2, ',', '.') }} €</td>
+                                                            <td class="muted-value">{{ number_format($p->profit_without_print, 2, ',', '.') }} €</td>
+                                                            <td class="muted-value">{{ number_format($percentWo, 1, ',', '.') }}%</td>
+                                                            <td class="muted-value">{{ number_format($p->profit_print, 2, ',', '.') }} €</td>
+                                                            <td class="muted-value">{{ number_format($percentW, 1, ',', '.') }}%</td>
                                                             <td style="font-weight: 700; white-space: nowrap;">{{ number_format($totalWo, 2, ',', '.') }} €</td>
                                                             <td style="font-weight: 700; color: var(--primary-accent); white-space: nowrap;">{{ number_format($totalW, 2, ',', '.') }} €</td>
                                                         </tr>
                                                     @endforeach
                                                 </tbody>
                                             </table>
-                                        <div style="margin-top: 8px; font-size: 0.7rem; color: var(--text-muted); display: flex; gap: 15px;">
-                                            <span><strong>Basis:</strong> Einkaufspreis (WAWI)</span>
-                                            <span><strong>G.o.D:</strong> Gewinn ohne Druck (pro Stk.)</span>
-                                            <span><strong>G.m.D:</strong> Gewinn mit Druck (pro Stk.)</span>
+                                        </div>
+                                        <div style="margin-top: 8px; font-size: 0.65rem; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 10px;">
+                                            <span><strong>Basis:</strong> Einkauf/Stk</span>
+                                            <span><strong>Ges. EK:</strong> Menge * Basis</span>
+                                            <span><strong>G. o.D. / G. m.D.:</strong> Gewinn Gesamt (Staffel)</span>
+                                            <span><strong>%:</strong> Aufschlag auf Ges. EK</span>
+                                            <span><strong>P. o.D. / P. m.D.:</strong> Preis pro Stück</span>
                                         </div>
                                     @else
                                         <div style="font-size: 0.85rem; color: var(--text-muted); font-style: italic; padding: 10px;">
