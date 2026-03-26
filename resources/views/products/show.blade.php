@@ -220,15 +220,15 @@
                                             <div class="calc-block">
                                                 <h4 style="color: var(--primary-accent); margin-bottom: 10px; font-size: 0.9rem;">Kalkulation ohne Druck</h4>
                                                 <div class="table-responsive">
-                                                    <table class="data-table price-matrix">
+                                                    <table class="data-table price-matrix" style="table-layout: fixed;">
                                                         <thead>
                                                             <tr>
-                                                                <th style="width: 15%;">Menge</th>
-                                                                <th style="width: 15%;">Basis</th>
-                                                                <th style="width: 15%;">Ges. EK</th>
-                                                                <th style="width: 15%;">Gewinn</th>
-                                                                <th style="width: 10%;">%</th>
-                                                                <th>Preis / Stk</th>
+                                                                <th style="width: 15%; text-align: left;">Menge</th>
+                                                                <th style="width: 15%; text-align: left;">Basis</th>
+                                                                <th style="width: 15%; text-align: left;">Ges. EK</th>
+                                                                <th style="width: 15%; text-align: left;">Gewinn</th>
+                                                                <th style="width: 10%; text-align: left;">%</th>
+                                                                <th style="width: 30%; text-align: left;">Preis / Stk</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -239,12 +239,12 @@
                                                                     $totalWo = $p->base_price + ($p->profit_without_print / $p->quantity);
                                                                 @endphp
                                                                 <tr>
-                                                                    <td style="font-weight: 600;">{{ number_format($p->quantity, 0, ',', '.') }}</td>
-                                                                    <td class="muted-value">{{ number_format($p->base_price, 2, ',', '.') }} €</td>
-                                                                    <td class="muted-value">{{ number_format($totalCost, 2, ',', '.') }} €</td>
-                                                                    <td class="muted-value">{{ number_format($p->profit_without_print, 2, ',', '.') }} €</td>
-                                                                    <td class="muted-value">{{ number_format($percentWo, 1, ',', '.') }}%</td>
-                                                                    <td style="font-weight: 700;">{{ number_format($totalWo, 2, ',', '.') }} €</td>
+                                                                    <td style="font-weight: 600; text-align: left;">{{ number_format($p->quantity, 0, ',', '.') }}</td>
+                                                                    <td class="muted-value" style="text-align: left;">{{ number_format($p->base_price, 2, ',', '.') }} €</td>
+                                                                    <td class="muted-value" style="text-align: left;">{{ number_format($totalCost, 2, ',', '.') }} €</td>
+                                                                    <td class="muted-value" style="text-align: left;">{{ number_format($p->profit_without_print, 2, ',', '.') }} €</td>
+                                                                    <td class="muted-value" style="text-align: left;">{{ number_format($percentWo, 1, ',', '.') }}%</td>
+                                                                    <td style="font-weight: 700; text-align: left;">{{ number_format($totalWo, 2, ',', '.') }} €</td>
                                                                 </tr>
                                                             @endforeach
                                                         </tbody>
@@ -256,15 +256,15 @@
                                             <div class="calc-block" style="margin-top: 25px;">
                                                 <h4 style="color: var(--primary-accent); margin-bottom: 10px; font-size: 0.9rem;">Kalkulation mit Druck</h4>
                                                 <div class="table-responsive">
-                                                    <table class="data-table price-matrix">
+                                                    <table class="data-table price-matrix" style="table-layout: fixed;">
                                                         <thead>
                                                             <tr>
-                                                                <th style="width: 15%;">Menge</th>
-                                                                <th style="width: 15%;">Basis</th>
-                                                                <th style="width: 15%;">Ges. EK</th>
-                                                                <th style="width: 15%;">Gewinn</th>
-                                                                <th style="width: 10%;">%</th>
-                                                                <th>Preis / Stk</th>
+                                                                <th style="width: 15%; text-align: left;">Menge</th>
+                                                                <th style="width: 15%; text-align: left;">Basis</th>
+                                                                <th style="width: 15%; text-align: left;">Ges. EK</th>
+                                                                <th style="width: 15%; text-align: left;">Gewinn</th>
+                                                                <th style="width: 10%; text-align: left;">%</th>
+                                                                <th style="width: 30%; text-align: left;">Preis / Stk</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -275,12 +275,12 @@
                                                                     $totalW = $p->base_price + ($p->profit_print / $p->quantity);
                                                                 @endphp
                                                                 <tr>
-                                                                    <td style="font-weight: 600;">{{ number_format($p->quantity, 0, ',', '.') }}</td>
-                                                                    <td class="muted-value">{{ number_format($p->base_price, 2, ',', '.') }} €</td>
-                                                                    <td class="muted-value">{{ number_format($totalCost, 2, ',', '.') }} €</td>
-                                                                    <td class="muted-value">{{ number_format($p->profit_print, 2, ',', '.') }} €</td>
-                                                                    <td class="muted-value">{{ number_format($percentW, 1, ',', '.') }}%</td>
-                                                                    <td style="font-weight: 700; color: var(--primary-accent);">{{ number_format($totalW, 2, ',', '.') }} €</td>
+                                                                    <td style="font-weight: 600; text-align: left;">{{ number_format($p->quantity, 0, ',', '.') }}</td>
+                                                                    <td class="muted-value" style="text-align: left;">{{ number_format($p->base_price, 2, ',', '.') }} €</td>
+                                                                    <td class="muted-value" style="text-align: left;">{{ number_format($totalCost, 2, ',', '.') }} €</td>
+                                                                    <td class="muted-value" style="text-align: left;">{{ number_format($p->profit_print, 2, ',', '.') }} €</td>
+                                                                    <td class="muted-value" style="text-align: left;">{{ number_format($percentW, 1, ',', '.') }}%</td>
+                                                                    <td style="font-weight: 700; color: var(--primary-accent); text-align: left;">{{ number_format($totalW, 2, ',', '.') }} €</td>
                                                                 </tr>
                                                             @endforeach
                                                         </tbody>
