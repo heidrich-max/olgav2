@@ -376,16 +376,7 @@
     </div>
 
     <script>
-        // Company Switcher
-        const switcher = document.getElementById('companySwitcher');
-        document.getElementById('switcherBtn').addEventListener('click', e => {
-            e.stopPropagation();
-            switcher.classList.toggle('active');
-        // Dropdown Logic (erledigt durch partials.navbar)
-        document.addEventListener('click', () => {
-            if (switcher) switcher.classList.remove('active');
-            if (userDropdown) userDropdown.classList.remove('active');
-        });
+        // To-Do Logic
 
         // To-Do Logic
         const todoInput = document.getElementById('newTodoInput');
