@@ -1,33 +1,51 @@
-# OS generated files
-.DS_Store
-Thumbs.db
-
-# Large media/uploads
-uploads/
-freigaben/
-korrekturabzuege/
-pdf/
-lieferschein/
-rechnung/
-
-# Logs and cache
-*.log
-cache/
-temp/
-storage/logs/
-storage/framework/cache/
-storage/framework/sessions/
-storage/framework/views/
-
-# Dependencies
-node_modules/
-vendor/
-
-# Environment
+/.phpunit.cache
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
 .env
-storage/app/google-calendar/
+.env.backup
+.env.production
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+auth.json
+npm-debug.log
+yarn-error.log
+/.fleet
+/.idea
+/.vscode
+/.antigravity-rules.md
+/.ftp-deploy-sync-state.json
 
-# Scripts
-download_olgav2.ps1
-list_server.ps1
-composer.phar
+# Temporäre Debug-/Analyse-Skripte im Root
+/tmp_*.php
+/debug_*.php
+/check_*.php
+/inspect_*.php
+/describe_*.php
+/update_dashboard*.php
+/diagnose_*.php
+/verify_*.php
+/backfill_*.php
+/recreate_*.php
+/migrate_*.php
+/run_*.php
+/fix_*.php
+/rebuild_*.php
+/cleanup_*.php
+/backdate_*.php
+/detect_*.php
+/schema_dump*.php
+/dump_*.php
+/test_*.php
+/read_env.php
+/db_list.php
+/db_structure*.txt
+/check_status_output*.txt
+/hersteller_info.txt
+/jtl_columns.txt
+/php_path*.txt
+/debug_output.txt
