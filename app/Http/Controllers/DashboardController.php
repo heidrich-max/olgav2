@@ -913,22 +913,20 @@ class DashboardController extends Controller
                     ->get()
                     ->keyBy('korrekturabzug_details_id');
 
-                // Freigabe-Center Links: erinnerung.id = auftrag_freigabe_code.id
-                $codesMain = DB::table('auftrag_korrekturabzug_erinnerung')
-                    ->whereIn('korrekturabzug_details_id', $detailIds)
-                    ->join('auftrag_freigabe_code', 'auftrag_korrekturabzug_erinnerung.id', '=', 'auftrag_freigabe_code.id')
-                    ->select('auftrag_korrekturabzug_erinnerung.korrekturabzug_details_id', 'auftrag_freigabe_code.shortcode')
+                // Freigabe-Center Links: auftrag_freigabe_code.id = detail.id - 3899
+                // (freigabe_code started 3899 entries after korrekturabzug_details when freigabe-center was introduced)
+                $offsetDetailIds = $detailIds->map(fn($id) => $id - 3899)->filter(fn($id) => $id > 0);
+                $rawCodes = DB::table('auftrag_freigabe_code')
+                    ->whereIn('id', $offsetDetailIds)
+                    ->where('shortcode', '!=', '')
                     ->get()
-                    ->keyBy('korrekturabzug_details_id');
+                    ->keyBy('id');
 
-                $codesKa = DB::table('auftrag_korrekturabzug_erinnerung_ka')
-                    ->whereIn('korrekturabzug_details_id', $detailIds)
-                    ->join('auftrag_freigabe_code', 'auftrag_korrekturabzug_erinnerung_ka.id', '=', 'auftrag_freigabe_code.id')
-                    ->select('auftrag_korrekturabzug_erinnerung_ka.korrekturabzug_details_id', 'auftrag_freigabe_code.shortcode')
-                    ->get()
-                    ->keyBy('korrekturabzug_details_id');
-
-                $proofCodes = $codesMain->merge($codesKa);
+                $proofCodes = $detailIds->mapWithKeys(function ($detailId) use ($rawCodes) {
+                    $codeId = $detailId - 3899;
+                    $code = $rawCodes->get($codeId);
+                    return [$detailId => $code];
+                });
             }
         }
 
