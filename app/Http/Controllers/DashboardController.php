@@ -912,6 +912,23 @@ class DashboardController extends Controller
                     ->select('auftrag_korrekturabzug_kunde.*', 'user.name_komplett as uploader_name')
                     ->get()
                     ->keyBy('korrekturabzug_details_id');
+
+                // Freigabe-Center Links: erinnerung.id = auftrag_freigabe_code.id
+                $codesMain = DB::table('auftrag_korrekturabzug_erinnerung')
+                    ->whereIn('korrekturabzug_details_id', $detailIds)
+                    ->join('auftrag_freigabe_code', 'auftrag_korrekturabzug_erinnerung.id', '=', 'auftrag_freigabe_code.id')
+                    ->select('auftrag_korrekturabzug_erinnerung.korrekturabzug_details_id', 'auftrag_freigabe_code.shortcode')
+                    ->get()
+                    ->keyBy('korrekturabzug_details_id');
+
+                $codesKa = DB::table('auftrag_korrekturabzug_erinnerung_ka')
+                    ->whereIn('korrekturabzug_details_id', $detailIds)
+                    ->join('auftrag_freigabe_code', 'auftrag_korrekturabzug_erinnerung_ka.id', '=', 'auftrag_freigabe_code.id')
+                    ->select('auftrag_korrekturabzug_erinnerung_ka.korrekturabzug_details_id', 'auftrag_freigabe_code.shortcode')
+                    ->get()
+                    ->keyBy('korrekturabzug_details_id');
+
+                $proofCodes = $codesMain->merge($codesKa);
             }
         }
 
@@ -956,7 +973,7 @@ class DashboardController extends Controller
         return view('orders.show', compact(
             'user', 'order', 'items', 'companyId', 'companyName', 'accentColor',
             'history', 'manufacturers', 'currentManufacturer', 'manufacturerHistory',
-            'proofs', 'proofDetails', 'proofApprovals', 'proofNotes',
+            'proofs', 'proofDetails', 'proofApprovals', 'proofNotes', 'proofCodes',
             'shipments', 'invoices', 'deliveryNotes', 'allStatuses'
         ));
     }

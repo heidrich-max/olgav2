@@ -804,14 +804,16 @@
                         <h2><i class="fas fa-file-signature"></i> Korrekturabzüge</h2>
                     </div>
                     <div style="padding: 20px;">
+                        @php $proofCodes = $proofCodes ?? collect(); @endphp
                         @if($proofDetails->count() > 0)
                             <div style="display: flex; flex-direction: column; gap: 14px;">
                                 @foreach($proofDetails as $i => $detail)
                                     @php
-                                        $approval  = $proofApprovals->get($detail->id);
-                                        $noteEntry = $proofNotes->get($detail->id);
-                                        $filename  = basename($detail->grafik);
-                                        $version   = $i + 1;
+                                        $approval   = $proofApprovals->get($detail->id);
+                                        $noteEntry  = $proofNotes->get($detail->id);
+                                        $codeEntry  = $proofCodes->get($detail->id);
+                                        $filename   = basename($detail->grafik);
+                                        $version    = $i + 1;
 
                                         if ($approval) {
                                             if ($approval->freigabe == 1) {
@@ -864,6 +866,11 @@
                                                 <a href="https://cms.frankgroup.net/{{ $detail->grafik }}" target="_blank" class="btn-glass-default" style="padding: 5px 12px; font-size: 12px;" title="PDF öffnen">
                                                     <i class="fas fa-file-pdf"></i> PDF öffnen
                                                 </a>
+                                                @if($codeEntry && $codeEntry->shortcode)
+                                                <a href="https://freigabe-center.net/?c={{ $codeEntry->shortcode }}" target="_blank" class="btn-glass-default" style="padding: 5px 12px; font-size: 12px;" title="Kundenlink im Freigabe-Center">
+                                                    <i class="fas fa-link"></i> Kundenlink
+                                                </a>
+                                                @endif
                                             </div>
                                         </div>
 
