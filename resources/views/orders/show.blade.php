@@ -844,9 +844,9 @@
                                                     {{ $version }}
                                                 </span>
                                                 <div style="min-width: 0;">
-                                                    <div style="font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $filename }}">
-                                                        {{ $filename }}
-                                                    </div>
+                                                    <a href="https://cms.frankgroup.net/{{ $detail->grafik }}" target="_blank" style="font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: inherit; text-decoration: none;" title="{{ $filename }}" onmouseover="this.style.color='var(--primary-accent)'" onmouseout="this.style.color='inherit'">
+                                                        <i class="fas fa-file-pdf" style="color: #f87171; margin-right: 5px; font-size: 13px;"></i>{{ $filename }}
+                                                    </a>
                                                     <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
                                                         {{ \Carbon\Carbon::parse($detail->timestamp)->format('d.m.Y H:i') }} Uhr
                                                         @if($noteEntry && $noteEntry->uploader_name)
@@ -861,8 +861,8 @@
                                                 <span style="display: inline-flex; align-items: center; gap: 6px; background: {{ $statusBg }}; border: 1px solid {{ $statusBorder }}; color: {{ $statusColor }}; border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 600;">
                                                     <i class="fas {{ $statusIcon }}"></i> {{ $statusText }}
                                                 </span>
-                                                <a href="https://freigabe-center.net/" target="_blank" class="btn-glass-default" style="padding: 5px 12px; font-size: 12px;" title="Im Freigabe-Center öffnen">
-                                                    <i class="fas fa-external-link-alt"></i> Freigabe-Center
+                                                <a href="https://cms.frankgroup.net/{{ $detail->grafik }}" target="_blank" class="btn-glass-default" style="padding: 5px 12px; font-size: 12px;" title="PDF öffnen">
+                                                    <i class="fas fa-file-pdf"></i> PDF öffnen
                                                 </a>
                                             </div>
                                         </div>
