@@ -546,6 +546,33 @@
                             $backRoute = route('dashboard');
                         }
                     @endphp
+
+                    {{-- Status ändern --}}
+                    <div style="position: relative; display: inline-block;">
+                        <button onclick="toggleStatusEdit()" class="btn-glass-default">
+                            <i class="fas fa-tag"></i> Status ändern
+                        </button>
+                        <div id="statusEditForm" style="display:none; position:absolute; right:0; top:110%; z-index:100; background:var(--glass-bg,#1e293b); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:16px; min-width:260px; box-shadow:0 8px 32px rgba(0,0,0,0.4);">
+                            @if(session('success'))
+                                <p style="color:#4ade80; margin-bottom:10px; font-size:13px;">✓ {{ session('success') }}</p>
+                            @endif
+                            <form method="POST" action="{{ route('orders.status.update', $order->id) }}">
+                                @csrf
+                                <label style="display:block; font-size:12px; color:var(--text-muted,#94a3b8); margin-bottom:6px;">Neuer Status</label>
+                                <select name="status_id" style="width:100%; padding:8px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); border-radius:6px; color:inherit; margin-bottom:10px;">
+                                    @foreach($allStatuses as $s)
+                                        <option value="{{ $s->id }}" {{ $order->letzter_status === $s->status_sh ? 'selected' : '' }}>
+                                            {{ $s->status_lg }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <button type="submit" style="width:100%; padding:8px; background:var(--primary-accent,#1DA1F2); border:none; border-radius:6px; color:#fff; cursor:pointer; font-size:13px;">
+                                    Speichern
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
                     <a href="{{ $backRoute }}" class="btn-glass-default">
                         <i class="fas fa-arrow-left"></i> Zurück
                     </a>
@@ -1085,10 +1112,19 @@
             });
         }
 
-        document.addEventListener('click', () => {
+        document.addEventListener('click', (e) => {
             if(companySwitcher) companySwitcher.classList.remove('active');
             if(userDropdown) userDropdown.classList.remove('active');
+            const statusForm = document.getElementById('statusEditForm');
+            if (statusForm && !statusForm.contains(e.target) && !e.target.closest('[onclick="toggleStatusEdit()"]')) {
+                statusForm.style.display = 'none';
+            }
         });
+        function toggleStatusEdit() {
+            const form = document.getElementById('statusEditForm');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        }
+
         function toggleManufacturerEdit() {
             const form = document.getElementById('manufacturerEditForm');
             form.style.display = form.style.display === 'none' ? 'block' : 'none';

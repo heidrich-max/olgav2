@@ -923,11 +923,43 @@ class DashboardController extends Controller
                 });
         }
 
+        $allStatuses = DB::table('auftrag_status')->orderBy('id')->get();
+
         return view('orders.show', compact(
-            'user', 'order', 'items', 'companyId', 'companyName', 'accentColor', 
+            'user', 'order', 'items', 'companyId', 'companyName', 'accentColor',
             'history', 'manufacturers', 'currentManufacturer', 'manufacturerHistory',
-            'proofs', 'shipments', 'invoices', 'deliveryNotes'
+            'proofs', 'shipments', 'invoices', 'deliveryNotes', 'allStatuses'
         ));
+    }
+
+    public function updateOrderStatus(Request $request, $id)
+    {
+        $request->validate(['status_id' => 'required|exists:auftrag_status,id']);
+
+        $order = DB::table('auftrag_tabelle')->where('id', $id)->first();
+        if (!$order) {
+            return back()->with('error', 'Auftrag nicht gefunden.');
+        }
+
+        $newStatus = DB::table('auftrag_status')->where('id', $request->status_id)->first();
+
+        DB::table('auftrag_tabelle')->where('id', $id)->update([
+            'letzter_status'           => $newStatus->status_sh,
+            'letzter_status_name'      => 'Status ' . $newStatus->status_lg,
+            'letzter_status_bg_hex'    => $newStatus->bg,
+            'letzter_status_farbe_hex' => $newStatus->color,
+            'abgeschlossen_status'     => ($newStatus->status_sh === 'A') ? 'Auftrag abgeschlossen' : 'Auftrag nicht abgeschlossen',
+        ]);
+
+        DB::table('auftrag_status_a')->insert([
+            'auftrag_id' => $order->auftrag_id,
+            'projekt_id' => $order->projekt_id,
+            'user_id'    => Auth::id(),
+            'status'     => $newStatus->id,
+            'timestamp'  => now(),
+        ]);
+
+        return back()->with('success', 'Status geändert: ' . $newStatus->status_lg);
     }
 
     /**
