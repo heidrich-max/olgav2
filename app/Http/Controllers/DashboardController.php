@@ -887,6 +887,34 @@ class DashboardController extends Controller
             ->where('projekt_id', $order->projekt_id)
             ->get();
 
+        $proofIds = $proofs->pluck('id');
+        $proofDetails = collect();
+        $proofApprovals = collect();
+        $proofNotes = collect();
+
+        if ($proofIds->isNotEmpty()) {
+            $proofDetails = DB::table('auftrag_korrekturabzug_details')
+                ->whereIn('korrekturabzug_id', $proofIds)
+                ->orderBy('timestamp', 'asc')
+                ->get();
+
+            $detailIds = $proofDetails->pluck('id');
+
+            if ($detailIds->isNotEmpty()) {
+                $proofApprovals = DB::table('auftrag_korrekturabzug_freigabe')
+                    ->whereIn('korrekturabzug_details_id', $detailIds)
+                    ->get()
+                    ->keyBy('korrekturabzug_details_id');
+
+                $proofNotes = DB::table('auftrag_korrekturabzug_kunde')
+                    ->whereIn('korrekturabzug_details_id', $detailIds)
+                    ->leftJoin('user', 'auftrag_korrekturabzug_kunde.user_id', '=', 'user.id')
+                    ->select('auftrag_korrekturabzug_kunde.*', 'user.name_komplett as uploader_name')
+                    ->get()
+                    ->keyBy('korrekturabzug_details_id');
+            }
+        }
+
         // 2. Versand / Sendungsnummern
         $shipments = DB::table('auftrag_sendungsnummer')
             ->whereIn('auftrag_id', $orderIds)
@@ -928,7 +956,8 @@ class DashboardController extends Controller
         return view('orders.show', compact(
             'user', 'order', 'items', 'companyId', 'companyName', 'accentColor',
             'history', 'manufacturers', 'currentManufacturer', 'manufacturerHistory',
-            'proofs', 'shipments', 'invoices', 'deliveryNotes', 'allStatuses'
+            'proofs', 'proofDetails', 'proofApprovals', 'proofNotes',
+            'shipments', 'invoices', 'deliveryNotes', 'allStatuses'
         ));
     }
 

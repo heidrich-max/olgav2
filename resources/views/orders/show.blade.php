@@ -549,28 +549,41 @@
 
                     {{-- Status ändern --}}
                     <div style="position: relative; display: inline-block;">
-                        <button onclick="toggleStatusEdit()" class="btn-glass-default">
+                        <button onclick="toggleStatusEdit(event)" class="btn-glass-default">
                             <i class="fas fa-tag"></i> Status ändern
                         </button>
-                        <div id="statusEditForm" style="display:none; position:absolute; right:0; top:110%; z-index:100; background:var(--glass-bg,#1e293b); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:16px; min-width:260px; box-shadow:0 8px 32px rgba(0,0,0,0.4);">
-                            @if(session('success'))
-                                <p style="color:#4ade80; margin-bottom:10px; font-size:13px;">✓ {{ session('success') }}</p>
-                            @endif
-                            <form method="POST" action="{{ route('orders.status.update', $order->id) }}">
-                                @csrf
-                                <label style="display:block; font-size:12px; color:var(--text-muted,#94a3b8); margin-bottom:6px;">Neuer Status</label>
-                                <select name="status_id" style="width:100%; padding:8px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); border-radius:6px; color:inherit; margin-bottom:10px;">
+                    </div>
+
+                    {{-- Status Modal Backdrop + Card --}}
+                    <div id="statusBackdrop" onclick="closeStatusEdit()" style="display:none; position:fixed; inset:0; z-index:300; background:rgba(0,0,0,0.5); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);"></div>
+                    <div id="statusEditForm" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:301; width:300px; background:rgba(15,23,42,0.97); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border:1px solid rgba(255,255,255,0.12); border-radius:16px; padding:24px; box-shadow:0 24px 64px rgba(0,0,0,0.7);">
+                        {{-- X Button --}}
+                        <button onclick="closeStatusEdit()" style="position:absolute; top:14px; right:14px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); border-radius:50%; width:28px; height:28px; color:var(--text-muted); cursor:pointer; font-size:13px; display:flex; align-items:center; justify-content:center; transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        @if(session('success'))
+                            <div style="display:flex; align-items:center; gap:8px; background:rgba(74,222,128,0.1); border:1px solid rgba(74,222,128,0.25); border-radius:8px; padding:10px 12px; margin-bottom:14px;">
+                                <i class="fas fa-check-circle" style="color:#4ade80; font-size:13px;"></i>
+                                <span style="color:#4ade80; font-size:13px;">{{ session('success') }}</span>
+                            </div>
+                        @endif
+                        <p style="font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); margin-bottom:14px; font-weight:600;">Status setzen</p>
+                        <form method="POST" action="{{ route('orders.status.update', $order->id) }}">
+                            @csrf
+                            <div style="position:relative; margin-bottom:14px;">
+                                <select name="status_id" style="width:100%; padding:10px 36px 10px 12px; appearance:none; -webkit-appearance:none; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); border-radius:8px; color:#fff; font-size:14px; cursor:pointer; outline:none;">
                                     @foreach($allStatuses as $s)
-                                        <option value="{{ $s->id }}" {{ $order->letzter_status === $s->status_sh ? 'selected' : '' }}>
+                                        <option value="{{ $s->id }}" style="background:#0f172a; color:#fff;" {{ $order->letzter_status === $s->status_sh ? 'selected' : '' }}>
                                             {{ $s->status_lg }}
                                         </option>
                                     @endforeach
                                 </select>
-                                <button type="submit" style="width:100%; padding:8px; background:var(--primary-accent,#1DA1F2); border:none; border-radius:6px; color:#fff; cursor:pointer; font-size:13px;">
-                                    Speichern
-                                </button>
-                            </form>
-                        </div>
+                                <i class="fas fa-chevron-down" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:11px; pointer-events:none;"></i>
+                            </div>
+                            <button type="submit" style="width:100%; padding:10px; background:var(--primary-accent); border:none; border-radius:8px; color:#fff; cursor:pointer; font-size:14px; font-weight:600; transition:opacity .2s;" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+                                <i class="fas fa-save" style="margin-right:6px;"></i> Speichern
+                            </button>
+                        </form>
                     </div>
 
                     <a href="{{ $backRoute }}" class="btn-glass-default">
@@ -788,34 +801,104 @@
             <div id="tab-proof" class="tab-content">
                 <div class="card glass-card">
                     <div class="card-header">
-                        <h2><i class="fas fa-file-signature"></i> Korrekturabzug</h2>
+                        <h2><i class="fas fa-file-signature"></i> Korrekturabzüge</h2>
                     </div>
-                    <div style="padding: 20px; text-align: center; color: var(--text-muted);">
-                        @if($proofs->count() > 0)
-                            <table class="items-table">
-                                <thead>
-                                    <tr>
-                                        <th>Datum</th>
-                                        <th>Projekt</th>
-                                        <th>Aktion</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($proofs as $p)
-                                    <tr>
-                                        <td>{{ isset($p->timestamp) ? \Carbon\Carbon::parse($p->timestamp)->format('d.m.Y H:i') : 'N/A' }}</td>
-                                        <td>{{ $p->projektname }}</td>
-                                        <td>
-                                            <a href="#" class="btn-glass-default" style="padding: 4px 10px; font-size: 0.75rem;">
-                                                <i class="fas fa-eye"></i> Öffnen
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                    <div style="padding: 20px;">
+                        @if($proofDetails->count() > 0)
+                            <div style="display: flex; flex-direction: column; gap: 14px;">
+                                @foreach($proofDetails as $i => $detail)
+                                    @php
+                                        $approval  = $proofApprovals->get($detail->id);
+                                        $noteEntry = $proofNotes->get($detail->id);
+                                        $filename  = basename($detail->grafik);
+                                        $version   = $i + 1;
+
+                                        if ($approval) {
+                                            if ($approval->freigabe == 1) {
+                                                $statusColor = '#4ade80';
+                                                $statusBg    = 'rgba(74,222,128,0.1)';
+                                                $statusBorder= 'rgba(74,222,128,0.25)';
+                                                $statusIcon  = 'fa-check-circle';
+                                                $statusText  = 'Freigegeben';
+                                            } else {
+                                                $statusColor = '#f87171';
+                                                $statusBg    = 'rgba(248,113,113,0.1)';
+                                                $statusBorder= 'rgba(248,113,113,0.25)';
+                                                $statusIcon  = 'fa-times-circle';
+                                                $statusText  = 'Abgelehnt';
+                                            }
+                                        } else {
+                                            $statusColor = '#fbbf24';
+                                            $statusBg    = 'rgba(251,191,36,0.1)';
+                                            $statusBorder= 'rgba(251,191,36,0.25)';
+                                            $statusIcon  = 'fa-clock';
+                                            $statusText  = 'Ausstehend';
+                                        }
+                                    @endphp
+                                    <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px 20px;">
+                                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+
+                                            {{-- Links: Version + Dateiname --}}
+                                            <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+                                                <span style="background: var(--primary-accent); color: #fff; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0;">
+                                                    {{ $version }}
+                                                </span>
+                                                <div style="min-width: 0;">
+                                                    <div style="font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ $filename }}">
+                                                        {{ $filename }}
+                                                    </div>
+                                                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+                                                        {{ \Carbon\Carbon::parse($detail->timestamp)->format('d.m.Y H:i') }} Uhr
+                                                        @if($noteEntry && $noteEntry->uploader_name)
+                                                            &nbsp;·&nbsp; {{ $noteEntry->uploader_name }}
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {{-- Rechts: Status + Freigabe-Link --}}
+                                            <div style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
+                                                <span style="display: inline-flex; align-items: center; gap: 6px; background: {{ $statusBg }}; border: 1px solid {{ $statusBorder }}; color: {{ $statusColor }}; border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 600;">
+                                                    <i class="fas {{ $statusIcon }}"></i> {{ $statusText }}
+                                                </span>
+                                                <a href="https://freigabe-center.net/" target="_blank" class="btn-glass-default" style="padding: 5px 12px; font-size: 12px;" title="Im Freigabe-Center öffnen">
+                                                    <i class="fas fa-external-link-alt"></i> Freigabe-Center
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        {{-- Interne Notiz --}}
+                                        @if($noteEntry && $noteEntry->notiz)
+                                            <div style="margin-top: 12px; padding: 10px 14px; background: rgba(255,255,255,0.04); border-left: 3px solid var(--primary-accent); border-radius: 0 6px 6px 0; font-size: 13px; color: var(--text-muted);">
+                                                <i class="fas fa-sticky-note" style="color: var(--primary-accent); margin-right: 6px;"></i>
+                                                {{ $noteEntry->notiz }}
+                                            </div>
+                                        @endif
+
+                                        {{-- Kundenrückmeldung bei Ablehnung --}}
+                                        @if($approval && $approval->freigabe == 2 && $approval->grund)
+                                            <div style="margin-top: 10px; padding: 10px 14px; background: rgba(248,113,113,0.08); border-left: 3px solid #f87171; border-radius: 0 6px 6px 0; font-size: 13px; color: #fca5a5;">
+                                                <i class="fas fa-comment-alt" style="margin-right: 6px;"></i>
+                                                <strong>{{ $approval->vorname }} {{ $approval->nachname }}:</strong> {{ $approval->grund }}
+                                            </div>
+                                        @endif
+
+                                        {{-- Freigabe-Bestätigung --}}
+                                        @if($approval && $approval->freigabe == 1)
+                                            <div style="margin-top: 10px; font-size: 12px; color: var(--text-muted);">
+                                                <i class="fas fa-user-check" style="color: #4ade80; margin-right: 4px;"></i>
+                                                Freigegeben von {{ $approval->vorname }} {{ $approval->nachname }}
+                                                ({{ $approval->email }}) am {{ \Carbon\Carbon::parse($approval->timestamp)->format('d.m.Y H:i') }}
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
                         @else
-                            Keine Daten für Korrekturabzüge vorhanden.
+                            <div style="text-align: center; color: var(--text-muted); padding: 30px;">
+                                <i class="fas fa-file-signature" style="font-size: 2rem; margin-bottom: 10px; opacity: 0.3;"></i>
+                                <p>Keine Korrekturabzüge vorhanden.</p>
+                            </div>
                         @endif
                     </div>
                 </div>
@@ -1115,14 +1198,15 @@
         document.addEventListener('click', (e) => {
             if(companySwitcher) companySwitcher.classList.remove('active');
             if(userDropdown) userDropdown.classList.remove('active');
-            const statusForm = document.getElementById('statusEditForm');
-            if (statusForm && !statusForm.contains(e.target) && !e.target.closest('[onclick="toggleStatusEdit()"]')) {
-                statusForm.style.display = 'none';
-            }
         });
-        function toggleStatusEdit() {
-            const form = document.getElementById('statusEditForm');
-            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        function toggleStatusEdit(e) {
+            e.stopPropagation();
+            document.getElementById('statusEditForm').style.display = 'block';
+            document.getElementById('statusBackdrop').style.display = 'block';
+        }
+        function closeStatusEdit() {
+            document.getElementById('statusEditForm').style.display = 'none';
+            document.getElementById('statusBackdrop').style.display = 'none';
         }
 
         function toggleManufacturerEdit() {
