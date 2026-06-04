@@ -906,6 +906,11 @@ class DashboardController extends Controller
                     ->get()
                     ->keyBy('korrekturabzug_details_id');
 
+                $proofDownloads = DB::table('auftrag_korrekturabzug_download')
+                    ->whereIn('korrekturabzug_details_id', $detailIds)
+                    ->get()
+                    ->keyBy('korrekturabzug_details_id');
+
                 $proofNotes = DB::table('auftrag_korrekturabzug_kunde')
                     ->whereIn('korrekturabzug_details_id', $detailIds)
                     ->leftJoin('user', 'auftrag_korrekturabzug_kunde.user_id', '=', 'user.id')
@@ -971,7 +976,7 @@ class DashboardController extends Controller
         return view('orders.show', compact(
             'user', 'order', 'items', 'companyId', 'companyName', 'accentColor',
             'history', 'manufacturers', 'currentManufacturer', 'manufacturerHistory',
-            'proofs', 'proofDetails', 'proofApprovals', 'proofNotes', 'proofCodes',
+            'proofs', 'proofDetails', 'proofApprovals', 'proofNotes', 'proofCodes', 'proofDownloads',
             'shipments', 'invoices', 'deliveryNotes', 'allStatuses'
         ));
     }

@@ -804,100 +804,141 @@
                         <h2><i class="fas fa-file-signature"></i> Korrekturabzüge</h2>
                     </div>
                     <div style="padding: 20px;">
-                        @php $proofCodes = $proofCodes ?? collect(); @endphp
+                        @php
+                            $proofCodes     = $proofCodes ?? collect();
+                            $proofDownloads = $proofDownloads ?? collect();
+                        @endphp
                         @if($proofDetails->count() > 0)
-                            <div style="display: flex; flex-direction: column; gap: 14px;">
+                            <div style="display: flex; flex-direction: column; gap: 20px;">
                                 @foreach($proofDetails as $i => $detail)
                                     @php
                                         $approval   = $proofApprovals->get($detail->id);
                                         $noteEntry  = $proofNotes->get($detail->id);
                                         $codeEntry  = $proofCodes->get($detail->id);
+                                        $download   = $proofDownloads->get($detail->id);
                                         $filename   = basename($detail->grafik);
                                         $version    = $i + 1;
 
                                         if ($approval) {
-                                            if ($approval->freigabe == 1) {
-                                                $statusColor = '#4ade80';
-                                                $statusBg    = 'rgba(74,222,128,0.1)';
-                                                $statusBorder= 'rgba(74,222,128,0.25)';
-                                                $statusIcon  = 'fa-check-circle';
-                                                $statusText  = 'Freigegeben';
-                                            } else {
-                                                $statusColor = '#f87171';
-                                                $statusBg    = 'rgba(248,113,113,0.1)';
-                                                $statusBorder= 'rgba(248,113,113,0.25)';
-                                                $statusIcon  = 'fa-times-circle';
-                                                $statusText  = 'Abgelehnt';
-                                            }
+                                            $statusColor  = $approval->freigabe == 1 ? '#4ade80' : '#f87171';
+                                            $statusBg     = $approval->freigabe == 1 ? 'rgba(74,222,128,0.1)' : 'rgba(248,113,113,0.1)';
+                                            $statusBorder = $approval->freigabe == 1 ? 'rgba(74,222,128,0.25)' : 'rgba(248,113,113,0.25)';
+                                            $statusIcon   = $approval->freigabe == 1 ? 'fa-check-circle' : 'fa-times-circle';
+                                            $statusText   = $approval->freigabe == 1 ? 'Freigegeben' : 'Abgelehnt';
                                         } else {
-                                            $statusColor = '#fbbf24';
-                                            $statusBg    = 'rgba(251,191,36,0.1)';
-                                            $statusBorder= 'rgba(251,191,36,0.25)';
-                                            $statusIcon  = 'fa-clock';
-                                            $statusText  = 'Ausstehend';
+                                            $statusColor  = '#fbbf24';
+                                            $statusBg     = 'rgba(251,191,36,0.1)';
+                                            $statusBorder = 'rgba(251,191,36,0.25)';
+                                            $statusIcon   = 'fa-clock';
+                                            $statusText   = 'Ausstehend';
                                         }
                                     @endphp
-                                    <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 16px 20px;">
-                                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
 
-                                            {{-- Links: Version + Dateiname --}}
+                                    <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden;">
+
+                                        {{-- Header: Version + Datei + Buttons --}}
+                                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.07);">
                                             <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
-                                                <span style="background: var(--primary-accent); color: #fff; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0;">
-                                                    {{ $version }}
-                                                </span>
+                                                <span style="background: var(--primary-accent); color: #fff; border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0;">{{ $version }}</span>
                                                 <div style="min-width: 0;">
-                                                    <a href="https://cms.frankgroup.net/{{ $detail->grafik }}" target="_blank" style="font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: inherit; text-decoration: none;" title="{{ $filename }}" onmouseover="this.style.color='var(--primary-accent)'" onmouseout="this.style.color='inherit'">
-                                                        <i class="fas fa-file-pdf" style="color: #f87171; margin-right: 5px; font-size: 13px;"></i>{{ $filename }}
+                                                    <a href="https://cms.frankgroup.net/{{ $detail->grafik }}" target="_blank" style="font-weight: 600; font-size: 13px; color: inherit; text-decoration: none; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" onmouseover="this.style.color='var(--primary-accent)'" onmouseout="this.style.color='inherit'" title="{{ $filename }}">
+                                                        <i class="fas fa-file-pdf" style="color: #f87171; margin-right: 5px;"></i>{{ $filename }}
                                                     </a>
-                                                    <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
-                                                        {{ \Carbon\Carbon::parse($detail->timestamp)->format('d.m.Y H:i') }} Uhr
-                                                        @if($noteEntry && $noteEntry->uploader_name)
-                                                            &nbsp;·&nbsp; {{ $noteEntry->uploader_name }}
-                                                        @endif
+                                                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+                                                        {{ \Carbon\Carbon::parse($detail->timestamp)->format('d.m.Y, H:i') }} Uhr
                                                     </div>
                                                 </div>
                                             </div>
-
-                                            {{-- Rechts: Status + Freigabe-Link --}}
-                                            <div style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
-                                                <span style="display: inline-flex; align-items: center; gap: 6px; background: {{ $statusBg }}; border: 1px solid {{ $statusBorder }}; color: {{ $statusColor }}; border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 600;">
+                                            <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                                                <span style="display:inline-flex; align-items:center; gap:5px; background:{{ $statusBg }}; border:1px solid {{ $statusBorder }}; color:{{ $statusColor }}; border-radius:20px; padding:3px 10px; font-size:11px; font-weight:600;">
                                                     <i class="fas {{ $statusIcon }}"></i> {{ $statusText }}
                                                 </span>
-                                                <a href="https://cms.frankgroup.net/{{ $detail->grafik }}" target="_blank" class="btn-glass-default" style="padding: 5px 12px; font-size: 12px;" title="PDF öffnen">
-                                                    <i class="fas fa-file-pdf"></i> PDF öffnen
+                                                <a href="https://cms.frankgroup.net/{{ $detail->grafik }}" target="_blank" class="btn-glass-default" style="padding:4px 10px; font-size:11px;">
+                                                    <i class="fas fa-file-pdf"></i> PDF
                                                 </a>
                                                 @if($codeEntry && $codeEntry->shortcode)
-                                                <a href="https://freigabe-center.net/?c={{ $codeEntry->shortcode }}" target="_blank" class="btn-glass-default" style="padding: 5px 12px; font-size: 12px;" title="Kundenlink im Freigabe-Center">
+                                                <a href="https://freigabe-center.net/?c={{ $codeEntry->shortcode }}" target="_blank" class="btn-glass-default" style="padding:4px 10px; font-size:11px;">
                                                     <i class="fas fa-link"></i> Kundenlink
                                                 </a>
                                                 @endif
                                             </div>
                                         </div>
 
-                                        {{-- Interne Notiz --}}
-                                        @if($noteEntry && $noteEntry->notiz)
-                                            <div style="margin-top: 12px; padding: 10px 14px; background: rgba(255,255,255,0.04); border-left: 3px solid var(--primary-accent); border-radius: 0 6px 6px 0; font-size: 13px; color: var(--text-muted);">
-                                                <i class="fas fa-sticky-note" style="color: var(--primary-accent); margin-right: 6px;"></i>
-                                                {{ $noteEntry->notiz }}
-                                            </div>
-                                        @endif
+                                        {{-- Timeline --}}
+                                        <div style="padding: 14px 18px; display: flex; flex-direction: column; gap: 8px;">
 
-                                        {{-- Kundenrückmeldung bei Ablehnung --}}
-                                        @if($approval && $approval->freigabe == 2 && $approval->grund)
-                                            <div style="margin-top: 10px; padding: 10px 14px; background: rgba(248,113,113,0.08); border-left: 3px solid #f87171; border-radius: 0 6px 6px 0; font-size: 13px; color: #fca5a5;">
-                                                <i class="fas fa-comment-alt" style="margin-right: 6px;"></i>
-                                                <strong>{{ $approval->vorname }} {{ $approval->nachname }}:</strong> {{ $approval->grund }}
+                                            {{-- 1. Hochgeladen --}}
+                                            <div style="display:flex; gap:10px; align-items:flex-start; font-size:13px;">
+                                                <i class="fas fa-upload" style="color: var(--primary-accent); margin-top:2px; width:14px; flex-shrink:0;"></i>
+                                                <span>
+                                                    <strong>{{ $noteEntry->uploader_name ?? 'Unbekannt' }}</strong>
+                                                    hat am {{ \Carbon\Carbon::parse($detail->hochgeladen)->format('d.m.Y') }} um {{ \Carbon\Carbon::parse($detail->hochgeladen)->format('H:i') }} Uhr
+                                                    den Korrekturabzug <strong>{{ $filename }}</strong> hochgeladen.
+                                                </span>
                                             </div>
-                                        @endif
 
-                                        {{-- Freigabe-Bestätigung --}}
-                                        @if($approval && $approval->freigabe == 1)
-                                            <div style="margin-top: 10px; font-size: 12px; color: var(--text-muted);">
-                                                <i class="fas fa-user-check" style="color: #4ade80; margin-right: 4px;"></i>
-                                                Freigegeben von {{ $approval->vorname }} {{ $approval->nachname }}
-                                                ({{ $approval->email }}) am {{ \Carbon\Carbon::parse($approval->timestamp)->format('d.m.Y H:i') }}
+                                            {{-- 2. Verschickt --}}
+                                            @if($noteEntry)
+                                            <div style="display:flex; gap:10px; align-items:flex-start; font-size:13px;">
+                                                <i class="fas fa-paper-plane" style="color: #60a5fa; margin-top:2px; width:14px; flex-shrink:0;"></i>
+                                                <span>
+                                                    <strong>{{ $noteEntry->uploader_name ?? 'Unbekannt' }}</strong>
+                                                    hat am {{ \Carbon\Carbon::parse($noteEntry->timestamp)->format('d.m.Y') }} um {{ \Carbon\Carbon::parse($noteEntry->timestamp)->format('H:i') }} Uhr
+                                                    den Korrekturabzug <strong>{{ $filename }}</strong>
+                                                    @if($approval && $approval->email)
+                                                        zum Kunden (<strong>{{ $approval->email }}</strong>)
+                                                    @else
+                                                        zum Kunden
+                                                    @endif
+                                                    verschickt.
+                                                </span>
                                             </div>
-                                        @endif
+                                            @endif
+
+                                            {{-- 3. Geöffnet --}}
+                                            @if($download)
+                                            <div style="display:flex; gap:10px; align-items:flex-start; font-size:13px;">
+                                                <i class="fas fa-eye" style="color: #a78bfa; margin-top:2px; width:14px; flex-shrink:0;"></i>
+                                                <span>
+                                                    Der Kunde hat am {{ \Carbon\Carbon::parse($download->timestamp)->format('d.m.Y') }} um {{ \Carbon\Carbon::parse($download->timestamp)->format('H:i') }} Uhr
+                                                    den Korrekturabzug <strong>{{ $filename }}</strong> geöffnet.
+                                                </span>
+                                            </div>
+                                            @endif
+
+                                            {{-- 4. Freigabe / Ablehnung --}}
+                                            @if($approval)
+                                            <div style="display:flex; gap:10px; align-items:flex-start; font-size:13px;">
+                                                <i class="fas {{ $approval->freigabe == 1 ? 'fa-check-circle' : 'fa-times-circle' }}"
+                                                   style="color: {{ $approval->freigabe == 1 ? '#4ade80' : '#f87171' }}; margin-top:2px; width:14px; flex-shrink:0;"></i>
+                                                <span>
+                                                    Der Kunde <strong>{{ $approval->vorname }} {{ $approval->nachname }}</strong>
+                                                    hat am {{ \Carbon\Carbon::parse($approval->timestamp)->format('d.m.Y') }} um {{ \Carbon\Carbon::parse($approval->timestamp)->format('H:i') }} Uhr
+                                                    den Korrekturabzug <strong>{{ $filename }}</strong>
+                                                    @if($approval->freigabe == 1)
+                                                        <span style="color:#4ade80; font-weight:600;">freigegeben</span>.
+                                                    @else
+                                                        <span style="color:#f87171; font-weight:600;">nicht freigegeben</span>.
+                                                    @endif
+                                                </span>
+                                            </div>
+                                            @if($approval->freigabe == 2 && $approval->grund)
+                                            <div style="display:flex; gap:10px; align-items:flex-start; font-size:13px; margin-left:24px;">
+                                                <i class="fas fa-arrow-right" style="color:var(--text-muted); margin-top:2px; width:14px; flex-shrink:0;"></i>
+                                                <span>Grund: <em style="color:#fca5a5;">"{{ $approval->grund }}"</em></span>
+                                            </div>
+                                            @endif
+                                            @endif
+
+                                            {{-- Interne Notiz --}}
+                                            @if($noteEntry && $noteEntry->notiz)
+                                            <div style="margin-top:4px; padding:8px 12px; background:rgba(255,255,255,0.04); border-left:3px solid var(--primary-accent); border-radius:0 6px 6px 0; font-size:12px; color:var(--text-muted);">
+                                                <i class="fas fa-sticky-note" style="color:var(--primary-accent); margin-right:5px;"></i>
+                                                Interne Notiz: {{ $noteEntry->notiz }}
+                                            </div>
+                                            @endif
+
+                                        </div>
                                     </div>
                                 @endforeach
                             </div>
