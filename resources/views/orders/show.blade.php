@@ -828,7 +828,7 @@
                                 <i class="fas fa-check-circle" style="color:#4ade80; font-size:18px;"></i>
                                 <div>
                                     <div style="font-weight:700; color:#4ade80; font-size:13px;">FE – Freigabe erteilt</div>
-                                    <div style="font-size:12px; color:var(--text-muted);">Der letzte Korrekturabzug wurde vom Kunden freigegeben. Auftrag kann in <strong>BO – Bestellung offen</strong> gesetzt werden.</div>
+                                    <div style="font-size:12px; color:var(--text-muted);">Der letzte Korrekturabzug wurde vom Kunden freigegeben.</div>
                                 </div>
                             </div>
                         </div>
