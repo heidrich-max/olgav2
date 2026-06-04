@@ -973,11 +973,27 @@ class DashboardController extends Controller
 
         $allStatuses = DB::table('auftrag_status')->orderBy('id')->get();
 
+        // Korrekturabzug-Status ableiten
+        $kaStatus = null;
+        if ($proofDetails->count() > 0) {
+            $lastDetail   = $proofDetails->last();
+            $lastApproval = $proofApprovals->get($lastDetail->id);
+            $lastNote     = $proofNotes->get($lastDetail->id);
+
+            if ($lastApproval) {
+                $kaStatus = $lastApproval->freigabe == 1 ? 'FE' : 'FNE';
+            } elseif ($lastNote) {
+                $kaStatus = 'FO';
+            } else {
+                $kaStatus = 'KAO';
+            }
+        }
+
         return view('orders.show', compact(
             'user', 'order', 'items', 'companyId', 'companyName', 'accentColor',
             'history', 'manufacturers', 'currentManufacturer', 'manufacturerHistory',
             'proofs', 'proofDetails', 'proofApprovals', 'proofNotes', 'proofCodes', 'proofDownloads',
-            'shipments', 'invoices', 'deliveryNotes', 'allStatuses'
+            'kaStatus', 'shipments', 'invoices', 'deliveryNotes', 'allStatuses'
         ));
     }
 

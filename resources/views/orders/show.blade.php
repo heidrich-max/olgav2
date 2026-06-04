@@ -597,8 +597,19 @@
                 <button class="tab-btn active" onclick="switchTab(event, 'tab-infos')">
                     <i class="fas fa-info-circle" style="margin-right: 8px;"></i> Infos
                 </button>
-                <button class="tab-btn" onclick="switchTab(event, 'tab-proof')">
+                <button class="tab-btn" onclick="switchTab(event, 'tab-proof')" style="position:relative;">
                     <i class="fas fa-file-signature" style="margin-right: 8px;"></i> Korrekturabzug
+                    @php
+                        $kaBadgeColor = match($kaStatus ?? '') {
+                            'KAO' => '#fbbf24', 'FO'  => '#60a5fa',
+                            'FNE' => '#f87171', 'FE'  => '#4ade80', default => null
+                        };
+                    @endphp
+                    @if($kaBadgeColor)
+                        <span style="margin-left:7px; background:{{ $kaBadgeColor }}; color:#000; border-radius:4px; padding:1px 6px; font-size:10px; font-weight:700; vertical-align:middle;">
+                            {{ $kaStatus }}
+                        </span>
+                    @endif
                 </button>
                 <button class="tab-btn" onclick="switchTab(event, 'tab-order')">
                     <i class="fas fa-box" style="margin-right: 8px;"></i> Bestellung
@@ -807,7 +818,46 @@
                         @php
                             $proofCodes     = $proofCodes ?? collect();
                             $proofDownloads = $proofDownloads ?? collect();
+                            $kaStatus       = $kaStatus ?? null;
                         @endphp
+
+                        {{-- KA-Status Banner --}}
+                        @if($kaStatus === 'FE')
+                        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; background:rgba(74,222,128,0.1); border:1px solid rgba(74,222,128,0.3); border-radius:10px; padding:12px 16px; margin-bottom:16px;">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <i class="fas fa-check-circle" style="color:#4ade80; font-size:18px;"></i>
+                                <div>
+                                    <div style="font-weight:700; color:#4ade80; font-size:13px;">FE – Freigabe erteilt</div>
+                                    <div style="font-size:12px; color:var(--text-muted);">Der letzte Korrekturabzug wurde vom Kunden freigegeben. Auftrag kann in <strong>BO – Bestellung offen</strong> gesetzt werden.</div>
+                                </div>
+                            </div>
+                        </div>
+                        @elseif($kaStatus === 'FNE')
+                        <div style="display:flex; align-items:center; gap:10px; background:rgba(248,113,113,0.1); border:1px solid rgba(248,113,113,0.3); border-radius:10px; padding:12px 16px; margin-bottom:16px;">
+                            <i class="fas fa-times-circle" style="color:#f87171; font-size:18px;"></i>
+                            <div>
+                                <div style="font-weight:700; color:#f87171; font-size:13px;">FNE – Freigabe nicht erteilt</div>
+                                <div style="font-size:12px; color:var(--text-muted);">Der Kunde hat den letzten Korrekturabzug abgelehnt. Bitte neuen Abzug hochladen.</div>
+                            </div>
+                        </div>
+                        @elseif($kaStatus === 'FO')
+                        <div style="display:flex; align-items:center; gap:10px; background:rgba(96,165,250,0.1); border:1px solid rgba(96,165,250,0.3); border-radius:10px; padding:12px 16px; margin-bottom:16px;">
+                            <i class="fas fa-clock" style="color:#60a5fa; font-size:18px;"></i>
+                            <div>
+                                <div style="font-weight:700; color:#60a5fa; font-size:13px;">FO – Freigabe offen</div>
+                                <div style="font-size:12px; color:var(--text-muted);">Korrekturabzug wurde an den Kunden verschickt. Warten auf Rückmeldung.</div>
+                            </div>
+                        </div>
+                        @elseif($kaStatus === 'KAO')
+                        <div style="display:flex; align-items:center; gap:10px; background:rgba(251,191,36,0.1); border:1px solid rgba(251,191,36,0.3); border-radius:10px; padding:12px 16px; margin-bottom:16px;">
+                            <i class="fas fa-hourglass-half" style="color:#fbbf24; font-size:18px;"></i>
+                            <div>
+                                <div style="font-weight:700; color:#fbbf24; font-size:13px;">KAO – Korrekturabzug offen</div>
+                                <div style="font-size:12px; color:var(--text-muted);">Korrekturabzug hochgeladen, noch nicht an den Kunden verschickt.</div>
+                            </div>
+                        </div>
+                        @endif
+
                         @if($proofDetails->count() > 0)
                             <div style="display: flex; flex-direction: column; gap: 20px;">
                                 @foreach($proofDetails as $i => $detail)
